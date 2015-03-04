@@ -90,7 +90,7 @@ public class Logic {
 	public ArrayList<Task> searchTask(String searchTerm) {
 		for(int i = 0; i < taskList.size(); i++) {
 			Task task = taskList.get(i);
-			if(task.getTaskName().contains(searchTerm)) {
+			if(task.getTaskName().contains(searchTerm.trim())) {
 				resultList.add(task);
 			}
 		}
