@@ -22,7 +22,7 @@ public class mainApp {
 	}
 
 	private static void displayTasks(ArrayList<Task> tasks) {
-		if (tasks.get(0) == null) {
+		if (tasks.size() == 0) {
 			printMessage(MESSAGE_EMPTY, null, null);
 		} else {
 			for (int i = 0; i < tasks.size(); i++) {
