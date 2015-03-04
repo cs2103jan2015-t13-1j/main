@@ -8,6 +8,7 @@ public class Logic {
 	Storage tempStorage = new Storage();
 	ArrayList<Task> taskList = new ArrayList<Task>(); 
 	ArrayList<Task> resultList = new ArrayList<Task>(); //for search
+	ArrayList<Task> viewList = new ArrayList<Task>();
 
 	Task tempTask = new Task();
 	
@@ -73,12 +74,13 @@ public class Logic {
 		
 	}
 	
-	public void addTask(String taskInfo) {
+	public ArrayList<Task> addTask(String taskInfo) {
+		return taskList;
 		
 	}
 	
-	public void deleteTask() {
-		
+	public ArrayList<Task> deleteTask() {
+		return taskList;
 	}
 	
 	public ArrayList<Task> searchTask(String searchTerm) {
@@ -92,7 +94,7 @@ public class Logic {
 		return resultList;
 	}
 	
-	public void viewList(){
-		
+	public ArrayList<Task> viewList(){
+		return viewList;
 	}
 }
