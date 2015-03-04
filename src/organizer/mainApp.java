@@ -18,7 +18,7 @@ public class mainApp {
 			ArrayList<String> parsedInput = parseInput();
 			String command = parsedInput.get(0);
 			String inputArgs = getInputArgsString(parsedInput);
-			executeCommand(command, inputArgs);
+			displayTasks(logic.executeComand());
 		}
 	}
 	
@@ -43,7 +43,9 @@ public class mainApp {
 			printMessage(MESSAGE_EMPTY, null, null);
 		} else {
 			for (int i = 0; i < tasks.size(); i++) {
-				System.out.println((i+1) + ". " + tasks.get(i));
+				System.out.print((i+1) + ". " + tasks.get(i).getTaskName());
+				System.out.print(" " + tasks.get(i).getTaskStatus());
+				System.out.println(" " + tasks.get(i).getDueDate());
 			}
 		}
 	}
@@ -57,16 +59,6 @@ public class mainApp {
 			parsedInputArray.add(tokens.next());
 		}
 		return (ArrayList<String>) parsedInputArray;
-	}
-	
-	public static void executeCommand(String command, String args) {
-		if (command.equals("add")) {
-			logic.addTask(args);
-		} else if (command.equals("delete")) {
-			logic.deleteTask(Integer.parseInt(args));
-		} else if (command.equals("search")) {
-			logic.searchTask(args);
-		}
 	}
 	
 	/*
