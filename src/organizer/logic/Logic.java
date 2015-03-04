@@ -79,8 +79,8 @@ public class Logic {
 
 	}
 
-	public ArrayList<Task> deleteTask() {
-		int num = Integer.parseInt(userContent.trim());
+	public ArrayList<Task> deleteTask(String taskInfo) {
+		int num = Integer.parseInt(taskInfo.trim());
 		taskList.remove(num - 1);
 		return taskList;
 	}
