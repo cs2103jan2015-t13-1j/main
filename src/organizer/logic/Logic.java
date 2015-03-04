@@ -80,7 +80,7 @@ public class Logic {
 		return taskList;
 
 	}
-
+	
 	public ArrayList<Task> deleteTask(String taskInfo) {
 		int num = Integer.parseInt(taskInfo.trim());
 		taskList.remove(num - 1);
@@ -90,6 +90,8 @@ public class Logic {
 
 
 	public ArrayList<Task> searchTask(String searchTerm) {
+		resultList.clear();
+		
 		for(int i = 0; i < taskList.size(); i++) {
 			Task task = taskList.get(i);
 			if(task.getTaskName().contains(searchTerm.trim())) {
