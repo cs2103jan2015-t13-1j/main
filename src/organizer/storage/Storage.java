@@ -14,9 +14,10 @@ import organizer.logic.Task;
 
 /**
 * File Format
-* name
-* date
-* description
+* id: ...
+* name: ...
+* date: ...
+* description: ...
 * ----
 */
 
@@ -27,6 +28,7 @@ public class Storage {
 	private static final String nameFieldIdentifier = "name: ";
 	private static final String dueDateFieldIdentifier = "duedate: ";
 	private static final String statusFieldIdentifier = "status: ";
+	private static final String taskIdFieldIdentifier = "id: ";
 
 	private static final String endIdentifier = "----";
 	
@@ -59,6 +61,9 @@ public class Storage {
 					taskList.add(task);
 					task = new Task();
 					begin = false;
+				} else if (line.startsWith(taskIdFieldIdentifier)) {
+					begin = true;
+					task.setTaskID(Integer.parseInt(line.substring(taskIdFieldIdentifier.length())));
 				}
 			}
 			// clean up
@@ -87,6 +92,8 @@ public class Storage {
 			while (taskIterator.hasNext()) {
 				// name
 				final Task task = taskIterator.next();
+				pw.print(taskIdFieldIdentifier);
+				pw.println(task.getTaskID());
 				pw.print(nameFieldIdentifier);
 				pw.println(task.getTaskName());
 				pw.print(dueDateFieldIdentifier);
