@@ -26,7 +26,6 @@ public class Storage {
 
 	private static final String nameFieldIdentifier = "name: ";
 	private static final String dueDateFieldIdentifier = "duedate: ";
-	private static final String descriptionFieldIdentifier = "description: ";
 	private static final String statusFieldIdentifier = "status: ";
 
 	private static final String endIdentifier = "----";
@@ -56,24 +55,7 @@ public class Storage {
 				} else if (line.startsWith(statusFieldIdentifier)) {
 					begin = true;
 					task.setTaskStatus(line.substring(dueDateFieldIdentifier.length()));
-				} else if (line.startsWith(descriptionFieldIdentifier)) {
-					// multiple lines
-					begin = true;
-					StringBuilder strb = new StringBuilder();
-					while(!line.equals(endIdentifier)) {
-						if (line.startsWith(endIdentifier)) {
-							line = line.substring(endIdentifier.length());
-						}
-						strb.append(line).append('\n');
-						if (sc.hasNextLine()) {
-							line = sc.nextLine();
-						} else {
-							break;
-						}
-					}
-				}
-	
-				if (line.equals(endIdentifier)) {
+				} else if (line.equals(endIdentifier)) {
 					taskList.add(task);
 					task = new Task();
 					begin = false;
