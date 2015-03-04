@@ -9,9 +9,9 @@ import java.util.*;
 public class mainApp {
 
 	public static final String MESSAGE_EMPTY = "You have no tasks.";
-	static Logic logic = new Logic();
 
 	public static void main(String[] args) {
+		Logic logic = new Logic();
 		ArrayList<Task> tasksArray = logic.loadStorage();
 		displayTasks(tasksArray);
 		while (true) {
@@ -22,7 +22,7 @@ public class mainApp {
 		}
 	}
 
-	public static void displayTasks(ArrayList<Task> tasks) {
+	private static void displayTasks(ArrayList<Task> tasks) {
 		if (tasks.get(0) == null) {
 			printMessage(MESSAGE_EMPTY, null, null);
 		} else {
