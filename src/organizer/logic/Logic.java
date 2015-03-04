@@ -6,8 +6,9 @@ import organizer.storage.Storage;
 
 public class Logic {
 	Storage tempStorage = new Storage();
-	ArrayList<Task> tempList = new ArrayList<Task>();
-	ArrayList<Task> resultList = new ArrayList<Task>();
+	ArrayList<Task> taskList = new ArrayList<Task>(); 
+	ArrayList<Task> resultList = new ArrayList<Task>(); //for search
+
 	Task tempTask = new Task();
 	
 	enum COMMAND_TYPE {
@@ -38,8 +39,8 @@ public class Logic {
 	}
 	
 	public ArrayList<Task> loadStorage() {
-		tempList = tempStorage.readFile();
-		return tempList;
+		taskList = tempStorage.readFile();
+		return taskList;
 	}
 	
 	public void writeStorage() {
@@ -47,7 +48,7 @@ public class Logic {
 	}
 	
 
-	public void executeCommand(String userCommand) {
+	public ArrayList<Task> executeCommand(String userCommand) {
 		//split the userCommand into operation and task info
 		String userOperation = userCommand.substring(0, userCommand.indexOf(' '));
 		String userContent = userCommand.substring(userCommand.indexOf(' '));
@@ -56,13 +57,13 @@ public class Logic {
 
 		switch (commandType) {
 		case ADD_TASK:	
-			addTask(userContent);	
+			return addTask(userContent);	
 		case DELETE_TASK:
-			deleteTask(userContent);
+			return deleteTask(userContent);
 		case SEARCH_TASK:
-			searchTask(userContent);
+			return searchTask(userContent);
 		case VIEW_TASK:
-			viewList(userContent);
+			return viewList(userContent);
 		case EXIT:
 			System.exit(0);	
 		default:
@@ -80,8 +81,15 @@ public class Logic {
 		
 	}
 	
-	public void searchTask() {
+	public ArrayList<Task> searchTask(String searchTerm) {
+		for(int i = 0; i < taskList.size(); i++) {
+			Task task = taskList.get(i);
+			if(task.getTaskName().contains(searchTerm)) {
+				resultList.add(task);
+			}
+		}
 		
+		return resultList;
 	}
 	
 	public void viewList(){
