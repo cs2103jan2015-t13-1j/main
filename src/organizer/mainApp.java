@@ -1,15 +1,14 @@
 package organizer;
 
 import organizer.logic.*;
-import organizer.storage.*;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class mainApp {
 
 	public static final String MESSAGE_EMPTY = "You have no tasks.";
 
+	@SuppressWarnings("resource")
 	public static void main(String[] args) {
 		Logic logic = new Logic();
 		ArrayList<Task> tasksArray = logic.loadStorage();
