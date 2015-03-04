@@ -7,17 +7,24 @@ import organizer.storage.Storage;
 public class Logic {
 	Storage tempStorage = new Storage();
 	ArrayList<Task> tempList = new ArrayList<Task>();
+	Task tempTask = new Task();
 	
-	public void loadStorage() {
+	public ArrayList<Task> loadStorage() {
 		tempList = tempStorage.readFile();
+		return tempList;
 	}
 	
 	public void writeStorage() {
 		tempStorage.writeFile(tempList);
 	}
 	
+	public void readCommand(String command) {
+		
+		
+	}
+	
 	public void addTask() {
-
+		
 	}
 	
 	public void deleteTask() {
