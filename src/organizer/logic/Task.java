@@ -4,48 +4,63 @@ import java.time.LocalDate;
 
 public class Task {
 
-    private String taskName = null;
-    private String taskStatus = null;
-    private LocalDate dueDate = null;
+	private int taskID = 0;
+	private String taskName = null;
+	private String taskStatus = null;
+	private LocalDate dueDate = null;
 
-    /**
-     * Default constructor.
-     */
-    public Task() {
-       taskName = null;
-       taskStatus = null;
-       dueDate = null;
-    }
 
-    public Task(String name, String status, LocalDate date) {
-    	taskName = name;
-    	taskStatus = status;
-    	dueDate = date;
+	/**
+	 * Default constructor.
+	 */
+	public Task() {
+		taskID = 0;
+		taskName = null;
+		taskStatus = null;
+		dueDate = null;
 	}
 
-    public String getTaskName() {
-        return taskName;
-    }
 
-    public void setTaskName(String name) {
-        taskName = name;
-    }
-    
-    public String getTaskStatus() {
-    	return taskStatus;
-    }
-    
-    public void setTaskStatus(String status) {
-    	taskStatus = status;
-    }
-    
-    public LocalDate getDueDate() {
-    	return dueDate;
-    }
-    
-    public void setDueDate(LocalDate date) {
-    	dueDate = date;
-    }
-    
-    
+	public Task(int taskID, String taskName, String taskStatus, LocalDate dueDate) {
+		this.taskID = taskID;
+		this.taskName = taskName;
+		this.taskStatus = taskStatus;
+		this.dueDate = dueDate;
+	}
+
+	/**
+	 * Get/Set methods for task attributes.
+	 */
+	public int getTaskID() {
+		return taskID;
+	}
+
+	public void setTaskID(int taskID) {
+		this.taskID = taskID;
+	}
+
+	public String getTaskName() {
+		return taskName;
+	}
+
+	public void setTaskName(String taskName) {
+		this.taskName = taskName;
+	}
+
+	public String getTaskStatus() {
+		return taskStatus;
+	}
+
+	public void setTaskStatus(String taskStatus) {
+		this.taskStatus = taskStatus;
+	}
+
+	public LocalDate getDueDate() {
+		return dueDate;
+	}
+
+	public void setDueDate(LocalDate dueDate) {
+		this.dueDate = dueDate;
+	}
+
 }
