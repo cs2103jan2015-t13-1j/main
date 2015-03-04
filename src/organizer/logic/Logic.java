@@ -40,12 +40,14 @@ public class Logic {
 	}
 
 	public ArrayList<Task> loadStorage() {
-		taskList = tempStorage.readFile();
+		//taskList = tempStorage.readFile();
+		//uncomment above line after Storage.java is done.
 		return taskList;
 	}
 
 	public void writeStorage() {
-		tempStorage.writeFile(tempList);
+		//tempStorage.writeFile(tempList);
+		//uncomment above line after Storage.java is done.
 	}
 
 
@@ -54,7 +56,7 @@ public class Logic {
 		String userOperation = userCommand.substring(0, userCommand.indexOf(' '));
 		String userContent = userCommand.substring(userCommand.indexOf(' '));
 
-		COMMAND_TYPE commandType = determineCommandType(userCommand);
+		COMMAND_TYPE commandType = determineCommandType(userOperation);
 
 		switch (commandType) {
 		case ADD_TASK:	
@@ -98,7 +100,7 @@ public class Logic {
 		return resultList;
 	}
 
-	public ArrayList<Task> viewList(){
+	public ArrayList<Task> viewList(String viewType){
 		return viewList;
 	}
 }
