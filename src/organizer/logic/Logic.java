@@ -11,11 +11,11 @@ public class Logic {
 	ArrayList<Task> viewList = new ArrayList<Task>();
 
 	Task tempTask = new Task();
-	
+
 	enum COMMAND_TYPE {
 		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, INVALID, EXIT
 	};
-	
+
 	private static COMMAND_TYPE determineCommandType(String commandTypeString) {
 		if(commandTypeString.equals(null))
 			throw new Error("Unregonized command type");
@@ -38,22 +38,22 @@ public class Logic {
 		}
 
 	}
-	
+
 	public ArrayList<Task> loadStorage() {
 		taskList = tempStorage.readFile();
 		return taskList;
 	}
-	
+
 	public void writeStorage() {
 		tempStorage.writeFile(tempList);
 	}
-	
+
 
 	public ArrayList<Task> executeCommand(String userCommand) {
 		//split the userCommand into operation and task info
 		String userOperation = userCommand.substring(0, userCommand.indexOf(' '));
 		String userContent = userCommand.substring(userCommand.indexOf(' '));
-		
+
 		COMMAND_TYPE commandType = determineCommandType(userCommand);
 
 		switch (commandType) {
@@ -71,18 +71,18 @@ public class Logic {
 			//throw an error if the command is not recognized
 			throw new Error("Unrecognized command type");
 		}
-		
+
 	}
-	
+
 	public ArrayList<Task> addTask(String taskInfo) {
 		return taskList;
-		
+
 	}
-	
+
 	public ArrayList<Task> deleteTask() {
 		return taskList;
 	}
-	
+
 	public ArrayList<Task> searchTask(String searchTerm) {
 		for(int i = 0; i < taskList.size(); i++) {
 			Task task = taskList.get(i);
@@ -90,10 +90,10 @@ public class Logic {
 				resultList.add(task);
 			}
 		}
-		
+
 		return resultList;
 	}
-	
+
 	public ArrayList<Task> viewList(){
 		return viewList;
 	}
