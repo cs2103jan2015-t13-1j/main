@@ -1,5 +1,7 @@
 package organizer.logic;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import organizer.storage.Storage;
@@ -39,22 +41,31 @@ public class Logic {
 
 	}
 
-	public ArrayList<Task> loadStorage() {
-		//taskList = tempStorage.readFile();
-		//uncomment above line after Storage.java is done.
+	public ArrayList<Task> loadStorage() throws IOException {
+		taskList = tempStorage.readFile();
 		return taskList;
 	}
 
-	public void writeStorage() {
-		//tempStorage.writeFile(tempList);
-		//uncomment above line after Storage.java is done.
+	public void writeStorage() throws IOException {
+		tempStorage.writeFile(taskList);
 	}
 
 
-	public ArrayList<Task> executeCommand(String userCommand) {
+	public ArrayList<Task> executeCommand(String userCommand) throws IOException {
 		//split the userCommand into operation and task info
-		String userOperation = userCommand.substring(0, userCommand.indexOf(' '));
-		String userContent = userCommand.substring(userCommand.indexOf(' '));
+		String userOperation;
+		String userContent;
+		
+		if(userCommand.indexOf(' ') >= 0) {
+			userOperation = userCommand.substring(0, userCommand.indexOf(' '));
+			userContent = userCommand.substring(userCommand.indexOf(' '));
+
+		}
+		else {
+			userOperation = userCommand;
+			userContent = null;
+		}
+		
 
 		COMMAND_TYPE commandType = determineCommandType(userOperation);
 
@@ -68,6 +79,7 @@ public class Logic {
 		case VIEW_TASK:
 			return viewList(userContent);
 		case EXIT:
+			tempStorage.writeFile(taskList);
 			System.exit(0);	
 		default:
 			//throw an error if the command is not recognized
@@ -77,6 +89,12 @@ public class Logic {
 	}
 
 	public ArrayList<Task> addTask(String taskInfo) {
+		tempTask.setTaskName(taskInfo);
+		tempTask.setDueDate(LocalDate.now());
+		tempTask.setTaskStatus("INCOMPLETE");
+		tempTask.setTaskID(taskList.size());
+		taskList.add(tempTask);
+		tempTask = new Task();
 		return taskList;
 
 	}

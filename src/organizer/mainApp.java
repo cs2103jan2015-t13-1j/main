@@ -2,6 +2,7 @@ package organizer;
 
 import organizer.logic.*;
 
+import java.io.IOException;
 import java.util.*;
 
 public class mainApp {
@@ -9,7 +10,7 @@ public class mainApp {
 	public static final String MESSAGE_EMPTY = "You have no tasks.";
 
 	@SuppressWarnings("resource")
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		Logic logic = new Logic();
 		ArrayList<Task> tasksArray = logic.loadStorage();
 		displayTasks(tasksArray);
