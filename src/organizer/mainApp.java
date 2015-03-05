@@ -16,7 +16,7 @@ public class mainApp {
 		displayTasks(tasksArray);
 		while (true) {
 			Scanner sc = new Scanner(System.in);
-			System.out.println("Please enter a command: ");
+			System.out.print("Please enter a command: ");
 			String userInput = sc.nextLine().toString();
 			displayTasks(logic.executeCommand(userInput));
 		}
