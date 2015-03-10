@@ -15,9 +15,6 @@ public class Logic {
 
 	Task tempTask = new Task();
 
-	boolean isSearch = false;
-	boolean isView = false;
-	
 	enum COMMAND_TYPE {
 		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INVALID, EXIT
 	};
@@ -64,7 +61,7 @@ public class Logic {
 		
 		if(userCommand.indexOf(' ') >= 0) {
 			userOperation = userCommand.substring(0, userCommand.indexOf(' '));
-			userContent = userCommand.substring(userCommand.indexOf(' '));
+			userContent = userCommand.substring(userCommand.indexOf(' ')+1);
 
 		}
 		else {
