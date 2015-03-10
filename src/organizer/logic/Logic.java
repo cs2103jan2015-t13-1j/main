@@ -173,7 +173,9 @@ public class Logic {
 				viewList.add(task);
 			}
 		}
+		isView = true;
 		return viewList;
+		
 	}
 }
 
