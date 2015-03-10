@@ -11,6 +11,9 @@ public class Logic {
 	ArrayList<Task> taskList = new ArrayList<Task>(); 
 	ArrayList<Task> resultList = new ArrayList<Task>(); //for search
 	ArrayList<Task> viewList = new ArrayList<Task>();
+	
+	boolean isSearch = false;
+	boolean isView = false;
 
 	Task tempTask = new Task();
 
@@ -107,9 +110,32 @@ public class Logic {
 	}
 	
 	public ArrayList<Task> deleteTask(String taskInfo) {
-		int num = Integer.parseInt(taskInfo.trim());
-		taskList.remove(num - 1);
+		int lineNum = Integer.parseInt(taskInfo.trim()) - 1;
+		int taskID;
+		
+		if(isSearch) {
+			taskID = resultList.get(lineNum).getTaskID();
+			isSearch = false;
+		} else if(isView){
+			taskID = viewList.get(lineNum).getTaskID();
+			isView = false;
+			
+		} else {
+			taskID = taskList.get(lineNum-1).getTaskID();
+		}
+		
+		removeFromTaskList(taskID);
 		return taskList;
+		
+	}
+	
+
+	private void removeFromTaskList(int taskID) {
+		for(int i = 0; i < taskList.size(); i++) {
+			if(taskList.get(i).getTaskID() == taskID) {
+				taskList.remove(i);
+			}
+		}
 	}
 	
 	public ArrayList<Task> completeTask(String taskInfo) {
@@ -122,6 +148,7 @@ public class Logic {
 
 	public ArrayList<Task> searchTask(String searchTerm) {
 		resultList.clear();
+		isSearch = true;
 		
 		for(int i = 0; i < taskList.size(); i++) {
 			Task task = taskList.get(i);
