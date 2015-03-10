@@ -1,5 +1,10 @@
 id: 0
-name: buy fruit
+name: buy milk
+duedate: 2015-03-10
+status: INCOMPLETE
+----
+id: 1
+name: buy bus
 duedate: 2015-03-10
 status: INCOMPLETE
 ----
