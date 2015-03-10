@@ -16,7 +16,7 @@ public class Logic {
 	boolean isView = false;
 
 	Task tempTask = new Task();
-
+	
 	enum COMMAND_TYPE {
 		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INVALID, EXIT
 	};
@@ -100,6 +100,7 @@ public class Logic {
 		tempTask.setDueDate(LocalDate.now());
 		tempTask.setTaskStatus("INCOMPLETE");
 		tempTask.setTaskID(taskList.size());
+		
 		taskList.add(tempTask);
 		tempTask = new Task();
 		return taskList;
@@ -164,26 +165,15 @@ public class Logic {
 		
 		for(int i = 0; i < taskList.size(); i++) {
 			Task task = taskList.get(i);
-			switch(viewType) {
-			case "today" : if(task.getDueDate().equals(currentDate)) {
+			if(viewType.trim().equals("today")&&task.getDueDate().equals(currentDate)) {
+				viewList.add(task);
+			}else if(viewType.trim().equals("complete")&&task.getTaskStatus().equals("complete")){
+				viewList.add(task);
+			}else if (viewType.trim().equalsIgnoreCase("all")){
 				viewList.add(task);
 			}
-				break;
-			case "all" : viewList.add(task);
-			break;
-			case "complete": if(task.getTaskStatus().equals(("COMPLETE"))) {
-				viewList.add(task);
-			}
-			}
-//			if(viewType.trim().equalsIgnoreCase("today")&&task.getDueDate() == currentDate) {
-//				viewList.add(task);
-//			}else if(viewType.trim().equalsIgnoreCase("complete")&&task.getTaskStatus().equalsIgnoreCase("complete")){
-//				viewList.add(task);
-//			}else if (viewType.trim().equalsIgnoreCase("all")){
-//				viewList.add(task);
-//			}
 		}
-		System.out.println(currentDate);
 		return viewList;
 	}
 }
+
