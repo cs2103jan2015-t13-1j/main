@@ -42,6 +42,10 @@ public class Storage {
 
 	public ArrayList<Task> readFile(String fileName) throws IOException {
 		ArrayList<Task> taskList = new ArrayList<Task>();
+		File file = new File(fileName);
+		if (!file.exists()) {
+			file.createNewFile();
+		}
 		try (Scanner sc = new Scanner(new File(fileName))) {
 			Task task = new Task();
 			boolean begin = false;
