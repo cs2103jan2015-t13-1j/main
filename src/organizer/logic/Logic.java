@@ -159,17 +159,29 @@ public class Logic {
 
 	public ArrayList<Task> viewList(String viewType){
 		LocalDate currentDate = LocalDate.now();
+		viewType = viewType.toLowerCase();
 		viewList.clear();
 		
 		for(int i = 0; i < taskList.size(); i++) {
 			Task task = taskList.get(i);
-			if(viewType.trim().equalsIgnoreCase("today")&&task.getDueDate() == currentDate) {
-				viewList.add(task);
-			}else if(viewType.trim().equalsIgnoreCase("complete")&&task.getTaskStatus().equalsIgnoreCase("complete")){
-				viewList.add(task);
-			}else if (viewType.trim().equalsIgnoreCase("all")){
+			switch(viewType) {
+			case "today" : if(task.getDueDate().equals(currentDate)) {
 				viewList.add(task);
 			}
+				break;
+			case "all" : viewList.add(task);
+			break;
+			case "complete": if(task.getTaskStatus().equals(("COMPLETE"))) {
+				viewList.add(task);
+			}
+			}
+//			if(viewType.trim().equalsIgnoreCase("today")&&task.getDueDate() == currentDate) {
+//				viewList.add(task);
+//			}else if(viewType.trim().equalsIgnoreCase("complete")&&task.getTaskStatus().equalsIgnoreCase("complete")){
+//				viewList.add(task);
+//			}else if (viewType.trim().equalsIgnoreCase("all")){
+//				viewList.add(task);
+//			}
 		}
 		System.out.println(currentDate);
 		return viewList;
