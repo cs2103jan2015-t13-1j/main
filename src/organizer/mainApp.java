@@ -28,6 +28,8 @@ public class mainApp {
 	}
 
 	private static void displayTasks(ArrayList<Task> tasks) {
+		printMessage("****************************************************************");
+		printNewLine();
 		if (tasks.size() == 0) {
 			printMessage(MESSAGE_EMPTY);
 		} else {
@@ -38,9 +40,12 @@ public class mainApp {
 						task.getTaskName(),
 						task.getTaskStatus(),
 						task.getDueDate().toString());
-				printMessage();
+				printNewLine();
 			}
 		}
+		printNewLine();
+		printMessage("****************************************************************");
+		printNewLine();
 	}
 
 	private static void printMessage(String message, Object... args) {
@@ -48,10 +53,10 @@ public class mainApp {
 	}
 	
 	private static void printMessage(String message) {
-		System.out.println(message);
+		System.out.print(message);
 	}
 	
-	private static void printMessage() {
+	private static void printNewLine() {
 		System.out.println();
 	}
 
