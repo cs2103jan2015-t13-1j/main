@@ -12,6 +12,8 @@ public class Logic {
 	ArrayList<Task> resultList = new ArrayList<Task>(); //for search
 	ArrayList<Task> viewList = new ArrayList<Task>();
 	
+	boolean isSearch = false;
+	boolean isView = false;
 
 	Task tempTask = new Task();
 
@@ -116,7 +118,7 @@ public class Logic {
 			isView = false;
 			
 		} else {
-			taskID = taskList.get(lineNum-1).getTaskID();
+			taskID = taskList.get(lineNum).getTaskID();
 		}
 		
 		removeFromTaskList(taskID);
