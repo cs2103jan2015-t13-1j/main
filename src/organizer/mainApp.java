@@ -10,8 +10,15 @@ public class mainApp {
 	public static final String COMMAND_PROMPT = "Please enter a command: ";
 	public static final String MESSAGE_EMPTY = "You have no tasks.";
 	public static final String TASK_TEMPLATE = "%d. %s %s %s";
-
+	public static final String PROGRAM_NAME = "                       ~TASK ORGANIZER~";
+	public static final String COMMAND_LIST = "available commands: add, delete, view, search, complete, exit";
+	
 	public static void main(String[] args) throws IOException {
+		printMessage(PROGRAM_NAME);
+		printNewLine();
+		printMessage(COMMAND_LIST);
+		printNewLine();
+		printNewLine();
 		Logic logic = new Logic();
 		ArrayList<Task> tasksArray = logic.loadStorage();
 		displayTasks(tasksArray);
@@ -28,10 +35,11 @@ public class mainApp {
 	}
 
 	private static void displayTasks(ArrayList<Task> tasks) {
-		printMessage("****************************************************************");
+		printMessage("--------------------------------------------------------------");
 		printNewLine();
 		if (tasks.size() == 0) {
 			printMessage(MESSAGE_EMPTY);
+			printNewLine();
 		} else {
 			for (int i = 0; i < tasks.size(); i++) {
 				final Task task = tasks.get(i);
@@ -44,7 +52,7 @@ public class mainApp {
 			}
 		}
 		printNewLine();
-		printMessage("****************************************************************");
+		printMessage("**************************************************************");
 		printNewLine();
 	}
 
