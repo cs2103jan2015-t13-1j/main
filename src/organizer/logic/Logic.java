@@ -167,7 +167,7 @@ public class Logic {
 			Task task = taskList.get(i);
 			if(viewType.trim().equals("today")&&task.getDueDate().equals(currentDate)) {
 				viewList.add(task);
-			}else if(viewType.trim().equals("complete")&&task.getTaskStatus().equals("complete")){
+			}else if(viewType.trim().equals("complete")&&task.getTaskStatus().toLowerCase().equals("complete")){
 				viewList.add(task);
 			}else if (viewType.trim().equalsIgnoreCase("all")){
 				viewList.add(task);
