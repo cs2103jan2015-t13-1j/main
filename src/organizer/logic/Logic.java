@@ -106,7 +106,7 @@ public class Logic {
 		String taskName = taskInfo;
 		String taskDate = null;
 		LocalDate dueDate = LocalDate.now();
-		
+
 		if(taskInfo.contains(dateFieldIdentifier)) {
 			taskDate = taskInfo.substring(taskInfo.indexOf(dateFieldIdentifier)+2);
 			if(determineDate(taskDate) != null) {
@@ -147,21 +147,21 @@ public class Logic {
 	private LocalDate determineDay(String dateInfo) {
 		LocalDate taskDate = null;
 		String dayOfWeek = LocalDate.now().getDayOfWeek().toString().toLowerCase();
-		
-		Map<String,Integer> dayMap=new HashMap<String,Integer>();
-        
-        dayMap.put("sunday",1);
-        dayMap.put("monday",2);
-        dayMap.put("tuesday",3);
-        dayMap.put("wednesday",4);
-        dayMap.put("thursday",5);
-        dayMap.put("friday",6);
-        dayMap.put("saturday",7);
 
-        
-        int numOfDay = dayMap.get(dayOfWeek).intValue();
-        int numOfTaskDay = dayMap.get(dateInfo).intValue();
-        
+		Map<String,Integer> dayMap=new HashMap<String,Integer>();
+
+		dayMap.put("sunday",1);
+		dayMap.put("monday",2);
+		dayMap.put("tuesday",3);
+		dayMap.put("wednesday",4);
+		dayMap.put("thursday",5);
+		dayMap.put("friday",6);
+		dayMap.put("saturday",7);
+
+
+		int numOfDay = dayMap.get(dayOfWeek).intValue();
+		int numOfTaskDay = dayMap.get(dateInfo).intValue();
+
 		if(numOfDay == numOfTaskDay) {
 			taskDate = LocalDate.now().plusDays(daysPerWeek);
 		} else {
