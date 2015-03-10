@@ -15,7 +15,6 @@ public class mainApp {
 		Logic logic = new Logic();
 		ArrayList<Task> tasksArray = logic.loadStorage();
 		displayTasks(tasksArray);
-
 		
 		try (Scanner sc = new Scanner(System.in)) {
 			while (true) {
