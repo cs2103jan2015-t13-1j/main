@@ -63,7 +63,7 @@ public class Logic {
 		
 		if(userCommand.indexOf(' ') >= 0) {
 			userOperation = userCommand.substring(0, userCommand.indexOf(' '));
-			userContent = userCommand.substring(userCommand.indexOf(' '));
+			userContent = userCommand.substring(userCommand.indexOf(' ')+1);
 
 		}
 		else {
