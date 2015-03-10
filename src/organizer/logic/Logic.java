@@ -25,7 +25,7 @@ public class Logic {
 	Task tempTask = new Task();
 
 	enum COMMAND_TYPE {
-		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INVALID, EXIT
+		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, CLEAR_TASK, INVALID, EXIT
 	};
 
 	private static COMMAND_TYPE determineCommandType(String commandTypeString) {
@@ -43,6 +43,8 @@ public class Logic {
 			return COMMAND_TYPE.VIEW_TASK;
 		case "search":
 			return COMMAND_TYPE.SEARCH_TASK;
+		case "clear":
+			return COMMAND_TYPE.CLEAR_TASK;
 		case "complete":
 			return COMMAND_TYPE.COMPLETE_TASK;
 		case "exit":
@@ -90,6 +92,8 @@ public class Logic {
 			return searchTask(userContent);
 		case VIEW_TASK:
 			return viewList(userContent);
+		case CLEAR_TASK:
+			return clearTask();
 		case COMPLETE_TASK:
 			return completeTask(userContent);
 		case EXIT:
@@ -210,7 +214,10 @@ public class Logic {
 		return taskList;
 	}
 
-
+	public ArrayList<Task> clearTask(){
+		taskList.clear();
+		return taskList;
+	}
 
 	public ArrayList<Task> searchTask(String searchTerm) {
 		resultList.clear();
