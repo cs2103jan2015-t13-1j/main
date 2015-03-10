@@ -17,6 +17,9 @@ public class Logic {
 
 	Task tempTask = new Task();
 
+	boolean isSearch = false;
+	boolean isView = false;
+	
 	enum COMMAND_TYPE {
 		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INVALID, EXIT
 	};
@@ -158,6 +161,20 @@ public class Logic {
 	}
 
 	public ArrayList<Task> viewList(String viewType){
+		LocalDate currentDate = LocalDate.now();
+		viewList.clear();
+		
+		for(int i = 0; i < taskList.size(); i++) {
+			Task task = taskList.get(i);
+			if(viewType.trim().equalsIgnoreCase("today")&&task.getDueDate() == currentDate) {
+				viewList.add(task);
+			}else if(viewType.trim().equalsIgnoreCase("complete")&&task.getTaskStatus().equalsIgnoreCase("complete")){
+				viewList.add(task);
+			}else if (viewType.trim().equalsIgnoreCase("all")){
+				viewList.add(task);
+			}
+		}
+		System.out.println(currentDate);
 		return viewList;
 	}
 }

@@ -11,7 +11,6 @@ import java.util.Scanner;
 
 import organizer.logic.Task;
 
-
 /**
 * File Format
 * id: ...
@@ -56,7 +55,7 @@ public class Storage {
 					task.setDueDate(LocalDate.parse(line.substring(dueDateFieldIdentifier.length())));
 				} else if (line.startsWith(statusFieldIdentifier)) {
 					begin = true;
-					task.setTaskStatus(line.substring(statusFieldIdentifier.length()));
+					task.setTaskStatus(line.substring(dueDateFieldIdentifier.length()));
 				} else if (line.equals(endIdentifier)) {
 					taskList.add(task);
 					task = new Task();
