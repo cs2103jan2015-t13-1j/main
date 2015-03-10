@@ -16,8 +16,6 @@ public class Logic {
 	boolean isView = false;
 
 	Task tempTask = new Task();
-	boolean isSearch = false;
-	boolean isView = false;
 	
 	enum COMMAND_TYPE {
 		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INVALID, EXIT
@@ -174,7 +172,6 @@ public class Logic {
 				viewList.add(task);
 			}
 		}
-		System.out.println(currentDate);
 		return viewList;
 	}
 }
