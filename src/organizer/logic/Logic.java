@@ -11,12 +11,12 @@ public class Logic {
 	ArrayList<Task> taskList = new ArrayList<Task>(); 
 	ArrayList<Task> resultList = new ArrayList<Task>(); //for search
 	ArrayList<Task> viewList = new ArrayList<Task>();
-	
+
 	boolean isSearch = false;
 	boolean isView = false;
 
 	Task tempTask = new Task();
-	
+
 	enum COMMAND_TYPE {
 		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INVALID, EXIT
 	};
@@ -60,7 +60,7 @@ public class Logic {
 		//split the userCommand into operation and task info
 		String userOperation;
 		String userContent;
-		
+
 		if(userCommand.indexOf(' ') >= 0) {
 			userOperation = userCommand.substring(0, userCommand.indexOf(' '));
 			userContent = userCommand.substring(userCommand.indexOf(' ')+1);
@@ -70,7 +70,7 @@ public class Logic {
 			userOperation = userCommand;
 			userContent = null;
 		}
-		
+
 
 		COMMAND_TYPE commandType = determineCommandType(userOperation);
 
@@ -100,33 +100,35 @@ public class Logic {
 		tempTask.setDueDate(LocalDate.now());
 		tempTask.setTaskStatus("INCOMPLETE");
 		tempTask.setTaskID(taskList.size());
-		
+
 		taskList.add(tempTask);
 		tempTask = new Task();
 		return taskList;
 
 	}
-	
+
 	public ArrayList<Task> deleteTask(String taskInfo) {
-		int lineNum = Integer.parseInt(taskInfo.trim()) - 1;
-		int taskID;
-		
-		if(isSearch) {
-			taskID = resultList.get(lineNum).getTaskID();
+		int lineNum = Integer.parseInt(taskInfo.trim());
+		int taskID = -1;
+
+		if(isSearch && lineNum <= resultList.size()) {
+			taskID = resultList.get(lineNum-1).getTaskID();
 			isSearch = false;
-		} else if(isView){
-			taskID = viewList.get(lineNum).getTaskID();
+		} else if(isView && lineNum <= viewList.size()){
+			taskID = viewList.get(lineNum-1).getTaskID();
 			isView = false;
-			
-		} else {
-			taskID = taskList.get(lineNum).getTaskID();
+
+		} else{
+			if(lineNum <= taskList.size()) {
+				taskID = taskList.get(lineNum-1).getTaskID();
+			}
 		}
-		
+
 		removeFromTaskList(taskID);
 		return taskList;
-		
+
 	}
-	
+
 
 	private void removeFromTaskList(int taskID) {
 		for(int i = 0; i < taskList.size(); i++) {
@@ -135,7 +137,7 @@ public class Logic {
 			}
 		}
 	}
-	
+
 	public ArrayList<Task> completeTask(String taskInfo) {
 		int num = Integer.parseInt(taskInfo.trim());
 		taskList.get(num-1).setTaskStatus("COMPLETE");
@@ -147,7 +149,7 @@ public class Logic {
 	public ArrayList<Task> searchTask(String searchTerm) {
 		resultList.clear();
 		isSearch = true;
-		
+
 		for(int i = 0; i < taskList.size(); i++) {
 			Task task = taskList.get(i);
 			if(task.getTaskName().contains(searchTerm.trim())) {
@@ -162,20 +164,21 @@ public class Logic {
 		LocalDate currentDate = LocalDate.now();
 		viewType = viewType.toLowerCase();
 		viewList.clear();
-		
+		isView = true;
+
 		for(int i = 0; i < taskList.size(); i++) {
 			Task task = taskList.get(i);
-			if(viewType.trim().equals("today")&&task.getDueDate().equals(currentDate)) {
+			if(viewType.trim().equals("today") && task.getDueDate().equals(currentDate)) {
 				viewList.add(task);
-			}else if(viewType.trim().equals("complete")&&task.getTaskStatus().toLowerCase().equals("complete")){
+			}else if(viewType.trim().equals("complete") && task.getTaskStatus().toLowerCase().equals("complete")){
 				viewList.add(task);
 			}else if (viewType.trim().equalsIgnoreCase("all")){
 				viewList.add(task);
 			}
 		}
-		isView = true;
+
 		return viewList;
-		
+
 	}
 }
 
