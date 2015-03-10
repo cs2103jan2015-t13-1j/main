@@ -1,6 +1,7 @@
 package organizer.logic;
 
 import java.io.IOException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -11,14 +12,14 @@ public class Logic {
 	ArrayList<Task> taskList = new ArrayList<Task>(); 
 	ArrayList<Task> resultList = new ArrayList<Task>(); //for search
 	ArrayList<Task> viewList = new ArrayList<Task>();
-
+	
 	boolean isSearch = false;
 	boolean isView = false;
 
 	Task tempTask = new Task();
-
+	
 	enum COMMAND_TYPE {
-		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INVALID, EXIT
+		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, CLEAR_TASK, INVALID, EXIT
 	};
 
 	private static COMMAND_TYPE determineCommandType(String commandTypeString) {
@@ -38,6 +39,8 @@ public class Logic {
 			return COMMAND_TYPE.SEARCH_TASK;
 		case "complete":
 			return COMMAND_TYPE.COMPLETE_TASK;
+		case "clear":
+			return COMMAND_TYPE.CLEAR_TASK;
 		case "exit":
 			return COMMAND_TYPE.EXIT;
 		default:
@@ -60,7 +63,7 @@ public class Logic {
 		//split the userCommand into operation and task info
 		String userOperation;
 		String userContent;
-
+		
 		if(userCommand.indexOf(' ') >= 0) {
 			userOperation = userCommand.substring(0, userCommand.indexOf(' '));
 			userContent = userCommand.substring(userCommand.indexOf(' ')+1);
@@ -70,7 +73,7 @@ public class Logic {
 			userOperation = userCommand;
 			userContent = null;
 		}
-
+		
 
 		COMMAND_TYPE commandType = determineCommandType(userOperation);
 
@@ -83,6 +86,8 @@ public class Logic {
 			return searchTask(userContent);
 		case VIEW_TASK:
 			return viewList(userContent);
+		case CLEAR_TASK:
+			return clearList();
 		case COMPLETE_TASK:
 			return completeTask(userContent);
 		case EXIT:
@@ -96,39 +101,71 @@ public class Logic {
 	}
 
 	public ArrayList<Task> addTask(String taskInfo) {
+//		String taskName = "";
+//		LocalDate dueDate = LocalDate.now();
+//		DayOfWeek currentDay;
+//		String userInputDate = "";
+//		
+//		if(taskInfo.indexOf("%%") >= 0) {
+//			taskName = taskInfo.substring(0, taskInfo.indexOf("%%"));
+//			userInputDate = taskInfo.substring(taskInfo.indexOf("%%")+1).toLowerCase();
+//
+//		}
+//		else {
+//			taskName = taskInfo;
+//		}	
+//		
+//		switch (userInputDate){
+//		case "taday":
+//			dueDate = LocalDate.now();
+//		case "tomorrow":
+//			dueDate = dueDate.plusDays(1);
+//		case "monday":
+//			dueDate =
+//		case "tuesday":
+//		case "wednesday":
+//		case "thursday":
+//		case "friday":
+//		case "saterday":
+//		case "sunday":
+//			
+//		
+//		
+//		}
+		
+		
 		tempTask.setTaskName(taskInfo);
 		tempTask.setDueDate(LocalDate.now());
 		tempTask.setTaskStatus("INCOMPLETE");
 		tempTask.setTaskID(taskList.size());
-
+		
 		taskList.add(tempTask);
 		tempTask = new Task();
 		return taskList;
 
 	}
+	
 
 	public ArrayList<Task> deleteTask(String taskInfo) {
-		int lineNum = Integer.parseInt(taskInfo.trim());
-		int taskID = -1;
-
-		if(isSearch && lineNum <= resultList.size()) {
-			taskID = resultList.get(lineNum-1).getTaskID();
+		int lineNum = Integer.parseInt(taskInfo.trim()) - 1;
+		int taskID;
+		
+		if(isSearch) {
+			taskID = resultList.get(lineNum).getTaskID();
 			isSearch = false;
-		} else if(isView && lineNum <= viewList.size()){
-			taskID = viewList.get(lineNum-1).getTaskID();
+		} else if(isView){
+			taskID = viewList.get(lineNum).getTaskID();
 			isView = false;
-
-		} else{
-			if(lineNum <= taskList.size()) {
-				taskID = taskList.get(lineNum-1).getTaskID();
-			}
+			
+		} else {
+			taskID = taskList.get(lineNum).getTaskID();
 		}
-
+		
 		removeFromTaskList(taskID);
 		return taskList;
-
+		
 	}
-
+	
 
 	private void removeFromTaskList(int taskID) {
 		for(int i = 0; i < taskList.size(); i++) {
@@ -137,19 +174,22 @@ public class Logic {
 			}
 		}
 	}
-
+	
 	public ArrayList<Task> completeTask(String taskInfo) {
 		int num = Integer.parseInt(taskInfo.trim());
 		taskList.get(num-1).setTaskStatus("COMPLETE");
 		return taskList;
 	}
 
-
+	public ArrayList<Task> clearList(){
+		taskList.clear();
+		return taskList;
+	}
 
 	public ArrayList<Task> searchTask(String searchTerm) {
 		resultList.clear();
 		isSearch = true;
-
+		
 		for(int i = 0; i < taskList.size(); i++) {
 			Task task = taskList.get(i);
 			if(task.getTaskName().contains(searchTerm.trim())) {
@@ -165,7 +205,7 @@ public class Logic {
 		viewType = viewType.toLowerCase();
 		viewList.clear();
 		isView = true;
-
+		
 		for(int i = 0; i < taskList.size(); i++) {
 			Task task = taskList.get(i);
 			if(viewType.trim().equals("today") && task.getDueDate().equals(currentDate)) {
@@ -176,9 +216,9 @@ public class Logic {
 				viewList.add(task);
 			}
 		}
-
+		
 		return viewList;
-
+		
 	}
 }
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="601.0" prefWidth="1138.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="organizer.gui.MainAppController">
+   <children>
+      <TableView fx:id="taskTable" layoutX="27.0" layoutY="100.0" prefHeight="364.0" prefWidth="828.0">
+        <columns>
+          <TableColumn fx:id="taskTableIdColumn" prefWidth="96.0" text="Task No." />
+          <TableColumn fx:id="taskTableNameColumn" prefWidth="395.0" text="Task Name" />
+            <TableColumn fx:id="taskTableDueDateColumn" prefWidth="170.0" text="Due Date" />
+            <TableColumn fx:id="taskTableStatusColumn" prefWidth="166.0" text="Status" />
+        </columns>
+      </TableView>
+      <Label layoutX="27.0" layoutY="28.0" prefHeight="54.0" prefWidth="284.0" text="Task Organizer">
+         <font>
+            <Font size="37.0" />
+         </font>
+      </Label>
+      <TextField fx:id="commandText" layoutX="27.0" layoutY="530.0" onAction="#performCommand" prefHeight="31.0" prefWidth="828.0" />
+      <Label layoutX="27.0" layoutY="487.0" text="Command">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
