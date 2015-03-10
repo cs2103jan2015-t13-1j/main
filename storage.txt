@@ -1,6 +1,16 @@
 id: 0
+<<<<<<< HEAD
 name: buy fruit
 duedate: 2015-03-05
+=======
+name: buy milk
+duedate: 2015-03-10
+status: INCOMPLETE
+----
+id: 1
+name: buy bus
+duedate: 2015-03-10
+>>>>>>> 21fa19dc09d11aa4f89da2b535c4455aed1ffd57
 status: INCOMPLETE
 ----
 id: 2
