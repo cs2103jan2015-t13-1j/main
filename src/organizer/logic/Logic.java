@@ -9,7 +9,7 @@ import java.util.Map;
 import organizer.storage.Storage;
 
 public class Logic {
-	private static final String dateFieldIdentifier = "%%";
+	private static final String dateFieldIdentifier = "%";
 	private static final int daysPerWeek = 7;
 	private static final String dayPattern = "monday|tuesday|wednesday|thursday|friday|saturday|sunday";
 	private static final String datePattern = "\\d{4}-\\d{2}-\\d{2}";
@@ -112,7 +112,7 @@ public class Logic {
 		LocalDate dueDate = LocalDate.now();
 
 		if(taskInfo.contains(dateFieldIdentifier)) {
-			taskDate = taskInfo.substring(taskInfo.indexOf(dateFieldIdentifier)+2);
+			taskDate = taskInfo.substring(taskInfo.indexOf(dateFieldIdentifier)+1);
 			if(determineDate(taskDate) != null) {
 				taskName = taskInfo.substring(0, taskInfo.indexOf(dateFieldIdentifier)-1);
 				dueDate = determineDate(taskDate);
