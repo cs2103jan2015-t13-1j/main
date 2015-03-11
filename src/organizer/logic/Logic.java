@@ -25,7 +25,7 @@ public class Logic {
 	Task tempTask = new Task();
 
 	enum COMMAND_TYPE {
-		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, CLEAR_TASK, INVALID, EXIT
+		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, CLEAR_TASK, EDIT_TASK, INVALID, EXIT
 	};
 
 	private static COMMAND_TYPE determineCommandType(String commandTypeString) {
@@ -47,6 +47,8 @@ public class Logic {
 			return COMMAND_TYPE.CLEAR_TASK;
 		case "complete":
 			return COMMAND_TYPE.COMPLETE_TASK;
+		case "edit":
+			return COMMAND_TYPE.EDIT_TASK;
 		case "exit":
 			return COMMAND_TYPE.EXIT;
 		default:
@@ -96,6 +98,8 @@ public class Logic {
 			return clearTask();
 		case COMPLETE_TASK:
 			return completeTask(userContent);
+		case EDIT_TASK:
+			return editTask(userContent);
 		case EXIT:
 			tempStorage.writeFile(taskList);
 			System.exit(0);	
@@ -104,6 +108,19 @@ public class Logic {
 			throw new Error("Unrecognized command type");
 		}
 
+	}
+
+	public ArrayList<Task> editTask(String userContent) {
+		int lineNum = Integer.parseInt(userContent.substring(0, userContent.indexOf(" ")));
+		String editContent = userContent.substring(userContent.indexOf(" ")+1);
+		LocalDate dueDate = determineDate(editContent);
+		if(dueDate != null) {
+			taskList.get(lineNum-1).setDueDate(dueDate);
+		} else {
+			taskList.get(lineNum-1).setTaskName(editContent);
+		}
+		
+		return taskList;
 	}
 
 	public ArrayList<Task> addTask(String taskInfo) {
