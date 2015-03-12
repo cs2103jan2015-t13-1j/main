@@ -1,25 +1,31 @@
 package organizer.logic;
 
 import java.io.IOException;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import organizer.storage.Storage;
 
 public class Logic {
+	private static final String dateFieldIdentifier = "%";
+	private static final int daysPerWeek = 7;
+	private static final String dayPattern = "monday|tuesday|wednesday|thursday|friday|saturday|sunday";
+	private static final String datePattern = "\\d{4}-\\d{2}-\\d{2}";
+
 	Storage tempStorage = new Storage();
 	ArrayList<Task> taskList = new ArrayList<Task>(); 
 	ArrayList<Task> resultList = new ArrayList<Task>(); //for search
 	ArrayList<Task> viewList = new ArrayList<Task>();
-	
+
 	boolean isSearch = false;
 	boolean isView = false;
 
 	Task tempTask = new Task();
-	
+
 	enum COMMAND_TYPE {
-		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, CLEAR_TASK, INVALID, EXIT
+		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, CLEAR_TASK, EDIT_TASK, INVALID, EXIT
 	};
 
 	private static COMMAND_TYPE determineCommandType(String commandTypeString) {
@@ -37,10 +43,12 @@ public class Logic {
 			return COMMAND_TYPE.VIEW_TASK;
 		case "search":
 			return COMMAND_TYPE.SEARCH_TASK;
-		case "complete":
-			return COMMAND_TYPE.COMPLETE_TASK;
 		case "clear":
 			return COMMAND_TYPE.CLEAR_TASK;
+		case "complete":
+			return COMMAND_TYPE.COMPLETE_TASK;
+		case "edit":
+			return COMMAND_TYPE.EDIT_TASK;
 		case "exit":
 			return COMMAND_TYPE.EXIT;
 		default:
@@ -63,7 +71,7 @@ public class Logic {
 		//split the userCommand into operation and task info
 		String userOperation;
 		String userContent;
-		
+
 		if(userCommand.indexOf(' ') >= 0) {
 			userOperation = userCommand.substring(0, userCommand.indexOf(' '));
 			userContent = userCommand.substring(userCommand.indexOf(' ')+1);
@@ -73,7 +81,7 @@ public class Logic {
 			userOperation = userCommand;
 			userContent = null;
 		}
-		
+
 
 		COMMAND_TYPE commandType = determineCommandType(userOperation);
 
@@ -87,9 +95,11 @@ public class Logic {
 		case VIEW_TASK:
 			return viewList(userContent);
 		case CLEAR_TASK:
-			return clearList();
+			return clearTask();
 		case COMPLETE_TASK:
 			return completeTask(userContent);
+		case EDIT_TASK:
+			return editTask(userContent);
 		case EXIT:
 			tempStorage.writeFile(taskList);
 			System.exit(0);	
@@ -100,72 +110,112 @@ public class Logic {
 
 	}
 
+	public ArrayList<Task> editTask(String userContent) {
+		int lineNum = Integer.parseInt(userContent.substring(0, userContent.indexOf(" ")));
+		String editContent = userContent.substring(userContent.indexOf(" ")+1);
+		LocalDate dueDate = determineDate(editContent);
+		if(dueDate != null) {
+			taskList.get(lineNum-1).setDueDate(dueDate);
+		} else {
+			taskList.get(lineNum-1).setTaskName(editContent);
+		}
+		
+		return taskList;
+	}
+
 	public ArrayList<Task> addTask(String taskInfo) {
-//		String taskName = "";
-//		LocalDate dueDate = LocalDate.now();
-//		DayOfWeek currentDay;
-//		String userInputDate = "";
-//		
-//		if(taskInfo.indexOf("%%") >= 0) {
-//			taskName = taskInfo.substring(0, taskInfo.indexOf("%%"));
-//			userInputDate = taskInfo.substring(taskInfo.indexOf("%%")+1).toLowerCase();
-//
-//		}
-//		else {
-//			taskName = taskInfo;
-//		}	
-//		
-//		switch (userInputDate){
-//		case "taday":
-//			dueDate = LocalDate.now();
-//		case "tomorrow":
-//			dueDate = dueDate.plusDays(1);
-//		case "monday":
-//			dueDate =
-//		case "tuesday":
-//		case "wednesday":
-//		case "thursday":
-//		case "friday":
-//		case "saterday":
-//		case "sunday":
-//			
-//		
-//		
-//		}
-		
-		
-		tempTask.setTaskName(taskInfo);
-		tempTask.setDueDate(LocalDate.now());
+		String taskName = taskInfo;
+		String taskDate = null;
+		LocalDate dueDate = LocalDate.now();
+
+		if(taskInfo.contains(dateFieldIdentifier)) {
+			taskDate = taskInfo.substring(taskInfo.indexOf(dateFieldIdentifier)+1);
+			if(determineDate(taskDate) != null) {
+				taskName = taskInfo.substring(0, taskInfo.indexOf(dateFieldIdentifier)-1);
+				dueDate = determineDate(taskDate);
+			} 
+		}
+
+		tempTask.setTaskName(taskName);
+		tempTask.setDueDate(dueDate);
 		tempTask.setTaskStatus("INCOMPLETE");
 		tempTask.setTaskID(taskList.size());
-		
+
 		taskList.add(tempTask);
 		tempTask = new Task();
 		return taskList;
 
 	}
-	
+
+	private LocalDate determineDate(String dateInfo) {
+		dateInfo = dateInfo.trim().toLowerCase();
+		LocalDate taskDate;
+		if(dateInfo.equals("today")) {
+			taskDate = LocalDate.now();
+		} else if(dateInfo.equals("tomorrow")) {
+			taskDate = LocalDate.now().plusDays(1);
+		} else if(dateInfo.matches(datePattern)) {
+			taskDate = LocalDate.parse(dateInfo);
+		} else if(dateInfo.matches(dayPattern)) {
+			taskDate = determineDay(dateInfo);
+		} else {
+			taskDate = null;
+		}
+
+		return taskDate;
+	}
+
+	private LocalDate determineDay(String dateInfo) {
+		LocalDate taskDate = null;
+		String dayOfWeek = LocalDate.now().getDayOfWeek().toString().toLowerCase();
+
+		Map<String,Integer> dayMap=new HashMap<String,Integer>();
+
+		dayMap.put("sunday",1);
+		dayMap.put("monday",2);
+		dayMap.put("tuesday",3);
+		dayMap.put("wednesday",4);
+		dayMap.put("thursday",5);
+		dayMap.put("friday",6);
+		dayMap.put("saturday",7);
+
+
+		int numOfDay = dayMap.get(dayOfWeek).intValue();
+		int numOfTaskDay = dayMap.get(dateInfo).intValue();
+
+		if(numOfDay == numOfTaskDay) {
+			taskDate = LocalDate.now().plusDays(daysPerWeek);
+		} else {
+			int taskDuration = (numOfTaskDay + daysPerWeek - numOfDay) % daysPerWeek;
+			taskDate = LocalDate.now().plusDays(taskDuration);
+		}
+
+		return taskDate;
+	}
+
 
 	public ArrayList<Task> deleteTask(String taskInfo) {
-		int lineNum = Integer.parseInt(taskInfo.trim()) - 1;
-		int taskID;
-		
-		if(isSearch) {
-			taskID = resultList.get(lineNum).getTaskID();
+		int lineNum = Integer.parseInt(taskInfo.trim());
+		int taskID = -1;
+
+		if(isSearch && lineNum <= resultList.size()) {
+			taskID = resultList.get(lineNum-1).getTaskID();
 			isSearch = false;
-		} else if(isView){
-			taskID = viewList.get(lineNum).getTaskID();
+		} else if(isView && lineNum <= viewList.size()){
+			taskID = viewList.get(lineNum-1).getTaskID();
 			isView = false;
-			
-		} else {
-			taskID = taskList.get(lineNum).getTaskID();
+
+		} else{
+			if(lineNum <= taskList.size()) {
+				taskID = taskList.get(lineNum-1).getTaskID();
+			}
 		}
-		
+
 		removeFromTaskList(taskID);
 		return taskList;
-		
+
 	}
-	
+
 
 	private void removeFromTaskList(int taskID) {
 		for(int i = 0; i < taskList.size(); i++) {
@@ -174,14 +224,14 @@ public class Logic {
 			}
 		}
 	}
-	
+
 	public ArrayList<Task> completeTask(String taskInfo) {
 		int num = Integer.parseInt(taskInfo.trim());
 		taskList.get(num-1).setTaskStatus("COMPLETE");
 		return taskList;
 	}
 
-	public ArrayList<Task> clearList(){
+	public ArrayList<Task> clearTask(){
 		taskList.clear();
 		return taskList;
 	}
@@ -189,7 +239,7 @@ public class Logic {
 	public ArrayList<Task> searchTask(String searchTerm) {
 		resultList.clear();
 		isSearch = true;
-		
+
 		for(int i = 0; i < taskList.size(); i++) {
 			Task task = taskList.get(i);
 			if(task.getTaskName().contains(searchTerm.trim())) {
@@ -205,7 +255,7 @@ public class Logic {
 		viewType = viewType.toLowerCase();
 		viewList.clear();
 		isView = true;
-		
+
 		for(int i = 0; i < taskList.size(); i++) {
 			Task task = taskList.get(i);
 			if(viewType.trim().equals("today") && task.getDueDate().equals(currentDate)) {
@@ -216,9 +266,9 @@ public class Logic {
 				viewList.add(task);
 			}
 		}
-		
+
 		return viewList;
-		
+
 	}
 }
 
