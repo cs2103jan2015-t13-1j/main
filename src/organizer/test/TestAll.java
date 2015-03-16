@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
+//import org.junit.runners.Parameterized.Parameters;
 
 import organizer.logic.Logic;
 import organizer.logic.Task;
@@ -72,10 +72,9 @@ public class TestAll {
 					toString(taskList.get(index)));
 		}
 		
-		logic.executeCommand("exit");
-
 	}
 	
+	//@Test
 	public void testLoadAndSaveSuccessfullyFromAndToTextFile() throws IOException{
 		taskList = storage.readFile("storage.txt");
 		testList = storage.readFile("testStorage.txt");
