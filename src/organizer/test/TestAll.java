@@ -6,12 +6,19 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import org.junit.FixMethodOrder;
+import org.junit.runners.MethodSorters;
+
 import org.junit.Test;
 //import org.junit.runners.Parameterized.Parameters;
+
 
 import organizer.logic.Logic;
 import organizer.logic.Task;
 import organizer.storage.Storage;
+
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 
 public class TestAll {
 
@@ -40,6 +47,7 @@ public class TestAll {
 	 */
 	
 	public void addToTestList(){
+		testList.clear();
 		Task tempTask_0 = new Task(0, "buy milk", "INCOMPLETE", today);
 		Task tempTask_1 = new Task(1, "buy ice cream", "INCOMPLETE", tomorrow);
 		Task tempTask_2 = new Task(2, "buy detergent", "INCOMPLETE", nextThursday);
@@ -52,20 +60,22 @@ public class TestAll {
 	}
 
 	public String toString(Task tempTask) {
-		String taskAsString = tempTask.getTaskID()+" "+tempTask.getTaskName()+ " " 
+		String taskToString = null;
+		taskToString = tempTask.getTaskID()+" "+tempTask.getTaskName()+ " " 
 				+tempTask.getTaskStatus()+ " "+tempTask.getDueDate();
 
-		return taskAsString;
+		return taskToString;
 	}
-
+	
 
 	@Test
 	public void testAddSucessfullyAddsToEndOfList() throws IOException {
-
-		logic.executeCommand("add buy milk %today");
-		logic.executeCommand("add buy ice cream %tomorrow");
-		logic.executeCommand("add buy detergent %thursday");
-		logic.executeCommand("add buy milk %2015-04-01");
+		taskList.clear();
+		addToTestList();
+		taskList = logic.executeCommand("add buy milk %today");
+		taskList = logic.executeCommand("add buy ice cream %tomorrow");
+		taskList = logic.executeCommand("add buy detergent %thursday");
+		taskList = logic.executeCommand("add buy pie %2015-04-01");
 
 		for(int index = 0; index < taskList.size(); index++) {
 			assertEquals("New task successfully added.", toString(testList.get(index)), 
@@ -74,17 +84,16 @@ public class TestAll {
 		
 	}
 	
-	//@Test
-	public void testLoadAndSaveSuccessfullyFromAndToTextFile() throws IOException{
-		taskList = storage.readFile("storage.txt");
-		testList = storage.readFile("testStorage.txt");
-		
-		for(int index = 0; index < testList.size(); index++) {
-			assertEquals("New task successfully added.", toString(testList.get(index)), 
-					toString(taskList.get(index)));
-		}
-		
-	}
+//	@Test
+//	public void testLoadAndSaveSuccessfullyFromAndToTextFile() throws IOException{
+//		taskList = storage.readFile("testStorage.txt");
+//		
+//		for(int index = 0; index < taskList.size(); index++) {
+//			assertEquals("New task successfully added.", toString(testList.get(index)), 
+//					toString(taskList.get(index)));
+//		}
+//		
+//	}
 	//	@Test
 	//	public void testDeleteRemovesCorrectLine() {
 	//
