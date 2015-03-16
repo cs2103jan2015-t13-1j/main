@@ -10,8 +10,8 @@ public class mainApp {
 	public static final String COMMAND_PROMPT = "Please enter a command: ";
 	public static final String MESSAGE_EMPTY = "You have no tasks.";
 	public static final String TASK_TEMPLATE = "%d. %s %s %s";
-	public static final String PROGRAM_NAME = "                       ~TASK ORGANIZER~";
-	public static final String COMMAND_LIST = "available commands: add, delete, view, search, complete, exit";
+	public static final String PROGRAM_NAME = "                       ~MnemoniCal~";
+	public static final String COMMAND_LIST = "available commands: add, delete, view, search, complete, clear, exit";
 	
 	public static void main(String[] args) throws IOException {
 		printMessage(PROGRAM_NAME);
