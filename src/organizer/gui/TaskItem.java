@@ -17,7 +17,7 @@ public class TaskItem {
 		taskName = new SimpleStringProperty(task.getTaskName());
 		taskStatus = new SimpleStringProperty(task.getTaskStatus());
 		taskDueDate = new SimpleObjectProperty<>(task.getDueDate());
-		taskId = new SimpleIntegerProperty(task.getTaskID());
+		taskId = new SimpleIntegerProperty(task.getTaskID() + 1);
 	}
 	
 	public String getTaskName() {
