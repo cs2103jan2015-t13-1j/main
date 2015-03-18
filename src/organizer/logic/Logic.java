@@ -9,6 +9,11 @@ import java.util.Map;
 import organizer.storage.Storage;
 
 public class Logic {
+	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
+	private static final String MESSAGE_INVALID_COMMAND = "Unregconized command!";
+	private static final String MESSAGE_UNSUCCESS = "Operation is unsuccessful.\n\n";
+	private static final String MESSAGE_SUCCESS = "Operation is successful.\n\n";
+
 	private static final String dateFieldIdentifier = "%";
 	private static final int daysPerWeek = 7;
 	private static final String dayPattern = "monday|tuesday|wednesday|thursday|friday|saturday|sunday";
@@ -21,6 +26,7 @@ public class Logic {
 
 	boolean isSearch = false;
 	boolean isView = false;
+	boolean isSuccessful = false;
 
 	Task tempTask = new Task();
 
@@ -30,7 +36,7 @@ public class Logic {
 
 	private static COMMAND_TYPE determineCommandType(String commandTypeString) {
 		if(commandTypeString.equals(null))
-			throw new Error("Unregonized command type");
+			throw new Error(MESSAGE_INVALID_COMMAND);
 		else
 			commandTypeString = commandTypeString.toLowerCase();
 
@@ -57,6 +63,24 @@ public class Logic {
 
 	}
 
+	public String getOperationStatus() {
+		if(isSuccessful) {
+			isSuccessful = false;
+			return String.format(MESSAGE_SUCCESS);
+		} else {
+			return MESSAGE_UNSUCCESS;
+		}
+	}
+
+	public void setOperationStatus(boolean isDone) {
+		if(isDone) {
+			isSuccessful = true;
+		} else {
+			isSuccessful = false;
+		}
+
+	}
+
 	public ArrayList<Task> loadStorage() throws IOException {
 		taskList = tempStorage.readFile();
 		return taskList;
@@ -76,10 +100,9 @@ public class Logic {
 			userOperation = userCommand.substring(0, userCommand.indexOf(' '));
 			userContent = userCommand.substring(userCommand.indexOf(' ')+1);
 
-		}
-		else {
+		} else {
 			userOperation = userCommand;
-			userContent = null;
+			userContent = "";
 		}
 
 
@@ -105,7 +128,7 @@ public class Logic {
 			System.exit(0);	
 		default:
 			//throw an error if the command is not recognized
-			throw new Error("Unrecognized command type");
+			throw new Error(MESSAGE_INVALID_COMMAND);
 		}
 
 	}
@@ -114,12 +137,14 @@ public class Logic {
 		int lineNum = Integer.parseInt(userContent.substring(0, userContent.indexOf(" ")));
 		String editContent = userContent.substring(userContent.indexOf(" ")+1);
 		LocalDate dueDate = determineDate(editContent);
+		int taskID = checkForTaskID(lineNum);
+
 		if(dueDate != null) {
-			taskList.get(lineNum-1).setDueDate(dueDate);
+			taskList.get(taskID).setDueDate(dueDate);
 		} else {
-			taskList.get(lineNum-1).setTaskName(editContent);
+			taskList.get(taskID).setTaskName(editContent);
 		}
-		
+
 		return taskList;
 	}
 
@@ -128,21 +153,26 @@ public class Logic {
 		String taskDate = null;
 		LocalDate dueDate = LocalDate.now();
 
-		if(taskInfo.contains(dateFieldIdentifier)) {
-			taskDate = taskInfo.substring(taskInfo.indexOf(dateFieldIdentifier)+1);
-			if(determineDate(taskDate) != null) {
-				taskName = taskInfo.substring(0, taskInfo.indexOf(dateFieldIdentifier)-1);
-				dueDate = determineDate(taskDate);
-			} 
+		if(taskInfo.trim().indexOf(' ') < 0) {
+			setOperationStatus(false);
+		} else {
+			if(taskInfo.contains(dateFieldIdentifier)) {
+				taskDate = taskInfo.substring(taskInfo.indexOf(dateFieldIdentifier)+1);
+				if(determineDate(taskDate) != null) {
+					taskName = taskInfo.substring(0, taskInfo.indexOf(dateFieldIdentifier)-1);
+					dueDate = determineDate(taskDate);
+				} 
+			}
+
+			tempTask.setTaskName(taskName);
+			tempTask.setDueDate(dueDate);
+			tempTask.setTaskStatus("INCOMPLETE");
+			tempTask.setTaskID(taskList.size());
+
+			taskList.add(tempTask);
+			tempTask = new Task();
+			setOperationStatus(true);
 		}
-
-		tempTask.setTaskName(taskName);
-		tempTask.setDueDate(dueDate);
-		tempTask.setTaskStatus("INCOMPLETE");
-		tempTask.setTaskID(taskList.size());
-
-		taskList.add(tempTask);
-		tempTask = new Task();
 		return taskList;
 
 	}
@@ -196,24 +226,28 @@ public class Logic {
 
 	public ArrayList<Task> deleteTask(String taskInfo) {
 		int lineNum = Integer.parseInt(taskInfo.trim());
-		int taskID = -1;
-
-		if(isSearch && lineNum <= resultList.size()) {
-			taskID = resultList.get(lineNum-1).getTaskID();
-			isSearch = false;
-		} else if(isView && lineNum <= viewList.size()){
-			taskID = viewList.get(lineNum-1).getTaskID();
-			isView = false;
-
-		} else{
-			if(lineNum <= taskList.size()) {
-				taskID = taskList.get(lineNum-1).getTaskID();
-			}
-		}
-
+		int taskID = checkForTaskID(lineNum);
 		removeFromTaskList(taskID);
 		return taskList;
 
+	}
+
+	private int checkForTaskID(int lineNum) {
+		int taskID = -1;
+
+		if(isSearch) {
+			assert lineNum <= resultList.size() :MESSAGE_INVALID_TASK; 
+			taskID = resultList.get(lineNum-1).getTaskID();
+			isSearch = false;
+		} else if(isView) {
+			assert lineNum <= viewList.size() :MESSAGE_INVALID_TASK;
+			taskID = viewList.get(lineNum-1).getTaskID();
+			isView = false;			
+		} else {
+			assert lineNum <= taskList.size():MESSAGE_INVALID_TASK;
+			taskID = taskList.get(lineNum-1).getTaskID();
+		}
+		return taskID;
 	}
 
 
@@ -226,8 +260,9 @@ public class Logic {
 	}
 
 	public ArrayList<Task> completeTask(String taskInfo) {
-		int num = Integer.parseInt(taskInfo.trim());
-		taskList.get(num-1).setTaskStatus("COMPLETE");
+		int lineNum = Integer.parseInt(taskInfo.trim());
+		int taskID = checkForTaskID(lineNum);
+		taskList.get(taskID).setTaskStatus("COMPLETE");
 		return taskList;
 	}
 
