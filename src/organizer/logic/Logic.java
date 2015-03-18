@@ -19,6 +19,7 @@ public class Logic {
 	private static final int LOG_ROTATE = 2;
 
 	private static final String dateFieldIdentifier = "%";
+	private static final String floatingIdentifier = "~";
 	private static final int daysPerWeek = 7;
 	private static final String dayPattern = "monday|tuesday|wednesday|thursday|friday|saturday|sunday";
 	private static final String datePattern = "\\d{4}-\\d{2}-\\d{2}";
@@ -160,7 +161,7 @@ public class Logic {
 	}
 
 	public ArrayList<Task> addTask(String taskInfo) {
-		String taskName = taskInfo;
+		String taskName = null;
 		String taskDate = null;
 		LocalDate dueDate = LocalDate.now();
 
@@ -173,6 +174,11 @@ public class Logic {
 					taskName = taskInfo.substring(0, taskInfo.indexOf(dateFieldIdentifier)-1);
 					dueDate = determineDate(taskDate);
 				} 
+			} else if(taskInfo.startsWith(floatingIdentifier)) {
+				dueDate = null;
+				taskName = taskInfo.substring(1);
+			} else {
+				taskName = taskInfo;
 			}
 
 			tempTask.setTaskName(taskName);

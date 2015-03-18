@@ -43,11 +43,20 @@ public class mainApp {
 		} else {
 			for (int i = 0; i < tasks.size(); i++) {
 				final Task task = tasks.get(i);
-				printMessage(TASK_TEMPLATE,
-						i + 1,
-						task.getTaskName(),
-						task.getTaskStatus(),
-						task.getDueDate().toString());
+				if(task.getDueDate() != null) {
+					printMessage(TASK_TEMPLATE,
+							i + 1,
+							task.getTaskName(),
+							task.getTaskStatus(),
+							task.getDueDate().toString());
+				} else {
+					printMessage(TASK_TEMPLATE,
+							i + 1,
+							task.getTaskName(),
+							task.getTaskStatus(),
+							"");
+				}
+				
 				printNewLine();
 				printMessage("--------------------------------------------------------------");
 				printNewLine();
