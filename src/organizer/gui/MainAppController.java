@@ -17,7 +17,7 @@ public class MainAppController {
 	@FXML
 	private TableColumn<TaskItem, String> taskTableDueDateColumn;
 	@FXML
-	private TableColumn<TaskItem, Number> taskTableIdColumn;
+	private TableColumn<TaskItem, Number> taskTableIndexColumn;
 	@FXML
 	private TextField commandText;
 	
@@ -26,8 +26,8 @@ public class MainAppController {
 	
 	@FXML
 	private void initialize() {
-		taskTableIdColumn.setCellValueFactory(
-				cellData -> cellData.getValue().taskIdProperty());
+		taskTableIndexColumn.setCellValueFactory(
+				cellData -> cellData.getValue().taskIndexProperty());
 		taskTableNameColumn.setCellValueFactory(
 				cellData -> cellData.getValue().taskNameProperty());
 		taskTableStatusColumn.setCellValueFactory(

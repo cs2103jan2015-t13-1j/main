@@ -9,7 +9,7 @@
    <children>
       <TableView fx:id="taskTable" layoutX="27.0" layoutY="100.0" prefHeight="364.0" prefWidth="828.0">
         <columns>
-          <TableColumn fx:id="taskTableIdColumn" prefWidth="96.0" text="Task No." />
+          <TableColumn fx:id="taskTableIndexColumn" prefWidth="96.0" text="Task No." />
           <TableColumn fx:id="taskTableNameColumn" prefWidth="395.0" text="Task Name" />
             <TableColumn fx:id="taskTableDueDateColumn" prefWidth="170.0" text="Due Date" />
             <TableColumn fx:id="taskTableStatusColumn" prefWidth="166.0" text="Status" />
