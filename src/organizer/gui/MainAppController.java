@@ -1,5 +1,6 @@
 package organizer.gui;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -33,7 +34,10 @@ public class MainAppController {
 		taskTableStatusColumn.setCellValueFactory(
 				cellData -> cellData.getValue().taskStatusProperty());
 		taskTableDueDateColumn.setCellValueFactory(
-				cellData -> cellData.getValue().taskDueDateProperty().asString());
+				cellData ->
+					cellData.getValue().taskDueDateProperty().get() == null ?
+							new SimpleStringProperty("Not Applicable") :
+							cellData.getValue().taskDueDateProperty().asString());
 	}
 	
 	public void setMainApp(MainApp mainApp) {
