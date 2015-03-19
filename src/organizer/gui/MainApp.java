@@ -33,13 +33,16 @@ public class MainApp extends Application {
     
     private void fillTaskList() {
         taskData.clear();
-        tasks.forEach(task -> taskData.add(new TaskItem(task)));
+        int counter = 0;
+        for (Task task : tasks) {
+        	taskData.add(new TaskItem(task, ++counter));
+        }
     }
     
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("Task Organizer");
+        this.primaryStage.setTitle("MnemoniCal");
         
         initRootLayout();
         

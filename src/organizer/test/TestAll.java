@@ -27,7 +27,7 @@ public class TestAll {
 	
 	static LocalDate today = LocalDate.now();
 	static LocalDate tomorrow = LocalDate.now().plusDays(1);
-	static LocalDate nextThursday = LocalDate.of(2015, 3, 19);
+	static LocalDate nextThursday = LocalDate.of(2015, 3, 26);
 
 	static ArrayList<Task> taskList = new ArrayList<Task>();
 	static ArrayList<Task> testList = new ArrayList<Task>();

@@ -9,15 +9,15 @@ public class TaskItem {
 	private final Task task;
 	private final StringProperty taskName;
 	private final StringProperty taskStatus;
-	private final IntegerProperty taskId;
+	private final IntegerProperty taskIndex;
 	private final ObjectProperty<LocalDate> taskDueDate;
 	
-	TaskItem(Task task) {
+	TaskItem(Task task, int index) {
 		this.task = task;
 		taskName = new SimpleStringProperty(task.getTaskName());
 		taskStatus = new SimpleStringProperty(task.getTaskStatus());
 		taskDueDate = new SimpleObjectProperty<>(task.getDueDate());
-		taskId = new SimpleIntegerProperty(task.getTaskID() + 1);
+		taskIndex = new SimpleIntegerProperty(index);
 	}
 	
 	public String getTaskName() {
@@ -36,12 +36,12 @@ public class TaskItem {
 		return taskDueDate;
 	}
 	
-	public int getTaskId() {
-		return taskId.get();
+	public int getTaskIndex() {
+		return taskIndex.get();
 	}
 	
-	public IntegerProperty taskIdProperty() {
-		return taskId;
+	public IntegerProperty taskIndexProperty() {
+		return taskIndex;
 	}
 	
 	public String getTaskStatus() {
