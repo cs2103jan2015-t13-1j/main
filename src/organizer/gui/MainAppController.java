@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
 
 public class MainAppController {
 	private MainApp mainApp;
@@ -21,6 +22,8 @@ public class MainAppController {
 	private TableColumn<TaskItem, Number> taskTableIndexColumn;
 	@FXML
 	private TextField commandText;
+	@FXML
+	private Label lblStatus;
 	
 	public MainAppController() {
 	}
@@ -38,6 +41,9 @@ public class MainAppController {
 					cellData.getValue().taskDueDateProperty().get() == null ?
 							new SimpleStringProperty("Not Applicable") :
 							cellData.getValue().taskDueDateProperty().asString());
+		
+		lblStatus.setText("Label for future program status display");
+
 	}
 	
 	public void setMainApp(MainApp mainApp) {

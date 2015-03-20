@@ -20,11 +20,12 @@
             <Font size="37.0" />
          </font>
       </Label>
-      <TextField fx:id="commandText" layoutX="27.0" layoutY="530.0" onAction="#performCommand" prefHeight="31.0" prefWidth="828.0" />
-      <Label layoutX="27.0" layoutY="487.0" text="Command">
+      <TextField fx:id="commandText" layoutX="27.0" layoutY="511.0" onAction="#performCommand" prefHeight="31.0" prefWidth="828.0" />
+      <Label layoutX="27.0" layoutY="473.0" text="Command">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
+      <Label fx:id="lblStatus" text = "" layoutX="27.0" layoutY="556.0" />
    </children>
 </AnchorPane>
