@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.*;
 
 import organizer.storage.Storage;
 
@@ -14,17 +13,12 @@ public class Logic {
 	private static final String MESSAGE_INVALID_COMMAND = "Unregconized command!";
 	private static final String MESSAGE_UNSUCCESS = "Operation is unsuccessful.\n\n";
 	private static final String MESSAGE_SUCCESS = "Operation is successful.\n\n";
-	
-	private static final int LOG_SIZE = 1;
-	private static final int LOG_ROTATE = 2;
 
 	private static final String dateFieldIdentifier = "%";
 	private static final String floatingIdentifier = "~";
 	private static final int daysPerWeek = 7;
 	private static final String dayPattern = "monday|tuesday|wednesday|thursday|friday|saturday|sunday";
 	private static final String datePattern = "\\d{4}-\\d{2}-\\d{2}";
-	
-	private static Logger logger = Logger.getLogger("Logic");
 
 	Storage tempStorage = new Storage();
 	ArrayList<Task> taskList = new ArrayList<Task>(); 
@@ -41,15 +35,11 @@ public class Logic {
 		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, CLEAR_TASK, EDIT_TASK, INVALID, EXIT
 	};
 
-	private static COMMAND_TYPE determineCommandType(String commandTypeString) throws SecurityException, IOException {
-		Handler handler = new FileHandler("log/test.log", LOG_SIZE, LOG_ROTATE);
-		Logger.getLogger("").addHandler(handler);
-		
+	private static COMMAND_TYPE determineCommandType(String commandTypeString) throws SecurityException, IOException {	
 		if(commandTypeString.equals(null)) {
 			throw new Error(MESSAGE_INVALID_COMMAND);
 		} else {
 			commandTypeString = commandTypeString.toLowerCase();
-			logger.log(Level.INFO, "going to start processing commands.");
 		}
 
 		switch(commandTypeString) {
