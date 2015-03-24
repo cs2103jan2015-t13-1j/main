@@ -244,5 +244,12 @@ public class Logic {
 		return viewList;
 
 	}
+
+	public ArrayList<Task> postponeTask(String taskInfo) {	
+		int lineNum = Integer.parseInt(taskInfo.trim());		
+		LocalDate newDueDate = taskList.get(lineNum - 1).getDueDate().plusDays(1);
+		taskList.get(lineNum - 1).setDueDate(newDueDate);
+		return taskList;
+	}
 }
 
