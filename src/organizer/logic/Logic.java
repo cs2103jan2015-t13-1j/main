@@ -20,7 +20,6 @@ public class Logic {
 	private static final String MESSAGE_SUCCESS = "%1$s task(s) operation is successful!\n\n";
 
 	private static final String dateFieldIdentifier = "%";
-	private static final String floatingIdentifier = "~";
 	private static final String priorityFieldIdentifier = "^";
 	private static final int daysPerWeek = 7;
 	private static final String dayPattern = "monday|tuesday|wednesday|thursday|friday|saturday|sunday";
@@ -78,21 +77,40 @@ public class Logic {
 	public ResultSet addTask(String taskInfo) {
 		String taskName = null;
 		String taskDate = null;
+		int taskPrior = 0;
 		LocalDate dueDate = LocalDate.now();
-
-		if(taskInfo.contains(dateFieldIdentifier)) {
+		
+		if(taskInfo.contains(dateFieldIdentifier) && taskInfo.contains(priorityFieldIdentifier)) {
+			taskDate = taskInfo.substring(taskInfo.indexOf(dateFieldIdentifier)+1, taskInfo.indexOf(priorityFieldIdentifier));
+			taskPrior = Integer.parseInt(taskInfo.substring(taskInfo.indexOf(priorityFieldIdentifier)+1));
+			taskName = taskInfo.substring(0, taskInfo.indexOf(dateFieldIdentifier));
+			dueDate = determineDate(taskDate);
+			
+		} else if(taskInfo.contains(priorityFieldIdentifier) && !taskInfo.contains(dateFieldIdentifier)) {
+			taskPrior = Integer.parseInt(taskInfo.substring(taskInfo.indexOf(priorityFieldIdentifier)+1));
+			taskName = taskInfo.substring(0, taskInfo.indexOf(priorityFieldIdentifier));
+			
+		} else if(!taskInfo.contains(priorityFieldIdentifier) && taskInfo.contains(dateFieldIdentifier)) {
+			taskName = taskInfo.substring(0, taskInfo.indexOf(dateFieldIdentifier));
 			taskDate = taskInfo.substring(taskInfo.indexOf(dateFieldIdentifier)+1);
-			if(determineDate(taskDate) != null) {
-				taskName = taskInfo.substring(0, taskInfo.indexOf(dateFieldIdentifier)-1);
-				dueDate = determineDate(taskDate);
-			} 
-		} else if(taskInfo.startsWith(floatingIdentifier)) {
-			dueDate = null;
-			taskName = taskInfo.substring(1);
+			dueDate = determineDate(taskDate);
+			
 		} else {
+			dueDate = null;
 			taskName = taskInfo;
 		}
 
+		switch(taskPrior) {
+		case 0: tempTask.setTaskPriority("");
+		break;
+		case 1: tempTask.setTaskPriority("LOW");
+		break;
+		case 2: tempTask.setTaskPriority("MED");
+		break;
+		case 3: tempTask.setTaskPriority("HIGH");
+		break;
+		}
+		
 		tempTask.setTaskName(taskName);
 		tempTask.setDueDate(dueDate);
 		tempTask.setTaskStatus("INCOMPLETE");
