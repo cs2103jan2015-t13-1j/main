@@ -28,6 +28,7 @@ public class Storage {
 	private static final String dueDateFieldIdentifier = "duedate: ";
 	private static final String statusFieldIdentifier = "status: ";
 	private static final String taskIdFieldIdentifier = "id: ";
+	private static final String priorityFieldIdentifier = "priority: ";
 
 	private static final String endIdentifier = "----";
 	
@@ -67,6 +68,9 @@ public class Storage {
 				} else if (line.startsWith(taskIdFieldIdentifier)) {
 					begin = true;
 					task.setTaskID(Integer.parseInt(line.substring(taskIdFieldIdentifier.length())));
+				} else if (line.startsWith(priorityFieldIdentifier)) {
+					begin = true;
+					task.setTaskPriority(line.substring(priorityFieldIdentifier.length()));
 				}
 			}
 			// clean up
@@ -103,6 +107,8 @@ public class Storage {
 				pw.println(task.getDueDate().toString());
 				pw.print(statusFieldIdentifier);
 				pw.println(task.getTaskStatus());
+				pw.print(priorityFieldIdentifier);
+				pw.println(task.getTaskPriority());
 				pw.println(endIdentifier);
 			}
 		} catch (IOException e) {
