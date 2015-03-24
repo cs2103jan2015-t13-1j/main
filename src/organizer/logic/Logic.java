@@ -166,12 +166,14 @@ public class Logic {
 		return returnResult;
 	}
 
-	private boolean isValidTask(int lineNum) {
+	public boolean isValidTask(int lineNum) {
 		if(isSearch && lineNum > resultList.size()) {
 			return false;
 		} else if(isView && lineNum > viewList.size()) {
 			return false;
 		} else if(lineNum > taskList.size()){
+			return false;
+		} else if(lineNum < 0) {
 			return false;
 		} else {
 			return true;
