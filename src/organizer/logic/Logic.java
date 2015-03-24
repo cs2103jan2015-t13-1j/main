@@ -15,18 +15,20 @@ public class Logic {
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
 	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
 	private static final String MESSAGE_NO_RESULT = "No results found!";
+	private static final String MESSAGE_INVALID_CONTENT = "Edit task operation failed for invalid content!";
 	private static final String MESSAGE_SEARCH_FOUND = "Search results found: \"%1$s\"";
 	private static final String MESSAGE_SUCCESS = "%1$s task(s) operation is successful!\n\n";
 
 	private static final String dateFieldIdentifier = "%";
 	private static final String floatingIdentifier = "~";
+	private static final String priorityFieldIdentifier = "^";
 	private static final int daysPerWeek = 7;
 	private static final String dayPattern = "monday|tuesday|wednesday|thursday|friday|saturday|sunday";
 	private static final String datePattern = "\\d{4}-\\d{2}-\\d{2}";
 
 	Storage tempStorage = new Storage();
 	ResultSet returnResult = new ResultSet();
-	
+
 	ArrayList<Task> taskList = new ArrayList<Task>(); 
 	ArrayList<Task> resultList = new ArrayList<Task>(); //for search
 	ArrayList<Task> viewList = new ArrayList<Task>();
@@ -50,24 +52,26 @@ public class Logic {
 	public ResultSet editTask(String userContent) {
 		int lineNum = Integer.parseInt(userContent.substring(0, userContent.indexOf(" ")));
 		if(checkValidTask(lineNum)) {
-			String editContent = userContent.substring(userContent.indexOf(" ")+1);
-			LocalDate dueDate = determineDate(editContent);
 			int taskID = checkForTaskID(lineNum);
-
-			if(dueDate != null) {
-				taskList.get(taskID).setDueDate(dueDate);
+			String editContent = userContent.substring(userContent.indexOf(" "));
+			if(editContent.indexOf(" ") >= 0) {
+				if(editContent.contains(dateFieldIdentifier)) {
+					LocalDate dueDate = determineDate(editContent.substring(editContent.indexOf(dateFieldIdentifier)+1));
+					taskList.get(taskID).setDueDate(dueDate);
+				} else {
+					taskList.get(taskID).setTaskName(editContent.substring(1));
+				}
+				returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, "Edit"));
 			} else {
-				taskList.get(taskID).setTaskName(editContent);
+				returnResult.setOpStatus(MESSAGE_INVALID_CONTENT);
 			}
-			
-			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS,"Edit"));
-			
+
 		} else {
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
 		}
-		
+
 		returnResult.setReturnList(taskList);
-		
+
 		return returnResult;
 	}
 
@@ -96,10 +100,10 @@ public class Logic {
 
 		taskList.add(tempTask);
 		tempTask = new Task();
-		
+
 		returnResult.setOpStatus(String.format(MESSAGE_SUCCESS,"Add"));
 		returnResult.setReturnList(taskList);
-		
+
 		return returnResult;
 	}
 
@@ -159,12 +163,12 @@ public class Logic {
 		} else {
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
 		}
-		
+
 		returnResult.setReturnList(taskList);
-		
+
 		return returnResult;
 	}
-	
+
 	private boolean checkValidTask(int lineNum) {
 		if(isSearch && lineNum > resultList.size()) {
 			return false;
@@ -210,7 +214,7 @@ public class Logic {
 		} else {
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
 		}
-		
+
 		returnResult.setReturnList(taskList);
 		return returnResult;
 	}
@@ -222,7 +226,7 @@ public class Logic {
 			taskList.clear();
 			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, "Clear"));
 		}
-		
+
 		returnResult.setReturnList(taskList);
 		return returnResult;
 	}
@@ -237,7 +241,7 @@ public class Logic {
 				resultList.add(task);
 			}
 		}
-		
+
 		if(resultList.isEmpty()) {
 			returnResult.setOpStatus(MESSAGE_NO_RESULT);
 		} else {
@@ -264,13 +268,13 @@ public class Logic {
 				viewList.add(task);
 			}
 		}
-		
+
 		if(viewList.isEmpty()) {
 			returnResult.setOpStatus(MESSAGE_EMPTY_LIST);
 		} else {
 			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, "View "+viewType));
 		}
-		
+
 		returnResult.setReturnList(viewList);
 		return returnResult;
 
