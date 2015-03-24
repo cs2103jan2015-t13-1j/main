@@ -1,5 +1,6 @@
 package organizer.logic;
 
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -7,10 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import organizer.storage.Storage;
+//import organizer.parser.CommandParser;;
 
 public class Logic {
+	
+
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
-	private static final String MESSAGE_INVALID_COMMAND = "Unregconized command!";
+//	private static final String MESSAGE_INVALID_COMMAND = "Unregconized command!";
 	private static final String MESSAGE_UNSUCCESS = "Operation is unsuccessful.\n\n";
 	private static final String MESSAGE_SUCCESS = "Operation is successful.\n\n";
 
@@ -31,39 +35,7 @@ public class Logic {
 
 	Task tempTask = new Task();
 
-	enum COMMAND_TYPE {
-		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, CLEAR_TASK, EDIT_TASK, INVALID, EXIT
-	};
-
-	private static COMMAND_TYPE determineCommandType(String commandTypeString) throws SecurityException, IOException {	
-		if(commandTypeString.equals(null)) {
-			throw new Error(MESSAGE_INVALID_COMMAND);
-		} else {
-			commandTypeString = commandTypeString.toLowerCase();
-		}
-
-		switch(commandTypeString) {
-		case "add":
-			return COMMAND_TYPE.ADD_TASK;
-		case "delete":
-			return COMMAND_TYPE.DELETE_TASK;
-		case "view":
-			return COMMAND_TYPE.VIEW_TASK;
-		case "search":
-			return COMMAND_TYPE.SEARCH_TASK;
-		case "clear":
-			return COMMAND_TYPE.CLEAR_TASK;
-		case "complete":
-			return COMMAND_TYPE.COMPLETE_TASK;
-		case "edit":
-			return COMMAND_TYPE.EDIT_TASK;
-		case "exit":
-			return COMMAND_TYPE.EXIT;
-		default:
-			return COMMAND_TYPE.INVALID;
-		}
-
-	}
+	
 
 	public String getOperationStatus() {
 		if(isSuccessful) {
@@ -93,47 +65,7 @@ public class Logic {
 	}
 
 
-	public ArrayList<Task> executeCommand(String userCommand) throws IOException {
-		//split the userCommand into operation and task info
-		String userOperation;
-		String userContent;
-
-		if(userCommand.indexOf(' ') >= 0) {
-			userOperation = userCommand.substring(0, userCommand.indexOf(' '));
-			userContent = userCommand.substring(userCommand.indexOf(' ')+1);
-
-		} else {
-			userOperation = userCommand;
-			userContent = "";
-		}
-
-
-		COMMAND_TYPE commandType = determineCommandType(userOperation);
-
-		switch (commandType) {
-		case ADD_TASK:	
-			return addTask(userContent);	
-		case DELETE_TASK:
-			return deleteTask(userContent);
-		case SEARCH_TASK:
-			return searchTask(userContent);
-		case VIEW_TASK:
-			return viewList(userContent);
-		case CLEAR_TASK:
-			return clearTask();
-		case COMPLETE_TASK:
-			return completeTask(userContent);
-		case EDIT_TASK:
-			return editTask(userContent);
-		case EXIT:
-			tempStorage.writeFile(taskList);
-			System.exit(0);	
-		default:
-			//throw an error if the command is not recognized
-			throw new Error(MESSAGE_INVALID_COMMAND);
-		}
-
-	}
+	
 
 	public ArrayList<Task> editTask(String userContent) {
 		int lineNum = Integer.parseInt(userContent.substring(0, userContent.indexOf(" ")));

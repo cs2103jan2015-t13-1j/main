@@ -23,7 +23,7 @@ public class MainAppController {
 	@FXML
 	private TextField commandText;
 	@FXML
-	private Label lblStatus;
+	private Label commandStatus;
 	
 	public MainAppController() {
 	}
@@ -42,7 +42,7 @@ public class MainAppController {
 							new SimpleStringProperty("Not Applicable") :
 							cellData.getValue().taskDueDateProperty().asString());
 		
-		lblStatus.setText("Label for future program status display");
+		commandStatus.setText("");
 
 	}
 	
@@ -59,9 +59,14 @@ public class MainAppController {
 		commandText.clear();
 		mainApp.performCommand(commandString);
 		updateTaskList();
+		setCommandStatus();
 	}
 	
-	public void updateTaskList() {
+	private void updateTaskList() {
 		taskTable.setItems(this.mainApp.getTaskData());
+	}
+	
+	private void setCommandStatus() {
+		commandStatus.setText(mainApp.getCurrentCommandStatus());
 	}
 }

@@ -26,6 +26,6 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <Label fx:id="lblStatus" text = "" layoutX="27.0" layoutY="556.0" />
+      <Label fx:id="commandStatus" text = "" layoutX="27.0" layoutY="556.0" />
    </children>
 </AnchorPane>
