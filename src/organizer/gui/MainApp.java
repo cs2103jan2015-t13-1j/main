@@ -92,7 +92,7 @@ public class MainApp extends Application {
     
     public void performCommand(String commandString) {
         try {
-            CommandParser.ReturnResult returnResult = CommandParser.executeCommand(commandString);
+            ResultSet returnResult = CommandParser.executeCommand(commandString);
             tasks = returnResult.getReturnList();
             currentCommandStatus = returnResult.getOpStatus();
             fillTaskList();

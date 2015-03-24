@@ -35,23 +35,23 @@ public class CommandParser {
 
 	// to return multiple values
 
-	public static class ReturnResult {
-		String opStatus;
-		ArrayList<Task> returnList;
-
-		public ReturnResult(String opStatus, ArrayList<Task> returnList) {
-			this.opStatus = opStatus;
-			this.returnList = returnList;
-		}
-
-		public String getOpStatus() {
-			return opStatus;
-		}
-
-		public ArrayList<Task> getReturnList() {
-			return returnList;
-		}
-	}
+//	public static class ReturnResult {
+//		String opStatus;
+//		ArrayList<Task> returnList;
+//
+//		public ReturnResult(String opStatus, ArrayList<Task> returnList) {
+//			this.opStatus = opStatus;
+//			this.returnList = returnList;
+//		}
+//
+//		public String getOpStatus() {
+//			return opStatus;
+//		}
+//
+//		public ArrayList<Task> getReturnList() {
+//			return returnList;
+//		}
+//	}
 
 	enum COMMAND_TYPE {
 		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, CLEAR_TASK, EDIT_TASK, POSTPONE_TASK, INVALID, EXIT
@@ -90,7 +90,7 @@ public class CommandParser {
 
 	}
 
-	public ReturnResult executeCommand(String userCommand) throws IOException {
+	public ResultSet executeCommand(String userCommand) throws IOException {
 		// split the userCommand into operation and task info
 		String userOperation;
 		String userContent;
@@ -105,31 +105,24 @@ public class CommandParser {
 		}
 
 		COMMAND_TYPE commandType = determineCommandType(userOperation);
-
+		
 		switch (commandType) {
 		case ADD_TASK:
-			return new ReturnResult("Addition successful",
-					logic.addTask(userContent));
+			return logic.addTask(userContent);
 		case DELETE_TASK:
-			return new ReturnResult("Delete successful",
-					logic.deleteTask(userContent));
+			return logic.deleteTask(userContent);
 		case SEARCH_TASK:
-			return new ReturnResult("Search successful",
-					logic.searchTask(userContent));
+			return logic.searchTask(userContent);
 		case VIEW_TASK:
-			return new ReturnResult("View successful",
-					logic.viewList(userContent));
+			return logic.viewList(userContent);
 		case CLEAR_TASK:
-			return new ReturnResult("Clear successful", logic.clearTask());
+			return logic.clearTask();
 		case COMPLETE_TASK:
-			return new ReturnResult("Task Completed",
-					logic.completeTask(userContent));
+			return logic.completeTask(userContent);
 		case EDIT_TASK:
-			return new ReturnResult("Edition successful",
-					logic.editTask(userContent));
+			return logic.editTask(userContent);
 		case POSTPONE_TASK:
-			return new ReturnResult("Postpone successful",
-					logic.postponeTask(userContent));
+			return logic.postponeTask(userContent);
 		case EXIT:
 			logic.writeStorage();
 			System.exit(0);

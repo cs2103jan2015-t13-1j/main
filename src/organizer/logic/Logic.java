@@ -8,15 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import organizer.storage.Storage;
-//import organizer.parser.CommandParser;;
 
 public class Logic {
-	
+
 
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
-//	private static final String MESSAGE_INVALID_COMMAND = "Unregconized command!";
-	private static final String MESSAGE_UNSUCCESS = "Operation is unsuccessful.\n\n";
-	private static final String MESSAGE_SUCCESS = "Operation is successful.\n\n";
+	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
+	private static final String MESSAGE_NO_RESULT = "No results found!";
+	private static final String MESSAGE_SEARCH_FOUND = "Search results found: \"%1$s\"";
+	private static final String MESSAGE_SUCCESS = "%1$s task(s) operation is successful!\n\n";
 
 	private static final String dateFieldIdentifier = "%";
 	private static final String floatingIdentifier = "~";
@@ -25,6 +25,8 @@ public class Logic {
 	private static final String datePattern = "\\d{4}-\\d{2}-\\d{2}";
 
 	Storage tempStorage = new Storage();
+	ResultSet returnResult = new ResultSet();
+	
 	ArrayList<Task> taskList = new ArrayList<Task>(); 
 	ArrayList<Task> resultList = new ArrayList<Task>(); //for search
 	ArrayList<Task> viewList = new ArrayList<Task>();
@@ -34,26 +36,6 @@ public class Logic {
 	boolean isSuccessful = false;
 
 	Task tempTask = new Task();
-
-	
-
-	public String getOperationStatus() {
-		if(isSuccessful) {
-			isSuccessful = false;
-			return String.format(MESSAGE_SUCCESS);
-		} else {
-			return MESSAGE_UNSUCCESS;
-		}
-	}
-
-	public void setOperationStatus(boolean isDone) {
-		if(isDone) {
-			isSuccessful = true;
-		} else {
-			isSuccessful = false;
-		}
-
-	}
 
 	public ArrayList<Task> loadStorage() throws IOException {
 		taskList = tempStorage.readFile();
@@ -65,55 +47,60 @@ public class Logic {
 	}
 
 
-	
-
-	public ArrayList<Task> editTask(String userContent) {
+	public ResultSet editTask(String userContent) {
 		int lineNum = Integer.parseInt(userContent.substring(0, userContent.indexOf(" ")));
-		String editContent = userContent.substring(userContent.indexOf(" ")+1);
-		LocalDate dueDate = determineDate(editContent);
-		int taskID = checkForTaskID(lineNum);
+		if(checkValidTask(lineNum)) {
+			String editContent = userContent.substring(userContent.indexOf(" ")+1);
+			LocalDate dueDate = determineDate(editContent);
+			int taskID = checkForTaskID(lineNum);
 
-		if(dueDate != null) {
-			taskList.get(taskID).setDueDate(dueDate);
+			if(dueDate != null) {
+				taskList.get(taskID).setDueDate(dueDate);
+			} else {
+				taskList.get(taskID).setTaskName(editContent);
+			}
+			
+			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS,"Edit"));
+			
 		} else {
-			taskList.get(taskID).setTaskName(editContent);
+			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
 		}
-
-		return taskList;
+		
+		returnResult.setReturnList(taskList);
+		
+		return returnResult;
 	}
 
-	public ArrayList<Task> addTask(String taskInfo) {
+	public ResultSet addTask(String taskInfo) {
 		String taskName = null;
 		String taskDate = null;
 		LocalDate dueDate = LocalDate.now();
 
-//		if(taskInfo.trim().indexOf(' ') < 0) {
-//			setOperationStatus(false);
-//		} else {
-			if(taskInfo.contains(dateFieldIdentifier)) {
-				taskDate = taskInfo.substring(taskInfo.indexOf(dateFieldIdentifier)+1);
-				if(determineDate(taskDate) != null) {
-					taskName = taskInfo.substring(0, taskInfo.indexOf(dateFieldIdentifier)-1);
-					dueDate = determineDate(taskDate);
-				} 
-			} else if(taskInfo.startsWith(floatingIdentifier)) {
-				dueDate = null;
-				taskName = taskInfo.substring(1);
-			} else {
-				taskName = taskInfo;
-			}
+		if(taskInfo.contains(dateFieldIdentifier)) {
+			taskDate = taskInfo.substring(taskInfo.indexOf(dateFieldIdentifier)+1);
+			if(determineDate(taskDate) != null) {
+				taskName = taskInfo.substring(0, taskInfo.indexOf(dateFieldIdentifier)-1);
+				dueDate = determineDate(taskDate);
+			} 
+		} else if(taskInfo.startsWith(floatingIdentifier)) {
+			dueDate = null;
+			taskName = taskInfo.substring(1);
+		} else {
+			taskName = taskInfo;
+		}
 
-			tempTask.setTaskName(taskName);
-			tempTask.setDueDate(dueDate);
-			tempTask.setTaskStatus("INCOMPLETE");
-			tempTask.setTaskID(taskList.size());
+		tempTask.setTaskName(taskName);
+		tempTask.setDueDate(dueDate);
+		tempTask.setTaskStatus("INCOMPLETE");
+		tempTask.setTaskID(taskList.size());
 
-			taskList.add(tempTask);
-			tempTask = new Task();
-			setOperationStatus(true);
-//		}
-		return taskList;
-
+		taskList.add(tempTask);
+		tempTask = new Task();
+		
+		returnResult.setOpStatus(String.format(MESSAGE_SUCCESS,"Add"));
+		returnResult.setReturnList(taskList);
+		
+		return returnResult;
 	}
 
 	private LocalDate determineDate(String dateInfo) {
@@ -163,27 +150,43 @@ public class Logic {
 	}
 
 
-	public ArrayList<Task> deleteTask(String taskInfo) {
+	public ResultSet deleteTask(String taskInfo) {
 		int lineNum = Integer.parseInt(taskInfo.trim());
-		int taskID = checkForTaskID(lineNum);
-		removeFromTaskList(taskID);
-		return taskList;
-
+		if(checkValidTask(lineNum)) {
+			int taskID = checkForTaskID(lineNum);
+			removeFromTaskList(taskID);
+			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS,"Delete"));
+		} else {
+			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+		}
+		
+		returnResult.setReturnList(taskList);
+		
+		return returnResult;
+	}
+	
+	private boolean checkValidTask(int lineNum) {
+		if(isSearch && lineNum > resultList.size()) {
+			return false;
+		} else if(isView && lineNum > viewList.size()) {
+			return false;
+		} else if(lineNum > taskList.size()){
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	private int checkForTaskID(int lineNum) {
 		int taskID = -1;
 
 		if(isSearch) {
-			assert lineNum <= resultList.size() :MESSAGE_INVALID_TASK; 
 			taskID = resultList.get(lineNum-1).getTaskID();
 			isSearch = false;
 		} else if(isView) {
-			assert lineNum <= viewList.size() :MESSAGE_INVALID_TASK;
 			taskID = viewList.get(lineNum-1).getTaskID();
 			isView = false;			
 		} else {
-			assert lineNum <= taskList.size():MESSAGE_INVALID_TASK;
 			taskID = taskList.get(lineNum-1).getTaskID();
 		}
 		return taskID;
@@ -198,19 +201,33 @@ public class Logic {
 		}
 	}
 
-	public ArrayList<Task> completeTask(String taskInfo) {
+	public ResultSet completeTask(String taskInfo) {
 		int lineNum = Integer.parseInt(taskInfo.trim());
-		int taskID = checkForTaskID(lineNum);
-		taskList.get(taskID).setTaskStatus("COMPLETE");
-		return taskList;
+		if(checkValidTask(lineNum)) {
+			int taskID = checkForTaskID(lineNum);
+			taskList.get(taskID).setTaskStatus("COMPLETE");
+			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, "Complete"));
+		} else {
+			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+		}
+		
+		returnResult.setReturnList(taskList);
+		return returnResult;
 	}
 
-	public ArrayList<Task> clearTask(){
-		taskList.clear();
-		return taskList;
+	public ResultSet clearTask(){
+		if(taskList.isEmpty()) {
+			returnResult.setOpStatus(MESSAGE_EMPTY_LIST);
+		} else {
+			taskList.clear();
+			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, "Clear"));
+		}
+		
+		returnResult.setReturnList(taskList);
+		return returnResult;
 	}
 
-	public ArrayList<Task> searchTask(String searchTerm) {
+	public ResultSet searchTask(String searchTerm) {
 		resultList.clear();
 		isSearch = true;
 
@@ -220,11 +237,18 @@ public class Logic {
 				resultList.add(task);
 			}
 		}
+		
+		if(resultList.isEmpty()) {
+			returnResult.setOpStatus(MESSAGE_NO_RESULT);
+		} else {
+			returnResult.setOpStatus(String.format(MESSAGE_SEARCH_FOUND,searchTerm));
+		}
 
-		return resultList;
+		returnResult.setReturnList(resultList);
+		return returnResult;
 	}
 
-	public ArrayList<Task> viewList(String viewType){
+	public ResultSet viewList(String viewType){
 		LocalDate currentDate = LocalDate.now();
 		viewType = viewType.toLowerCase();
 		viewList.clear();
@@ -240,16 +264,25 @@ public class Logic {
 				viewList.add(task);
 			}
 		}
-
-		return viewList;
+		
+		if(viewList.isEmpty()) {
+			returnResult.setOpStatus(MESSAGE_EMPTY_LIST);
+		} else {
+			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, "View "+viewType));
+		}
+		
+		returnResult.setReturnList(viewList);
+		return returnResult;
 
 	}
 
-	public ArrayList<Task> postponeTask(String taskInfo) {	
+	public ResultSet postponeTask(String taskInfo) {	
 		int lineNum = Integer.parseInt(taskInfo.trim());		
 		LocalDate newDueDate = taskList.get(lineNum - 1).getDueDate().plusDays(1);
 		taskList.get(lineNum - 1).setDueDate(newDueDate);
-		return taskList;
+		returnResult.setOpStatus(String.format(MESSAGE_SUCCESS,"Postpone"));
+		returnResult.setReturnList(taskList);
+		return returnResult;
 	}
 }
 

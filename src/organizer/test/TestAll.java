@@ -11,9 +11,10 @@ import org.junit.runners.MethodSorters;
 import org.junit.Test;
 //import org.junit.runners.Parameterized.Parameters;
 
+
+import organizer.logic.ResultSet;
 import organizer.logic.Task;
 import organizer.parser.CommandParser;
-import organizer.parser.CommandParser.ReturnResult;
 import organizer.storage.Storage;
 
 
@@ -30,7 +31,7 @@ public class TestAll {
 	static ArrayList<Task> testList = new ArrayList<Task>();
 	static ArrayList<Task> taskList = new ArrayList<Task>();
 	static String operationStatus = null;
-	static ReturnResult resultObj = new CommandParser.ReturnResult(null, taskList);
+	static ResultSet resultObj = new ResultSet(null, taskList);
 
 	/*
 	 * testStorage.txt file at the beginning of testing as check manually, should
