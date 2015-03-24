@@ -54,7 +54,8 @@ public class CommandParser {
 //	}
 
 	enum COMMAND_TYPE {
-		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, CLEAR_TASK, EDIT_TASK, POSTPONE_TASK, INVALID, EXIT
+		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, CLEAR_TASK, EDIT_TASK, POSTPONE_TASK, RANK_TASK,
+		INVALID, EXIT
 	};
 
 	private static COMMAND_TYPE determineCommandType(String commandTypeString)
@@ -82,6 +83,8 @@ public class CommandParser {
 			return COMMAND_TYPE.EDIT_TASK;
 		case "postpone":
 			return COMMAND_TYPE.POSTPONE_TASK;
+		case "rank":
+			return COMMAND_TYPE.RANK_TASK;
 		case "exit":
 			return COMMAND_TYPE.EXIT;
 		default:
@@ -123,6 +126,8 @@ public class CommandParser {
 			return logic.editTask(userContent);
 		case POSTPONE_TASK:
 			return logic.postponeTask(userContent);
+		case RANK_TASK:
+			return logic.rankTask(userContent);
 		case EXIT:
 			logic.writeStorage();
 			System.exit(0);

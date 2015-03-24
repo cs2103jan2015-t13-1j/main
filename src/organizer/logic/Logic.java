@@ -13,6 +13,7 @@ public class Logic {
 
 
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
+	private static final String MESSAGE_INVALID_RANK = "Invalid priority rank!";
 	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
 	private static final String MESSAGE_NO_RESULT = "No results found!";
 	private static final String MESSAGE_INVALID_CONTENT = "Edit task operation failed for invalid content!";
@@ -22,7 +23,9 @@ public class Logic {
 	private static final String dateFieldIdentifier = "%";
 	private static final String priorityFieldIdentifier = "^";
 	private static final int daysPerWeek = 7;
+	private static final String optionPattern = "%|^|@";
 	private static final String dayPattern = "monday|tuesday|wednesday|thursday|friday|saturday|sunday";
+	private static final String rankPattern = "high|medium|low";
 	private static final String datePattern = "\\d{4}-\\d{2}-\\d{2}";
 
 	Storage tempStorage = new Storage();
@@ -50,7 +53,7 @@ public class Logic {
 
 	public ResultSet editTask(String userContent) {
 		int lineNum = Integer.parseInt(userContent.substring(0, userContent.indexOf(" ")));
-		if(checkValidTask(lineNum)) {
+		if(isValidTask(lineNum)) {
 			int taskID = checkForTaskID(lineNum);
 			String editContent = userContent.substring(userContent.indexOf(" "));
 			if(editContent.indexOf(" ") >= 0) {
@@ -77,38 +80,15 @@ public class Logic {
 	public ResultSet addTask(String taskInfo) {
 		String taskName = null;
 		String taskDate = null;
-		int taskPrior = 0;
 		LocalDate dueDate = LocalDate.now();
 		
-		if(taskInfo.contains(dateFieldIdentifier) && taskInfo.contains(priorityFieldIdentifier)) {
-			taskDate = taskInfo.substring(taskInfo.indexOf(dateFieldIdentifier)+1, taskInfo.indexOf(priorityFieldIdentifier));
-			taskPrior = Integer.parseInt(taskInfo.substring(taskInfo.indexOf(priorityFieldIdentifier)+1));
-			taskName = taskInfo.substring(0, taskInfo.indexOf(dateFieldIdentifier));
-			dueDate = determineDate(taskDate);
-			
-		} else if(taskInfo.contains(priorityFieldIdentifier) && !taskInfo.contains(dateFieldIdentifier)) {
-			taskPrior = Integer.parseInt(taskInfo.substring(taskInfo.indexOf(priorityFieldIdentifier)+1));
-			taskName = taskInfo.substring(0, taskInfo.indexOf(priorityFieldIdentifier));
-			
-		} else if(!taskInfo.contains(priorityFieldIdentifier) && taskInfo.contains(dateFieldIdentifier)) {
-			taskName = taskInfo.substring(0, taskInfo.indexOf(dateFieldIdentifier));
+		if(taskInfo.contains(dateFieldIdentifier)) {
+			taskName = taskInfo.substring(0,taskInfo.indexOf(dateFieldIdentifier));
 			taskDate = taskInfo.substring(taskInfo.indexOf(dateFieldIdentifier)+1);
 			dueDate = determineDate(taskDate);
-			
 		} else {
-			dueDate = null;
 			taskName = taskInfo;
-		}
-
-		switch(taskPrior) {
-		case 0: tempTask.setTaskPriority("");
-		break;
-		case 1: tempTask.setTaskPriority("LOW");
-		break;
-		case 2: tempTask.setTaskPriority("MED");
-		break;
-		case 3: tempTask.setTaskPriority("HIGH");
-		break;
+			dueDate = null;
 		}
 		
 		tempTask.setTaskName(taskName);
@@ -174,7 +154,7 @@ public class Logic {
 
 	public ResultSet deleteTask(String taskInfo) {
 		int lineNum = Integer.parseInt(taskInfo.trim());
-		if(checkValidTask(lineNum)) {
+		if(isValidTask(lineNum)) {
 			int taskID = checkForTaskID(lineNum);
 			removeFromTaskList(taskID);
 			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS,"Delete"));
@@ -187,7 +167,7 @@ public class Logic {
 		return returnResult;
 	}
 
-	private boolean checkValidTask(int lineNum) {
+	private boolean isValidTask(int lineNum) {
 		if(isSearch && lineNum > resultList.size()) {
 			return false;
 		} else if(isView && lineNum > viewList.size()) {
@@ -225,7 +205,7 @@ public class Logic {
 
 	public ResultSet completeTask(String taskInfo) {
 		int lineNum = Integer.parseInt(taskInfo.trim());
-		if(checkValidTask(lineNum)) {
+		if(isValidTask(lineNum)) {
 			int taskID = checkForTaskID(lineNum);
 			taskList.get(taskID).setTaskStatus("COMPLETE");
 			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, "Complete"));
@@ -299,12 +279,49 @@ public class Logic {
 	}
 
 	public ResultSet postponeTask(String taskInfo) {	
-		int lineNum = Integer.parseInt(taskInfo.trim());		
-		LocalDate newDueDate = taskList.get(lineNum - 1).getDueDate().plusDays(1);
-		taskList.get(lineNum - 1).setDueDate(newDueDate);
-		returnResult.setOpStatus(String.format(MESSAGE_SUCCESS,"Postpone"));
+		int lineNum = Integer.parseInt(taskInfo.trim());
+		if(isValidTask(lineNum)) {
+			LocalDate newDueDate = taskList.get(lineNum - 1).getDueDate().plusDays(1);
+			taskList.get(lineNum - 1).setDueDate(newDueDate);
+			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS,"Postpone"));
+		} else {
+			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+		}
 		returnResult.setReturnList(taskList);
 		return returnResult;
 	}
+	
+	public ResultSet rankTask(String taskInfo) {
+		int lineNum = Integer.parseInt(taskInfo.substring(0, taskInfo.indexOf(" ")));
+		String taskRank = taskInfo.substring(taskInfo.indexOf(" ")+1);
+		
+		if(isValidTask(lineNum) && isValidRank(taskRank)) {
+			int taskID = checkForTaskID(lineNum);
+			for(int i = 0; i < taskList.size(); i++) {
+				if(taskList.get(i).getTaskID() == taskID) {
+					taskList.get(i).setTaskPriority(taskRank.toUpperCase());
+				}
+			}
+			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS,"Rank"));
+			
+		} else if(!isValidRank(taskRank)){
+			returnResult.setOpStatus(MESSAGE_INVALID_RANK);
+		} else {
+			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+		}
+		
+		returnResult.setReturnList(taskList);
+		
+		return returnResult;
+	}
+	
+	private boolean isValidRank(String taskRank) {
+		if(taskRank.matches(rankPattern)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
+
 
