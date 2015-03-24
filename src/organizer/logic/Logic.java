@@ -87,9 +87,9 @@ public class Logic {
 		String taskDate = null;
 		LocalDate dueDate = LocalDate.now();
 
-		if(taskInfo.trim().indexOf(' ') < 0) {
-			setOperationStatus(false);
-		} else {
+//		if(taskInfo.trim().indexOf(' ') < 0) {
+//			setOperationStatus(false);
+//		} else {
 			if(taskInfo.contains(dateFieldIdentifier)) {
 				taskDate = taskInfo.substring(taskInfo.indexOf(dateFieldIdentifier)+1);
 				if(determineDate(taskDate) != null) {
@@ -111,7 +111,7 @@ public class Logic {
 			taskList.add(tempTask);
 			tempTask = new Task();
 			setOperationStatus(true);
-		}
+//		}
 		return taskList;
 
 	}
