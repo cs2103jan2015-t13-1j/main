@@ -21,9 +21,8 @@ public class Logic {
 	private static final String MESSAGE_SUCCESS = "%1$s task(s) operation is successful!\n\n";
 
 	private static final String dateFieldIdentifier = "%";
-	private static final String priorityFieldIdentifier = "^";
+	private static final String timeFieldIdentifier = "@";
 	private static final int daysPerWeek = 7;
-	private static final String optionPattern = "%|^|@";
 	private static final String dayPattern = "monday|tuesday|wednesday|thursday|friday|saturday|sunday";
 	private static final String rankPattern = "high|medium|low";
 	private static final String datePattern = "\\d{4}-\\d{2}-\\d{2}";
