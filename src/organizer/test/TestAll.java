@@ -8,13 +8,13 @@ import java.util.ArrayList;
 
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
-
 import org.junit.Test;
 //import org.junit.runners.Parameterized.Parameters;
 
 
-import organizer.logic.Logic;
+import organizer.logic.ResultSet;
 import organizer.logic.Task;
+import organizer.parser.CommandParser;
 import organizer.storage.Storage;
 
 
@@ -22,15 +22,16 @@ import organizer.storage.Storage;
 
 public class TestAll {
 
-	Logic logic = new Logic();
+	CommandParser commandParse = new CommandParser();
 	Storage storage = new Storage();
 	
 	static LocalDate today = LocalDate.now();
 	static LocalDate tomorrow = LocalDate.now().plusDays(1);
 	static LocalDate nextThursday = LocalDate.of(2015, 3, 26);
-
-	static ArrayList<Task> taskList = new ArrayList<Task>();
 	static ArrayList<Task> testList = new ArrayList<Task>();
+	static ArrayList<Task> taskList = new ArrayList<Task>();
+	static String operationStatus = null;
+	static ResultSet resultObj = new ResultSet(null, taskList);
 
 	/*
 	 * testStorage.txt file at the beginning of testing as check manually, should
@@ -70,11 +71,12 @@ public class TestAll {
 	public void testAddSucessfullyAddsToEndOfList() throws IOException {
 		taskList.clear();
 		addToTestList();
-		taskList = logic.executeCommand("add buy milk %today");
-		taskList = logic.executeCommand("add buy ice cream %tomorrow");
-		taskList = logic.executeCommand("add buy detergent %thursday");
-		taskList = logic.executeCommand("add buy pie %2015-04-01");
-
+		resultObj = commandParse.executeCommand("add buy milk %today");
+		resultObj = commandParse.executeCommand("add buy ice cream %tomorrow");
+		resultObj = commandParse.executeCommand("add buy detergent %thursday");
+		resultObj = commandParse.executeCommand("add buy pie %2015-04-01");
+		taskList = resultObj.getReturnList();
+		
 		for(int index = 0; index < taskList.size(); index++) {
 			assertEquals("New task successfully added.", toString(testList.get(index)), 
 					toString(taskList.get(index)));

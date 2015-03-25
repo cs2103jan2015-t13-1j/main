@@ -1,9 +1,11 @@
 package organizer.gui;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
 
 public class MainAppController {
 	private MainApp mainApp;
@@ -20,6 +22,8 @@ public class MainAppController {
 	private TableColumn<TaskItem, Number> taskTableIndexColumn;
 	@FXML
 	private TextField commandText;
+	@FXML
+	private Label commandStatus;
 	
 	public MainAppController() {
 	}
@@ -33,7 +37,13 @@ public class MainAppController {
 		taskTableStatusColumn.setCellValueFactory(
 				cellData -> cellData.getValue().taskStatusProperty());
 		taskTableDueDateColumn.setCellValueFactory(
-				cellData -> cellData.getValue().taskDueDateProperty().asString());
+				cellData ->
+					cellData.getValue().taskDueDateProperty().get() == null ?
+							new SimpleStringProperty("Not Applicable") :
+							cellData.getValue().taskDueDateProperty().asString());
+		
+		commandStatus.setText("");
+
 	}
 	
 	public void setMainApp(MainApp mainApp) {
@@ -49,9 +59,14 @@ public class MainAppController {
 		commandText.clear();
 		mainApp.performCommand(commandString);
 		updateTaskList();
+		setCommandStatus();
 	}
 	
-	public void updateTaskList() {
+	private void updateTaskList() {
 		taskTable.setItems(this.mainApp.getTaskData());
+	}
+	
+	private void setCommandStatus() {
+		commandStatus.setText(mainApp.getCurrentCommandStatus());
 	}
 }

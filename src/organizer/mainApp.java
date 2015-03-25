@@ -1,6 +1,7 @@
 package organizer;
 
 import organizer.logic.*;
+import organizer.parser.CommandParser;
 
 import java.io.IOException;
 import java.util.*;
@@ -22,12 +23,14 @@ public class mainApp {
 		Logic logic = new Logic();
 		ArrayList<Task> tasksArray = logic.loadStorage();
 		displayTasks(tasksArray);
+		CommandParser commandParser = new CommandParser();
+		commandParser.loadStorage();
 		
 		try (Scanner sc = new Scanner(System.in)) {
 			while (true) {
 				printMessage(COMMAND_PROMPT);
 				String userInput = sc.nextLine().toString();
-				displayTasks(logic.executeCommand(userInput));
+				displayTasks(commandParser.executeCommand(userInput).getReturnList());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

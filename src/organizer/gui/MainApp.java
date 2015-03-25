@@ -13,6 +13,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import organizer.logic.*;
+import organizer.parser.*;
+
 
 public class MainApp extends Application {
 
@@ -20,14 +22,16 @@ public class MainApp extends Application {
     private AnchorPane rootLayout;
     
     private ObservableList<TaskItem> taskData = FXCollections.observableArrayList();
+    private String currentCommandStatus = "";
     
-    private Logic logic = new Logic();
+    
+    private CommandParser CommandParser = new CommandParser();
     private List<Task> tasks;
     
     private MainAppController controller;
     
     public MainApp() throws IOException {
-        tasks = logic.loadStorage();
+        tasks =  CommandParser.loadStorage();
         fillTaskList();
     }
     
@@ -82,9 +86,15 @@ public class MainApp extends Application {
         return taskData;
     }
     
+    public String getCurrentCommandStatus() {
+    	return currentCommandStatus;
+    }
+    
     public void performCommand(String commandString) {
         try {
-            tasks = logic.executeCommand(commandString);
+            ResultSet returnResult = CommandParser.executeCommand(commandString);
+            tasks = returnResult.getReturnList();
+            currentCommandStatus = returnResult.getOpStatus();
             fillTaskList();
         } catch (IOException e) {
             e.printStackTrace();

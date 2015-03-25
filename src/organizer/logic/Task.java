@@ -8,6 +8,7 @@ public class Task {
 	private String taskName = null;
 	private String taskStatus = null;
 	private LocalDate dueDate = null;
+	private String taskPriority = null;
 
 
 	/**
@@ -62,5 +63,16 @@ public class Task {
 	public void setDueDate(LocalDate dueDate) {
 		this.dueDate = dueDate;
 	}
+
+	public String getTaskPriority() {
+		return taskPriority;
+	}
+
+
+	public void setTaskPriority(String taskPriority) {
+		this.taskPriority = taskPriority;
+	}
+	
+	
 
 }
