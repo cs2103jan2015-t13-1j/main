@@ -68,7 +68,6 @@ public class Task {
 		return taskPriority;
 	}
 
-
 	public void setTaskPriority(String taskPriority) {
 		this.taskPriority = taskPriority;
 	}

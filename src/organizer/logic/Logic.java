@@ -28,7 +28,7 @@ public class Logic {
 	Storage tempStorage = new Storage();
 	ResultSet returnResult = new ResultSet();
 	DateAndTime dateTime = new DateAndTime();
-
+	
 	ArrayList<Task> taskList = new ArrayList<Task>(); 
 	ArrayList<Task> resultList = new ArrayList<Task>(); //for search
 	ArrayList<Task> viewList = new ArrayList<Task>();
@@ -92,6 +92,7 @@ public class Logic {
 		tempTask.setTaskName(taskName);
 		tempTask.setDueDate(dueDate);
 		tempTask.setTaskStatus("INCOMPLETE");
+		tempTask.setTaskPriority(null);
 		tempTask.setTaskID(taskList.size());
 
 		taskList.add(tempTask);
@@ -125,7 +126,7 @@ public class Logic {
 			return false;
 		} else if(lineNum > taskList.size()){
 			return false;
-		} else if(lineNum < 0) {
+		} else if(lineNum <= 0) {
 			return false;
 		} else {
 			return true;

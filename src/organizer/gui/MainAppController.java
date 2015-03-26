@@ -21,6 +21,8 @@ public class MainAppController {
 	@FXML
 	private TableColumn<TaskItem, Number> taskTableIndexColumn;
 	@FXML
+	private TableColumn<TaskItem, String> taskTablePriorityColumn;
+	@FXML
 	private TextField commandText;
 	@FXML
 	private Label commandStatus;
@@ -41,6 +43,11 @@ public class MainAppController {
 					cellData.getValue().taskDueDateProperty().get() == null ?
 							new SimpleStringProperty("Not Applicable") :
 							cellData.getValue().taskDueDateProperty().asString());
+		taskTablePriorityColumn.setCellValueFactory(
+				cellData ->
+					cellData.getValue().taskPriorityProperty().get() == null ?
+							new SimpleStringProperty("Not Applicable") :
+							cellData.getValue().taskPriorityProperty());
 		
 		commandStatus.setText("");
 
