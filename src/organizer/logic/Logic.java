@@ -4,8 +4,7 @@ package organizer.logic;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import organizer.storage.Storage;
 
@@ -22,13 +21,13 @@ public class Logic {
 
 	private static final String dateFieldIdentifier = "%";
 //	private static final String timeFieldIdentifier = "@";
-	private static final int daysPerWeek = 7;
-	private static final String dayPattern = "monday|tuesday|wednesday|thursday|friday|saturday|sunday";
+
 	private static final String rankPattern = "high|medium|low";
-	private static final String datePattern = "\\d{4}-\\d{2}-\\d{2}";
+
 
 	Storage tempStorage = new Storage();
 	ResultSet returnResult = new ResultSet();
+	DateAndTime dateTime = new DateAndTime();
 
 	ArrayList<Task> taskList = new ArrayList<Task>(); 
 	ArrayList<Task> resultList = new ArrayList<Task>(); //for search
@@ -57,7 +56,7 @@ public class Logic {
 			String editContent = userContent.substring(userContent.indexOf(" "));
 			if(editContent.indexOf(" ") >= 0) {
 				if(editContent.contains(dateFieldIdentifier)) {
-					LocalDate dueDate = determineDate(editContent.substring(editContent.indexOf(dateFieldIdentifier)+1));
+					LocalDate dueDate = dateTime.determineDate(editContent.substring(editContent.indexOf(dateFieldIdentifier)+1));
 					taskList.get(taskID).setDueDate(dueDate);
 				} else {
 					taskList.get(taskID).setTaskName(editContent.substring(1));
@@ -84,7 +83,7 @@ public class Logic {
 		if(taskInfo.contains(dateFieldIdentifier)) {
 			taskName = taskInfo.substring(0,taskInfo.indexOf(dateFieldIdentifier));
 			taskDate = taskInfo.substring(taskInfo.indexOf(dateFieldIdentifier)+1);
-			dueDate = determineDate(taskDate);
+			dueDate = dateTime.determineDate(taskDate);
 		} else {
 			taskName = taskInfo;
 			dueDate = null;
@@ -103,53 +102,6 @@ public class Logic {
 
 		return returnResult;
 	}
-
-	private LocalDate determineDate(String dateInfo) {
-		dateInfo = dateInfo.trim().toLowerCase();
-		LocalDate taskDate;
-		if(dateInfo.equals("today")) {
-			taskDate = LocalDate.now();
-		} else if(dateInfo.equals("tomorrow")) {
-			taskDate = LocalDate.now().plusDays(1);
-		} else if(dateInfo.matches(datePattern)) {
-			taskDate = LocalDate.parse(dateInfo);
-		} else if(dateInfo.matches(dayPattern)) {
-			taskDate = determineDay(dateInfo);
-		} else {
-			taskDate = null;
-		}
-
-		return taskDate;
-	}
-
-	private LocalDate determineDay(String dateInfo) {
-		LocalDate taskDate = null;
-		String dayOfWeek = LocalDate.now().getDayOfWeek().toString().toLowerCase();
-
-		Map<String,Integer> dayMap=new HashMap<String,Integer>();
-
-		dayMap.put("sunday",1);
-		dayMap.put("monday",2);
-		dayMap.put("tuesday",3);
-		dayMap.put("wednesday",4);
-		dayMap.put("thursday",5);
-		dayMap.put("friday",6);
-		dayMap.put("saturday",7);
-
-
-		int numOfDay = dayMap.get(dayOfWeek).intValue();
-		int numOfTaskDay = dayMap.get(dateInfo).intValue();
-
-		if(numOfDay == numOfTaskDay) {
-			taskDate = LocalDate.now().plusDays(daysPerWeek);
-		} else {
-			int taskDuration = (numOfTaskDay + daysPerWeek - numOfDay) % daysPerWeek;
-			taskDate = LocalDate.now().plusDays(taskDuration);
-		}
-
-		return taskDate;
-	}
-
 
 	public ResultSet deleteTask(String taskInfo) {
 		int lineNum = Integer.parseInt(taskInfo.trim());
