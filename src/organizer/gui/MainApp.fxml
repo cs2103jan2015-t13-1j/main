@@ -7,12 +7,13 @@
 
 <AnchorPane prefHeight="601.0" prefWidth="1138.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="organizer.gui.MainAppController">
    <children>
-      <TableView fx:id="taskTable" layoutX="27.0" layoutY="100.0" prefHeight="364.0" prefWidth="828.0">
+      <TableView fx:id="taskTable" layoutX="27.0" layoutY="100.0" prefHeight="364.0" prefWidth="815.0">
         <columns>
-          <TableColumn fx:id="taskTableIndexColumn" prefWidth="96.0" text="Task No." />
-          <TableColumn fx:id="taskTableNameColumn" prefWidth="395.0" text="Task Name" />
-            <TableColumn fx:id="taskTableDueDateColumn" prefWidth="170.0" text="Due Date" />
-            <TableColumn fx:id="taskTableStatusColumn" prefWidth="166.0" text="Status" />
+          <TableColumn fx:id="taskTableIndexColumn" editable="false" prefWidth="50.0" text="No." />
+          <TableColumn fx:id="taskTableNameColumn" editable="false" prefWidth="395.0" text="Task Name" />
+            <TableColumn fx:id="taskTableDueDateColumn" editable="false" prefWidth="120.0" text="Due Date" />
+            <TableColumn fx:id="taskTableStatusColumn" editable="false" prefWidth="100.0" text="Status" />
+            <TableColumn fx:id="taskTablePriorityColumn" editable="false" resizable = "false" prefWidth="147.5" text="Priority" />
         </columns>
       </TableView>
       <Label layoutX="27.0" layoutY="28.0" prefHeight="54.0" prefWidth="251.0" text="MnemoniCal">
@@ -26,6 +27,6 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <Label fx:id="commandStatus" text = "" layoutX="27.0" layoutY="556.0" />
+      <Label fx:id="commandStatus" layoutX="27.0" layoutY="556.0" text="" />
    </children>
 </AnchorPane>

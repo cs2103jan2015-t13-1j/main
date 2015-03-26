@@ -9,6 +9,7 @@ public class TaskItem {
 	private final Task task;
 	private final StringProperty taskName;
 	private final StringProperty taskStatus;
+	private final StringProperty taskPriority;
 	private final IntegerProperty taskIndex;
 	private final ObjectProperty<LocalDate> taskDueDate;
 	
@@ -18,6 +19,7 @@ public class TaskItem {
 		taskStatus = new SimpleStringProperty(task.getTaskStatus());
 		taskDueDate = new SimpleObjectProperty<>(task.getDueDate());
 		taskIndex = new SimpleIntegerProperty(index);
+		taskPriority = new SimpleStringProperty(task.getTaskPriority());
 	}
 	
 	public String getTaskName() {
@@ -50,5 +52,13 @@ public class TaskItem {
 	
 	public StringProperty taskStatusProperty() {
 		return taskStatus;
+	}
+	
+	public String getTaskPriority() {
+		return task.getTaskPriority();
+	}
+	
+	public StringProperty taskPriorityProperty() {
+		return taskPriority;
 	}
 }
