@@ -1,7 +1,9 @@
 package organizer.storage;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.File;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.Iterator;
@@ -40,14 +42,10 @@ public class Storage {
 	public ArrayList<Task> readFile() throws IOException {
 		return readFile(defaultFileName);
 	}
-
-	public ArrayList<Task> readFile(String fileName) throws IOException {
+	
+	public ArrayList<Task> readFromStream(InputStream in) throws IOException {
 		ArrayList<Task> taskList = new ArrayList<Task>();
-		File file = new File(fileName);
-		if (!file.exists()) {
-			file.createNewFile();
-		}
-		try (Scanner sc = new Scanner(new File(fileName))) {
+		try (Scanner sc = new Scanner(in)) {
 			Task task = new Task();
 			boolean begin = false;
 			while(sc.hasNextLine()) {
@@ -62,9 +60,11 @@ public class Storage {
 					begin = true;
 					task.setTaskStatus(line.substring(statusFieldIdentifier.length()));
 				} else if (line.equals(endIdentifier)) {
-					taskList.add(task);
-					task = new Task();
-					begin = false;
+					if (begin) {
+						taskList.add(task);
+						task = new Task();
+						begin = false;
+					}
 				} else if (line.startsWith(taskIdFieldIdentifier)) {
 					begin = true;
 					task.setTaskID(Integer.parseInt(line.substring(taskIdFieldIdentifier.length())));
@@ -78,9 +78,15 @@ public class Storage {
 				taskList.add(task);
 			}
 			return taskList;
-		} catch (IOException e) {
-			throw e;
 		}
+	}
+
+	public ArrayList<Task> readFile(String fileName) throws IOException {
+		File file = new File(fileName);
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+		return readFromStream(new FileInputStream(file));
 	}
 	
 	public void writeFile(List<Task> taskList) throws IOException {
