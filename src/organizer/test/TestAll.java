@@ -137,10 +137,10 @@ public class TestAll {
 	// TO TEST: public ResultSet editTask(String userContent) {...}
 	public void testEditTaskSuccessfullyUpdates() throws IOException {
 		addToTestListEdited();
-		resultObj = commandParse.executeCommand("edit 1");
-		resultObj = commandParse.executeCommand("edit 2");
-		resultObj = commandParse.executeCommand("edit 3");
-		resultObj = commandParse.executeCommand("edit 4");
+		resultObj = commandParse.executeCommand("edit 1 %tomorrow");
+		resultObj = commandParse.executeCommand("edit 2 buy chocolate ice cream");
+		resultObj = commandParse.executeCommand("edit 3 buy one bag detergent");
+		resultObj = commandParse.executeCommand("edit 4 buy apple pie");
 		taskList = resultObj.getReturnList();
 		for (int index = 0; index < taskList.size(); index++) {
 			assertEquals("Tasks successfully edited.",
