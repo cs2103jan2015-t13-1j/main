@@ -46,7 +46,6 @@ public class TestAll {
 	 * ---- 
 	 * 
 	 */
-	
 	public void addToTestList(){
 		testList.clear();
 		Task tempTask_0 = new Task(0, "buy milk", "INCOMPLETE", today);
@@ -57,7 +56,6 @@ public class TestAll {
 		testList.add(tempTask_1);
 		testList.add(tempTask_2);
 		testList.add(tempTask_3);
-
 	}
 
 	public String toString(Task tempTask) {
