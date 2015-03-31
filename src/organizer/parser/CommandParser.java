@@ -54,7 +54,7 @@ public class CommandParser {
 //	}
 
 	enum COMMAND_TYPE {
-		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, CLEAR_TASK, EDIT_TASK, POSTPONE_TASK, RANK_TASK,
+		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INCOMPLETE_TASK, CLEAR_TASK, EDIT_TASK, POSTPONE_TASK, RANK_TASK,
 		INVALID, EXIT
 	};
 
@@ -79,6 +79,8 @@ public class CommandParser {
 			return COMMAND_TYPE.CLEAR_TASK;
 		case "complete":
 			return COMMAND_TYPE.COMPLETE_TASK;
+		case "incomplete":
+			return COMMAND_TYPE.INCOMPLETE_TASK;
 		case "edit":
 			return COMMAND_TYPE.EDIT_TASK;
 		case "postpone":
@@ -122,6 +124,8 @@ public class CommandParser {
 			return logic.clearCommand();
 		case COMPLETE_TASK:
 			return logic.completeCommand(userContent);
+		case INCOMPLETE_TASK:
+			return logic.incompleteCommand(userContent);
 		case EDIT_TASK:
 			return logic.editCommand(userContent);
 		case POSTPONE_TASK:

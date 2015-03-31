@@ -10,30 +10,10 @@ import organizer.storage.Storage;
 
 public class Logic {
 
-//
-//	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
-//	private static final String MESSAGE_INVALID_RANK = "Invalid priority rank!";
-//	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
-//	private static final String MESSAGE_NO_RESULT = "No results found!";
-//	private static final String MESSAGE_INVALID_CONTENT = "Edit task operation failed for invalid content!";
-//	private static final String MESSAGE_SEARCH_FOUND = "Search results found: \"%1$s\"";
-//	private static final String MESSAGE_SUCCESS = "%1$s task(s) operation is successful!\n\n";
-//
-//	private static final String dateFieldIdentifier = "%";
-////	private static final String timeFieldIdentifier = "@";
-//
-//	private static final String rankPattern = "high|medium|low";
-
-
 	Storage tempStorage = new Storage();
 	ResultSet returnResult = new ResultSet();
 	TaskListSet allLists = new TaskListSet();
 	Validation validOp = new Validation();
-	
-	boolean isSearch = false;
-	boolean isView = false;
-	boolean isSuccessful = false;
-
 
 	public ArrayList<Task> loadStorage() throws IOException {
 		allLists.setTaskList(tempStorage.readFile()); 
@@ -90,6 +70,12 @@ public class Logic {
 	
 	public ResultSet completeCommand(String taskInfo) {
 		CompleteTask command = new CompleteTask();
+		returnResult = command.execute(taskInfo, allLists, validOp);
+		return returnResult;	
+	}
+	
+	public ResultSet incompleteCommand(String taskInfo) {
+		IncompleteTask command = new IncompleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
 		return returnResult;	
 	}
