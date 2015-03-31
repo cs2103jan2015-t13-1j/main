@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import java.net.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import java.net.* ?>
 
-<AnchorPane prefHeight="601.0" prefWidth="1138.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="organizer.gui.MainAppController">
+<AnchorPane prefHeight="601.0" prefWidth="1138.0" styleClass="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="organizer.gui.MainAppController">
+   <stylesheets>
+      <URL value="@mainstyle.css" />
+   </stylesheets>
    <children>
       <TableView fx:id="taskTable" layoutX="27.0" layoutY="100.0" prefHeight="364.0" prefWidth="815.0">
         <columns>
@@ -13,7 +19,7 @@
           <TableColumn fx:id="taskTableNameColumn" editable="false" prefWidth="395.0" text="Task Name" />
             <TableColumn fx:id="taskTableDueDateColumn" editable="false" prefWidth="120.0" text="Due Date" />
             <TableColumn fx:id="taskTableStatusColumn" editable="false" prefWidth="100.0" text="Status" />
-            <TableColumn fx:id="taskTablePriorityColumn" editable="false" resizable = "false" prefWidth="147.5" text="Priority" />
+            <TableColumn fx:id="taskTablePriorityColumn" editable="false" prefWidth="147.5" resizable="false" text="Priority" />
         </columns>
       </TableView>
       <Label layoutX="27.0" layoutY="28.0" prefHeight="54.0" prefWidth="251.0" text="MnemoniCal">
@@ -27,6 +33,33 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <Label fx:id="commandStatus" layoutX="27.0" layoutY="556.0" text="" />
+      <Label id="commandStatus" fx:id="commandStatus" layoutX="27.0" layoutY="556.0" text="" />
+      <TabPane fx:id="taskPane" layoutX="855.0" layoutY="100.0" prefHeight="364.0" prefWidth="265.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab fx:id="showTaskTab" text="Due tasks">
+               <content>
+               </content>
+               <content>
+                  <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" vmax="30.0">
+                    <content>
+                      <AnchorPane minWidth="0.0">
+                      	<children>
+	                        <Label text="Today" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0">
+	                           <opaqueInsets>
+	                              <Insets left="20.0" top="20.0" />
+	                           </opaqueInsets>
+	                        </Label>
+	                        <ListView fx:id="dueTodayTaskList" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="40.0" />
+	                        <Label text="This week" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="250.0" />
+	                        <ListView fx:id="dueWeekTaskList" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="280.0" />
+                            <Label text="This month" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="500.0" />
+                            <ListView fx:id="dueMonthTaskList" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="520.0" />
+                        </children>
+                      </AnchorPane>
+                    </content>
+                  </ScrollPane>
+               </content></Tab>
+        </tabs>
+      </TabPane>
    </children>
 </AnchorPane>

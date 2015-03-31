@@ -1,0 +1,10 @@
+root {
+	/*display: block;*/
+}
+
+.root {
+}
+
+#commandStatus {
+	-fx-text-fill: #ff0000;
+}
