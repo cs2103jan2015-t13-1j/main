@@ -111,23 +111,23 @@ public class CommandParser {
 		
 		switch (commandType) {
 		case ADD_TASK:
-			return logic.addTask(userContent);
+			return logic.addCommand(userContent);
 		case DELETE_TASK:
-			return logic.deleteTask(userContent);
+			return logic.deleteCommand(userContent);
 		case SEARCH_TASK:
-			return logic.searchTask(userContent);
+			return logic.searchCommand(userContent);
 		case VIEW_TASK:
-			return logic.viewList(userContent);
+			return logic.viewCommand(userContent);
 		case CLEAR_TASK:
-			return logic.clearTask();
+			return logic.clearCommand();
 		case COMPLETE_TASK:
-			return logic.completeTask(userContent);
+			return logic.completeCommand(userContent);
 		case EDIT_TASK:
-			return logic.editTask(userContent);
+			return logic.editCommand(userContent);
 		case POSTPONE_TASK:
-			return logic.postponeTask(userContent);
+			return logic.postponeCommand(userContent);
 		case RANK_TASK:
-			return logic.rankTask(userContent);
+			return logic.rankCommand(userContent);
 		case EXIT:
 			logic.writeStorage();
 			System.exit(0);
