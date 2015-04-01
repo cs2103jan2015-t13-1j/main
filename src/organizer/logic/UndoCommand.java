@@ -13,7 +13,6 @@ public class UndoCommand {
 	public ResultSet execute(TaskListSet allLists, Stack<ArrayList<Task>> undoList) {
 		if(!undoList.isEmpty()) {
 			allLists.setTaskList(undoList.pop());
-			System.out.println(allLists.getTaskList().get(3).getDueDate().toString());
 			returnResult.setOpStatus(MESSAGE_UNDO_SUCCESS);
 		} else {
 			returnResult.setOpStatus(MESSAGE_UNDO_FAIL);

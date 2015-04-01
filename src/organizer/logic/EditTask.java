@@ -41,8 +41,9 @@ public class EditTask {
 						taskEndTime = timeInfo.substring(timeInfo.indexOf(timeFieldSeparator)+1);
 						startTime = dateTimeCheck.determineTime(taskStartTime);
 						endTime = dateTimeCheck.determineTime(taskEndTime);
-						if((startTime == null && endTime == null) || (endTime != null && startTime == null && (tempList.get(taskID).getStartTime() == null)
+						if((startTime == null && endTime == null) || (endTime != null && startTime == null && tempList.get(taskID).getStartTime() == null
 								&& tempList.get(taskID).getEndTime() == null)) {
+							returnResult.setReturnList(allLists.getTaskList());
 							returnResult.setOpStatus(MESSAGE_INVALID_CONTENT);
 							return returnResult;
 						} else if(endTime != null && tempList.get(taskID).getStartTime() != null) {
