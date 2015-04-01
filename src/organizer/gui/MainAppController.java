@@ -136,23 +136,31 @@ public class MainAppController {
 		displayDueTasksInSidePanel();
 	}
 	
+	private static boolean compareDateBefore(LocalDate thisDate, LocalDate reference) {
+		return thisDate == null || reference == null || thisDate.compareTo(reference) < 0;
+	}
+	
+	private static boolean compareDateEqual(LocalDate thisDate, LocalDate reference) {
+		return thisDate == null || reference == null || thisDate.compareTo(reference) == 0;
+	}
+	
 	private void displayDueTasksInSidePanel() {
 		final List<TaskItem> list = this.mainApp.getTaskData();
 		
 		// This month
 		final List<TaskItem> thisMonthList = list
 				.stream()
-				.filter(task -> task != null && task.getTaskDueDate().compareTo(LocalDate.now().plusMonths(1)) < 0)
+				.filter(task -> task != null && compareDateBefore(task.getTaskDueDate(), LocalDate.now().plusMonths(1)))
 				.collect(Collectors.toList());
 		// This week
 		final List<TaskItem> thisWeekList = thisMonthList
 				.stream()
-				.filter(task -> task != null && task.getTaskDueDate().compareTo(LocalDate.now().plusWeeks(1)) < 0)
+				.filter(task -> task != null && compareDateBefore(task.getTaskDueDate(), LocalDate.now().plusWeeks(1)))
 				.collect(Collectors.toList());
 		// Today
 		final List<TaskItem> todayList = thisWeekList
 				.stream()
-				.filter(task -> task != null && task.getTaskDueDate().compareTo(LocalDate.now()) == 0)
+				.filter(task -> task != null && compareDateEqual(task.getTaskDueDate(), LocalDate.now()))
 				.collect(Collectors.toList());
 		dueMonthTaskList.setItems(
 				FXCollections.observableArrayList(
