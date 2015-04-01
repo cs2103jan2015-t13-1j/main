@@ -2,16 +2,14 @@ package organizer.gui;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-
 import organizer.logic.*;
 import organizer.parser.*;
 
@@ -21,7 +19,7 @@ public class MainApp extends Application {
     private Stage primaryStage;
     private AnchorPane rootLayout;
     
-    private ObservableList<TaskItem> taskData = FXCollections.observableArrayList();
+    private List<TaskItem> taskData = new ArrayList<>();
     private String currentCommandStatus = "";
     
     
@@ -82,7 +80,7 @@ public class MainApp extends Application {
         return primaryStage;
     }
     
-    public ObservableList<TaskItem> getTaskData() {
+    public List<TaskItem> getTaskData() {
         return taskData;
     }
     
