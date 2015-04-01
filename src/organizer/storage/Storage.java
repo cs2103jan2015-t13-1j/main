@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public class Storage {
 
 	private static final String nameFieldIdentifier = "name: ";
 	private static final String dueDateFieldIdentifier = "duedate: ";
+	private static final String startTimeFieldIdentifier = "start: ";
+	private static final String endTimeFieldIdentifier = "end: ";
 	private static final String statusFieldIdentifier = "status: ";
 	private static final String taskIdFieldIdentifier = "id: ";
 	private static final String priorityFieldIdentifier = "priority: ";
@@ -56,7 +59,13 @@ public class Storage {
 				} else if (line.startsWith(dueDateFieldIdentifier)) {
 					begin = true;
 					task.setDueDate(LocalDate.parse(line.substring(dueDateFieldIdentifier.length())));
-				} else if (line.startsWith(statusFieldIdentifier)) {
+				} else if(line.startsWith(startTimeFieldIdentifier)) {
+					begin = true;
+					task.setStartTime(LocalDateTime.parse(line.substring(startTimeFieldIdentifier.length())));
+				} else if(line.startsWith(endTimeFieldIdentifier)) {
+					begin = true;
+					task.setStartTime(LocalDateTime.parse(line.substring(endTimeFieldIdentifier.length())));
+				}else if (line.startsWith(statusFieldIdentifier)) {
 					begin = true;
 					task.setTaskStatus(line.substring(statusFieldIdentifier.length()));
 				} else if (line.equals(endIdentifier)) {

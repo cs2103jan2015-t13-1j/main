@@ -1,6 +1,7 @@
 package organizer.logic;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Task {
 
@@ -8,6 +9,8 @@ public class Task {
 	private String taskName = null;
 	private String taskStatus = null;
 	private LocalDate dueDate = null;
+	private LocalDateTime startTime = null;
+	private LocalDateTime endTime = null;
 	private String taskPriority = null;
 
 
@@ -19,6 +22,9 @@ public class Task {
 		taskName = null;
 		taskStatus = null;
 		dueDate = null;
+		startTime = null;
+		endTime = null;
+		taskPriority = null;
 	}
 
 
@@ -63,6 +69,23 @@ public class Task {
 	public void setDueDate(LocalDate dueDate) {
 		this.dueDate = dueDate;
 	}
+	
+	public LocalDateTime getStartTime() {
+		return startTime;
+	}
+	
+	public void setStartTime(LocalDateTime startTime) {
+		this.startTime = startTime;
+	}
+	
+	public LocalDateTime getEndTime() {
+		return endTime;
+	}
+	
+	public void setEndTime(LocalDateTime endTime) {
+		this.endTime = endTime;
+	}
+	
 
 	public String getTaskPriority() {
 		return taskPriority;

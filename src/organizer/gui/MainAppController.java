@@ -29,6 +29,10 @@ public class MainAppController {
 	@FXML
 	private TableColumn<TaskItem, String> taskTableDueDateColumn;
 	@FXML
+	private TableColumn<TaskItem, String> taskTableStartTimeColumn;
+	@FXML
+	private TableColumn<TaskItem, String> taskTableEndTimeColumn;
+	@FXML
 	private TableColumn<TaskItem, Number> taskTableIndexColumn;
 	@FXML
 	private TableColumn<TaskItem, String> taskTablePriorityColumn;
@@ -85,6 +89,16 @@ public class MainAppController {
 				cellData ->
 					cellData.getValue().taskDueDateProperty().get() == null ?
 							new SimpleStringProperty("Not Applicable") :
+							cellData.getValue().taskDueDateProperty().asString());
+		taskTableStartTimeColumn.setCellValueFactory(
+				cellData ->
+					cellData.getValue().taskStartTimeProperty().get() == null ?
+							new SimpleStringProperty("-") :
+							cellData.getValue().taskDueDateProperty().asString());
+		taskTableEndTimeColumn.setCellValueFactory(
+				cellData ->
+					cellData.getValue().taskEndTimeProperty().get() == null ?
+							new SimpleStringProperty("-") :
 							cellData.getValue().taskDueDateProperty().asString());
 		taskTablePriorityColumn.setCellValueFactory(
 				cellData ->
