@@ -8,14 +8,12 @@ public class AddTask {
 	private static final String MESSAGE_SUCCESS = "%1$s task(s) operation is successful!\n\n";
 	private DateAndTime dateTime = new DateAndTime();
 	
-	public ResultSet execute(String taskInfo, TaskListSet allLists) {
+	public ResultSet execute(String taskInfo, ArrayList<Task> taskList) {
 		String taskName = null;
 		String taskDate = null;
 		LocalDate dueDate = LocalDate.now();
 		Task tempTask = new Task();
 		ResultSet returnResult = new ResultSet();
-		ArrayList<Task> tempList = new ArrayList<Task>();
-		tempList = allLists.getTaskList();
 		
 		if(taskInfo.contains(dateFieldIdentifier)) {
 			taskName = taskInfo.substring(0,taskInfo.indexOf(dateFieldIdentifier));
@@ -30,14 +28,13 @@ public class AddTask {
 		tempTask.setDueDate(dueDate);
 		tempTask.setTaskStatus("INCOMPLETE");
 		tempTask.setTaskPriority(null);
-		tempTask.setTaskID(tempList.size());
+		tempTask.setTaskID(taskList.size());
 
-		tempList.add(tempTask);
+		taskList.add(tempTask);
 		tempTask = new Task();
-		allLists.setTaskList(tempList);
 
 		returnResult.setOpStatus(String.format(MESSAGE_SUCCESS,"Add"));
-		returnResult.setReturnList(allLists.getTaskList());
+		returnResult.setReturnList(taskList);
 
 		return returnResult;
 	}

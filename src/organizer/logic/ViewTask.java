@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class ViewTask {
 	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
 	private static final String MESSAGE_SUCCESS = "%1$s task(s) operation is successful!\n\n";
-	
+
 	public ResultSet execute(String viewType, TaskListSet allLists){
 		LocalDate currentDate = LocalDate.now();
 		viewType = viewType.toLowerCase();
@@ -21,16 +21,19 @@ public class ViewTask {
 			} else {
 				if(viewType.trim().equals("today") && task.getDueDate().equals(currentDate)) {
 					tempList.add(task);
-				} else if(viewType.trim().equals("complete") && task.getTaskStatus().toLowerCase().equals("complete")) {
-					tempList.add(task);
-				} else if(viewType.trim().equals("incomplete") && task.getTaskStatus().toLowerCase().equals("incomplete")) {
-					tempList.add(task);
-				}else if (viewType.trim().equalsIgnoreCase("all")){
-					tempList.add(task);
 				}
 			}
+
+			if(viewType.trim().equals("complete") && task.getTaskStatus().toLowerCase().equals("complete")) {
+				tempList.add(task);
+			} else if(viewType.trim().equals("incomplete") && task.getTaskStatus().toLowerCase().equals("incomplete")) {
+				tempList.add(task);
+			}else if (viewType.trim().equalsIgnoreCase("all")){
+				tempList.add(task);
+			}
+
 		}
-		
+
 		allLists.setViewList(tempList);
 
 		if(allLists.getViewList().isEmpty()) {
@@ -43,4 +46,6 @@ public class ViewTask {
 		return returnResult;
 
 	}
+
 }
+
