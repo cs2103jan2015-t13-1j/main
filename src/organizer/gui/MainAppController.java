@@ -3,7 +3,6 @@ package organizer.gui;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
 import java.util.List;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -30,6 +29,10 @@ public class MainAppController {
 	private TableColumn<TaskItem, String> taskTableStatusColumn;
 	@FXML
 	private TableColumn<TaskItem, String> taskTableDueDateColumn;
+	@FXML
+	private TableColumn<TaskItem, String> taskTableStartTimeColumn;
+	@FXML
+	private TableColumn<TaskItem, String> taskTableEndTimeColumn;
 	@FXML
 	private TableColumn<TaskItem, Number> taskTableIndexColumn;
 	@FXML
@@ -88,6 +91,16 @@ public class MainAppController {
 					cellData.getValue().taskDueDateProperty().get() == null ?
 							new SimpleStringProperty("Not Applicable") :
 							cellData.getValue().taskDueDateProperty().asString());
+		taskTableStartTimeColumn.setCellValueFactory(
+				cellData ->
+					cellData.getValue().taskStartTimeProperty().get() == null ?
+							new SimpleStringProperty("-") :
+							cellData.getValue().taskStartTimeProperty().asString());
+		taskTableEndTimeColumn.setCellValueFactory(
+				cellData ->
+					cellData.getValue().taskEndTimeProperty().get() == null ?
+							new SimpleStringProperty("-") :
+							cellData.getValue().taskEndTimeProperty().asString());
 		taskTablePriorityColumn.setCellValueFactory(
 				cellData ->
 					cellData.getValue().taskPriorityProperty().get() == null ?

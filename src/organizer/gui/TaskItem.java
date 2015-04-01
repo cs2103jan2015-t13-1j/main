@@ -1,6 +1,7 @@
 package organizer.gui;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import javafx.beans.property.*;
 import organizer.logic.Task;
@@ -12,12 +13,16 @@ public class TaskItem {
 	private final StringProperty taskPriority;
 	private final IntegerProperty taskIndex;
 	private final ObjectProperty<LocalDate> taskDueDate;
+	private final ObjectProperty<LocalTime> taskStartTime;
+	private final ObjectProperty<LocalTime> taskEndTime;
 	
 	TaskItem(Task task, int index) {
 		this.task = task;
 		taskName = new SimpleStringProperty(task.getTaskName());
 		taskStatus = new SimpleStringProperty(task.getTaskStatus());
 		taskDueDate = new SimpleObjectProperty<>(task.getDueDate());
+		taskStartTime = new SimpleObjectProperty<>(task.getStartTime());
+		taskEndTime = new SimpleObjectProperty<>(task.getEndTime());
 		taskIndex = new SimpleIntegerProperty(index);
 		taskPriority = new SimpleStringProperty(task.getTaskPriority());
 	}
@@ -60,5 +65,21 @@ public class TaskItem {
 	
 	public StringProperty taskPriorityProperty() {
 		return taskPriority;
+	}
+	
+	public LocalTime getTaskStartTime() {
+		return task.getStartTime();
+	}
+	
+	public ObjectProperty<LocalTime> taskStartTimeProperty() {
+		return taskStartTime;
+	}
+	
+	public LocalTime getTaskEndTime() {
+		return task.getEndTime();
+	}
+	
+	public ObjectProperty<LocalTime> taskEndTimeProperty() {
+		return taskEndTime;
 	}
 }

@@ -2,21 +2,17 @@ package organizer.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
-//import java.util.List;
 
 import organizer.logic.*;
 
-//import organizer.storage.Storage;
 
 public class CommandParser {
-
-	// private static final String MESSAGE_INVALID_TASK =
-	// "Selected task does not exists!";
 	private static final String MESSAGE_INVALID_COMMAND = "Unregconized command!";
-	// private static final String MESSAGE_UNSUCCESS =
-	// "Operation is unsuccessful.\n\n";
-	// private static final String MESSAGE_SUCCESS =
-	// "Operation is successful.\n\n";
+	
+	private static final String noContentCommandPattern = "clear|undo";
+	private static final String withContentCommandPattern = "add|delete|search|view|edit|rank|postpone|incomplete|complete";
+	
+	private static final String MODE_VIEW = "incomplete";
 
 	ArrayList<Task> taskList = new ArrayList<Task>();
 	ArrayList<Task> resultList = new ArrayList<Task>(); // for search
@@ -33,29 +29,9 @@ public class CommandParser {
 		logic.writeStorage();
 	}
 
-	// to return multiple values
-
-//	public static class ReturnResult {
-//		String opStatus;
-//		ArrayList<Task> returnList;
-//
-//		public ReturnResult(String opStatus, ArrayList<Task> returnList) {
-//			this.opStatus = opStatus;
-//			this.returnList = returnList;
-//		}
-//
-//		public String getOpStatus() {
-//			return opStatus;
-//		}
-//
-//		public ArrayList<Task> getReturnList() {
-//			return returnList;
-//		}
-//	}
-
 	enum COMMAND_TYPE {
-		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, CLEAR_TASK, EDIT_TASK, POSTPONE_TASK, RANK_TASK,
-		INVALID, EXIT
+		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INCOMPLETE_TASK, CLEAR_TASK, EDIT_TASK, POSTPONE_TASK, RANK_TASK,
+		UNDO, INVALID, EXIT
 	};
 
 	private static COMMAND_TYPE determineCommandType(String commandTypeString)
@@ -79,12 +55,16 @@ public class CommandParser {
 			return COMMAND_TYPE.CLEAR_TASK;
 		case "complete":
 			return COMMAND_TYPE.COMPLETE_TASK;
+		case "incomplete":
+			return COMMAND_TYPE.INCOMPLETE_TASK;
 		case "edit":
 			return COMMAND_TYPE.EDIT_TASK;
 		case "postpone":
 			return COMMAND_TYPE.POSTPONE_TASK;
 		case "rank":
 			return COMMAND_TYPE.RANK_TASK;
+		case "undo":
+			return COMMAND_TYPE.UNDO;
 		case "exit":
 			return COMMAND_TYPE.EXIT;
 		default:
@@ -101,40 +81,58 @@ public class CommandParser {
 		if (userCommand.indexOf(' ') >= 0) {
 			userOperation = userCommand.substring(0, userCommand.indexOf(' '));
 			userContent = userCommand.substring(userCommand.indexOf(' ') + 1);
+			if(userOperation.matches(noContentCommandPattern)) {
+				return showNoChanges();
+			}
 
 		} else {
 			userOperation = userCommand;
-			userContent = "";
+			if(userOperation.matches(withContentCommandPattern)) {
+				return showNoChanges();
+			} else {
+				userContent = "";
+			}
 		}
 
 		COMMAND_TYPE commandType = determineCommandType(userOperation);
 		
 		switch (commandType) {
 		case ADD_TASK:
-			return logic.addTask(userContent);
+			return logic.addCommand(userContent);
 		case DELETE_TASK:
-			return logic.deleteTask(userContent);
+			return logic.deleteCommand(userContent);
 		case SEARCH_TASK:
-			return logic.searchTask(userContent);
+			return logic.searchCommand(userContent);
 		case VIEW_TASK:
-			return logic.viewList(userContent);
+			return logic.viewCommand(userContent);
 		case CLEAR_TASK:
-			return logic.clearTask();
+			return logic.clearCommand();
 		case COMPLETE_TASK:
-			return logic.completeTask(userContent);
+			return logic.completeCommand(userContent);
+		case INCOMPLETE_TASK:
+			return logic.incompleteCommand(userContent);
 		case EDIT_TASK:
-			return logic.editTask(userContent);
+			return logic.editCommand(userContent);
 		case POSTPONE_TASK:
-			return logic.postponeTask(userContent);
+			return logic.postponeCommand(userContent);
 		case RANK_TASK:
-			return logic.rankTask(userContent);
+			return logic.rankCommand(userContent);
+		case UNDO:
+			return logic.undoCommand();
 		case EXIT:
 			logic.writeStorage();
 			System.exit(0);
 		default:
 			// throw an error if the command is not recognized
-			throw new Error(MESSAGE_INVALID_COMMAND);
+			return showNoChanges();
 		}
 
+	}
+
+	private ResultSet showNoChanges() {
+		ResultSet returnResult = new ResultSet();
+		returnResult.setOpStatus(MESSAGE_INVALID_COMMAND);
+		returnResult.setReturnList(logic.viewCommand(MODE_VIEW).getReturnList());
+		return returnResult;
 	}
 }
