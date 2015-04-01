@@ -122,11 +122,19 @@ public class Storage {
 					pw.print(dueDateFieldIdentifier);
 					pw.println(task.getDueDate().toString());
 				}
+				if (task.getEndTime() != null) {
+					pw.print(endTimeFieldIdentifier);
+					pw.println(task.getEndTime());
+				}
 				pw.print(statusFieldIdentifier);
 				pw.println(task.getTaskStatus());
 				if (task.getTaskPriority() != null) {
 					pw.print(priorityFieldIdentifier);
 					pw.println(task.getTaskPriority());
+				}
+				if (task.getStartTime() != null) {
+					pw.print(startTimeFieldIdentifier);
+					pw.println(task.getStartTime());
 				}
 				pw.println(endIdentifier);
 			}
