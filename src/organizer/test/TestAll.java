@@ -11,8 +11,7 @@ import org.junit.runners.MethodSorters;
 import org.junit.runners.Parameterized.Parameters;
 import org.junit.Test;
 
-import organizer.logic.ResultSet;
-import organizer.logic.Task;
+import organizer.logic.*;
 import organizer.parser.CommandParser;
 import organizer.storage.Storage;
 
@@ -32,7 +31,7 @@ public class TestAll {
 	static ResultSet resultObj = new ResultSet(null, taskList);
 
 	@Parameters
-	public void addToTestList() {
+	private void addToTestList() {
 		testList.clear();
 		Task tempTask_0 = new Task(0, "buy milk", "INCOMPLETE", today);
 		Task tempTask_1 = new Task(1, "buy ice cream", "INCOMPLETE", tomorrow);
@@ -45,7 +44,7 @@ public class TestAll {
 	}
 
 	@Parameters
-	public void addToTestListEdited() {
+	private void addToTestListEdited() {
 		testList.clear();
 		Task tempTask_0 = new Task(0, "buy milk", "INCOMPLETE", tomorrow);
 		Task tempTask_1 = new Task(1, "buy chocolate ice cream", "INCOMPLETE",
@@ -60,7 +59,7 @@ public class TestAll {
 	}
 
 	@Parameters
-	public void addToTestListDeleted() {
+	private void addToTestListDeleted() {
 		testList.clear();
 		Task tempTask_0 = new Task(0, "buy milk", "INCOMPLETE", tomorrow);
 		Task tempTask_1 = new Task(1, "buy chocolate ice cream", "INCOMPLETE",
@@ -73,14 +72,14 @@ public class TestAll {
 	}
 
 	@Parameters
-	public void addToTestListFiltered() {
+	private void addToTestListFiltered() {
 		testList.clear();
 		Task tempTask_0 = new Task(0, "buy milk", "INCOMPLETE", tomorrow);
 		testList.add(tempTask_0);
 	}
-	
+
 	@Parameters
-	public void addToTestListCompleted() {
+	private void addToTestListCompleted() {
 		testList.clear();
 		Task tempTask_0 = new Task(0, "buy milk", "COMPLETE", today);
 		Task tempTask_1 = new Task(1, "buy ice cream", "COMPLETE", tomorrow);
@@ -92,30 +91,16 @@ public class TestAll {
 		testList.add(tempTask_3);
 	}
 
-	public String toString(Task tempTask) {
+	private String toString(Task tempTask) {
 		String taskToString = null;
 		taskToString = tempTask.getTaskID() + " " + tempTask.getTaskName()
 				+ " " + tempTask.getTaskStatus() + " " + tempTask.getDueDate();
 		return taskToString;
 	}
 
-	@Test
-	// WRITE STORAGE & LOAD STORAGE
-	// TO TEST: public void writeStorage() throws IOException {...}
-	// TO TEST: public ArrayList<Task> loadStorage() throws IOException {...}
-	public void testLoadAndSaveSuccessfullyFromAndToTextFile()
-			throws IOException {
-		taskList = storage.readFile("testStorage.txt");
-		for (int index = 0; index < taskList.size(); index++) {
-			assertEquals("New task successfully added.",
-					toString(testList.get(index)),
-					toString(taskList.get(index)));
-		}
-	}
-
-	@Test
 	// ADD TASK
 	// TO TEST: public ResultSet addTask(String taskInfo) {...}
+	@Test
 	public void testAddSucessfullyAddsToEndOfList() throws IOException {
 		taskList.clear();
 		addToTestList();
@@ -132,29 +117,31 @@ public class TestAll {
 		}
 	}
 
+	// CLEAR TASK LIST
+	// TO TEST: public ResultSet clearCommand() {...}
 	@Test
-	// EDIT TASK
-	// TO TEST: public ResultSet editTask(String userContent) {...}
-	public void testEditTaskSuccessfullyUpdates() throws IOException {
-		addToTestListEdited();
-		resultObj = commandParse.executeCommand("edit 1 %tomorrow");
-		resultObj = commandParse.executeCommand("edit 2 buy chocolate ice cream");
-		resultObj = commandParse.executeCommand("edit 3 buy one bag detergent");
-		resultObj = commandParse.executeCommand("edit 4 buy apple pie");
+	public void clearCommandSucessfullyDeletesAllTasks() throws IOException {
+		testList.clear();
+		addToTestList();
+		resultObj = commandParse.executeCommand("clear");
 		taskList = resultObj.getReturnList();
-		for (int index = 0; index < taskList.size(); index++) {
-			assertEquals("Tasks successfully edited.",
-					toString(testList.get(index)),
-					toString(taskList.get(index)));
-		}
+		assertEquals("TaskList successfully emptied.", 0, taskList.size());
+	}
+
+	// COMPLETE TASK
+	// TO TEST: public ResultSet completeTask(String taskInfo) {...}
+	@Test
+	public void testCompleteMethodMarksTaskAsComplete() {
+
 	}
 
 	// DETERMINE DATE
-	// TO TEST: private LocalDate determineDate(String dateInfo) {...}
+	// TO TEST: public LocalDate determineDay(String dateInfo) {...}
+	@Test
+	public void testDetermineDateReturnsCorrectDate() {
 
-	// DETERMINE DAY
-	// TO TEST: private LocalDate determineDay(String dateInfo) {...}
-
+	}
+	
 	// DELETE TASK
 	// TO TEST: public ResultSet deleteTask(String taskInfo) {...}
 	@Test
@@ -169,28 +156,44 @@ public class TestAll {
 		}
 	}
 
-	// CHECK TASK
-	// TO TEST: public boolean isValidTask(int lineNum) {...}
-
-	// CHECK TASK ID
-	// TO TEST: private int checkForTaskID(int lineNum) {...}
-
-	// REMOVE TASK
-	// TO TEST: private void removeFromTaskList(int taskID) {...}
-
+	// EDIT TASK
+	// TO TEST: public ResultSet editTask(String userContent) {...}
 	@Test
-	// COMPLETE TASK
-	// TO TEST: public ResultSet completeTask(String taskInfo) {...}
-	public void testCompleteMethodMarksTaskAsComplete() {
+	public void testEditTaskSuccessfullyUpdates() throws IOException {
+		addToTestListEdited();
+		resultObj = commandParse.executeCommand("edit 1 %tomorrow");
+		resultObj = commandParse
+				.executeCommand("edit 2 buy chocolate ice cream");
+		resultObj = commandParse.executeCommand("edit 3 buy one bag detergent");
+		resultObj = commandParse.executeCommand("edit 4 buy apple pie");
+		taskList = resultObj.getReturnList();
+		for (int index = 0; index < taskList.size(); index++) {
+			assertEquals("Tasks successfully edited.",
+					toString(testList.get(index)),
+					toString(taskList.get(index)));
+		}
+	}
+	
+	// INCOMPLETE TASK
+	// TO TEST: public ResultSet incompleteCommand(String taskInfo) {...}
+	@Test
+	public void testIncompleteTaskChangesStatus() {
 		
 	}
-
-	// CLEAR TASK
-	// TO TEST: public ResultSet clearTask(){...}
-
+	
+	// POSTPONE TASK
+	// TO TEST: public ResultSet postponeTask(String taskInfo) {...}
+	
+	// RANK TASK
+	// TO TEST: public ResultSet rankTask(String taskInfo) {...}
 	@Test
+	public void testRankTaskSetsPriority() {
+		
+	}
+	
 	// SEARCH FUNCTION
 	// TO TEST: public ResultSet searchTask(String searchTerm) {...}
+	@Test
 	public void testSearchMethodReturnsFilteredResultObject()
 			throws IOException {
 		addToTestListFiltered();
@@ -202,10 +205,17 @@ public class TestAll {
 					toString(taskList.get(index)));
 		}
 	}
-
+	
+	// UNDO
+	// TO TEST: public ResultSet undoCommand() {...}
 	@Test
+	public void testIfUndoRevertsToPreviousState() {
+		
+	}
+
 	// VIEW LIST
 	// TO TEST: public ResultSet viewList(String viewType){...}
+	@Test
 	public void testViewMethodReturnsCompleteArrayList() throws IOException {
 		addToTestListCompleted();
 		resultObj = commandParse.executeCommand("complete 1");
@@ -220,9 +230,17 @@ public class TestAll {
 		}
 	}
 
-	// POSTPONE TASK
-	// TO TEST: public ResultSet postponeTask(String taskInfo) {...}
-
-	// RANK TASK
-	// TO TEST: public ResultSet rankTask(String taskInfo) {...}
+	// WRITE STORAGE & LOAD STORAGE
+	// TO TEST: public void writeStorage() throws IOException {...}
+	// TO TEST: public ArrayList<Task> loadStorage() throws IOException {...}
+	@Test
+	public void testLoadAndSaveSuccessfullyFromAndToTextFile()
+			throws IOException {
+		taskList = storage.readFile("testStorage.txt");
+		for (int index = 0; index < taskList.size(); index++) {
+			assertEquals("New task successfully added.",
+					toString(testList.get(index)),
+					toString(taskList.get(index)));
+		}
+	}
 }
