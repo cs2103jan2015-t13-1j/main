@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class RankTask {
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
 	private static final String MESSAGE_INVALID_RANK = "Invalid priority rank!";
-	private static final String MESSAGE_SUCCESS = "%1$s task(s) operation is successful!\n\n";
+	private static final String MESSAGE_SUCCESS = "Rank task(s) operation is successful!\n\n";
 	private static final String TYPE_REMOVE = "remove";
 	
 	public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {
@@ -28,7 +28,7 @@ public class RankTask {
 			}
 			
 			allLists.setTaskList(tempList);
-			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS,"Rank"));
+			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
 			
 		} else if(!validOp.isValidRank(taskRank)){
 			returnResult.setOpStatus(MESSAGE_INVALID_RANK);

@@ -6,9 +6,10 @@ import java.util.ArrayList;
 public class EditTask {
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
 	private static final String MESSAGE_INVALID_CONTENT = "Edit task operation failed for invalid content!";
-	private static final String MESSAGE_SUCCESS = "%1$s task(s) operation is successful!\n\n";
-	
+	private static final String MESSAGE_SUCCESS = "Edit task(s) operation is successful!\n\n";
+
 	private static final String dateFieldIdentifier = "%";
+	
 	DateAndTime dateTime = new DateAndTime();
 
 	public ResultSet execute(String userContent, TaskListSet allLists, Validation validOp) {
@@ -27,7 +28,7 @@ public class EditTask {
 				} else {
 					tempList.get(taskID).setTaskName(editContent.substring(1));
 				}
-				returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, "Edit"));
+				returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
 			} else {
 				returnResult.setOpStatus(MESSAGE_INVALID_CONTENT);
 			}
@@ -35,7 +36,7 @@ public class EditTask {
 		} else {
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
 		}
-		
+
 		allLists.setTaskList(tempList);
 		returnResult.setReturnList(allLists.getTaskList());
 

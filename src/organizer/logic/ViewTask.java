@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class ViewTask {
 	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
-	private static final String MESSAGE_SUCCESS = "%1$s task(s) operation is successful!\n\n";
+	private static final String MESSAGE_SUCCESS = "View %1$s task(s) operation is successful!\n\n";
 
 	public ResultSet execute(String viewType, TaskListSet allLists){
 		LocalDate currentDate = LocalDate.now();
@@ -39,7 +39,7 @@ public class ViewTask {
 		if(allLists.getViewList().isEmpty()) {
 			returnResult.setOpStatus(MESSAGE_EMPTY_LIST);
 		} else {
-			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, "View "+viewType));
+			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, viewType));
 		}
 
 		returnResult.setReturnList(allLists.getViewList());

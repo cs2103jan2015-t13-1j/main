@@ -6,17 +6,20 @@ public class TaskListSet {
 	ArrayList<Task> taskList = new ArrayList<Task>(); 
 	ArrayList<Task> resultList = new ArrayList<Task>();
 	ArrayList<Task> viewList = new ArrayList<Task>();
+	ArrayList<Task> initList = new ArrayList<Task>();
 	
 	public TaskListSet() {
 		taskList = null;
 		resultList = null;
 		viewList = null;
+		initList = null;
 	}
 	
-	public TaskListSet(ArrayList<Task> taskList, ArrayList<Task> resultList, ArrayList<Task> viewList) {
+	public TaskListSet(ArrayList<Task> taskList, ArrayList<Task> resultList, ArrayList<Task> viewList, ArrayList<Task> initList) {
 		this.taskList = taskList;
 		this.resultList = resultList;
 		this.viewList = viewList;
+		this.initList = initList;
 	}
 	
 	public ArrayList<Task> getTaskList() {
@@ -43,5 +46,12 @@ public class TaskListSet {
 		this.viewList = viewList;
 	}
 	
+	public ArrayList<Task> getInitList() {
+		return initList;
+	}
+	
+	public void setInitList(ArrayList<Task> initList) {
+		this.initList = initList;
+	}
 	
 }

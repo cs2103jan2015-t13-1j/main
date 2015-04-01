@@ -4,22 +4,19 @@ import java.util.ArrayList;
 
 public class ClearTask {
 	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
-	private static final String MESSAGE_SUCCESS = "%1$s task(s) operation is successful!\n\n";
+	private static final String MESSAGE_SUCCESS = "Clear task(s) operation is successful!\n\n";
 	
-	public ResultSet execute(TaskListSet allLists){
+	public ResultSet execute(ArrayList<Task> taskList){
 		ResultSet returnResult = new ResultSet();
-		ArrayList<Task> tempList = new ArrayList<Task>();
-		tempList = allLists.getTaskList();
 		
-		if(tempList.isEmpty()) {
+		if(taskList.isEmpty()) {
 			returnResult.setOpStatus(MESSAGE_EMPTY_LIST);
 		} else {
-			tempList.clear();
-			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, "Clear"));
+			taskList.clear();
+			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
 		}
 		
-		allLists.setTaskList(tempList);
-		returnResult.setReturnList(allLists.getTaskList());
+		returnResult.setReturnList(taskList);
 		return returnResult;
 	}
 }

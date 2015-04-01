@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class AddTask {
 	private static final String dateFieldIdentifier = "%";
-	private static final String MESSAGE_SUCCESS = "%1$s task(s) operation is successful!\n\n";
+	private static final String MESSAGE_SUCCESS = "Add task(s) operation is successful!\n\n";
 	private DateAndTime dateTime = new DateAndTime();
 	
 	public ResultSet execute(String taskInfo, ArrayList<Task> taskList) {
@@ -33,7 +33,7 @@ public class AddTask {
 		taskList.add(tempTask);
 		tempTask = new Task();
 
-		returnResult.setOpStatus(String.format(MESSAGE_SUCCESS,"Add"));
+		returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
 		returnResult.setReturnList(taskList);
 
 		return returnResult;
