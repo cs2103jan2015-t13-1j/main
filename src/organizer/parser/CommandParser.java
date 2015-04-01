@@ -2,21 +2,17 @@ package organizer.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
-//import java.util.List;
 
 import organizer.logic.*;
 
-//import organizer.storage.Storage;
 
 public class CommandParser {
-
-	// private static final String MESSAGE_INVALID_TASK =
-	// "Selected task does not exists!";
 	private static final String MESSAGE_INVALID_COMMAND = "Unregconized command!";
-	// private static final String MESSAGE_UNSUCCESS =
-	// "Operation is unsuccessful.\n\n";
-	// private static final String MESSAGE_SUCCESS =
-	// "Operation is successful.\n\n";
+	
+	private static final String noContentCommandPattern = "clear|undo";
+	private static final String withContentCommandPattern = "add|delete|search|view|edit|rank|postpone|incomplete|complete";
+	
+	private static final String MODE_VIEW = "incomplete";
 
 	ArrayList<Task> taskList = new ArrayList<Task>();
 	ArrayList<Task> resultList = new ArrayList<Task>(); // for search
@@ -32,26 +28,6 @@ public class CommandParser {
 	public void writeStorage() throws IOException {
 		logic.writeStorage();
 	}
-
-	// to return multiple values
-
-//	public static class ReturnResult {
-//		String opStatus;
-//		ArrayList<Task> returnList;
-//
-//		public ReturnResult(String opStatus, ArrayList<Task> returnList) {
-//			this.opStatus = opStatus;
-//			this.returnList = returnList;
-//		}
-//
-//		public String getOpStatus() {
-//			return opStatus;
-//		}
-//
-//		public ArrayList<Task> getReturnList() {
-//			return returnList;
-//		}
-//	}
 
 	enum COMMAND_TYPE {
 		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INCOMPLETE_TASK, CLEAR_TASK, EDIT_TASK, POSTPONE_TASK, RANK_TASK,
@@ -105,10 +81,17 @@ public class CommandParser {
 		if (userCommand.indexOf(' ') >= 0) {
 			userOperation = userCommand.substring(0, userCommand.indexOf(' '));
 			userContent = userCommand.substring(userCommand.indexOf(' ') + 1);
+			if(userOperation.matches(noContentCommandPattern)) {
+				return showNoChanges();
+			}
 
 		} else {
 			userOperation = userCommand;
-			userContent = "";
+			if(userOperation.matches(withContentCommandPattern)) {
+				return showNoChanges();
+			} else {
+				userContent = "";
+			}
 		}
 
 		COMMAND_TYPE commandType = determineCommandType(userOperation);
@@ -141,8 +124,15 @@ public class CommandParser {
 			System.exit(0);
 		default:
 			// throw an error if the command is not recognized
-			throw new Error(MESSAGE_INVALID_COMMAND);
+			return showNoChanges();
 		}
 
+	}
+
+	private ResultSet showNoChanges() {
+		ResultSet returnResult = new ResultSet();
+		returnResult.setOpStatus(MESSAGE_INVALID_COMMAND);
+		returnResult.setReturnList(logic.viewCommand(MODE_VIEW).getReturnList());
+		return returnResult;
 	}
 }

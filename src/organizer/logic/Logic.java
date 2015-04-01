@@ -21,20 +21,26 @@ public class Logic {
 
 	public ArrayList<Task> loadStorage() throws IOException {
 		allLists.setTaskList(tempStorage.readFile());
-		ViewTask command = new ViewTask();
-		returnResult = command.execute(MODE_INIT_VIEW, allLists);
-		allLists.setInitList(returnResult.getReturnList());
-		return allLists.getInitList();
+		return viewDefault();
 	}
 
 	public void writeStorage() throws IOException {
 		tempStorage.writeFile(allLists.getTaskList());
 	}
 	
+	//to allow program to display "incomplete" tasklist even after adding/deleting tasks
+	public ArrayList<Task> viewDefault() {
+		ViewTask command = new ViewTask();
+		ResultSet returnResult = command.execute(MODE_INIT_VIEW, allLists);
+		allLists.setInitList(returnResult.getReturnList());
+		return allLists.getInitList();
+	}
+	
 	public ResultSet addCommand(String taskInfo) {
 		undoList.push(new ArrayList<Task>(allLists.getTaskList()));
 		AddTask command = new AddTask();
 		returnResult = command.execute(taskInfo, allLists.getTaskList());
+		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
 	
@@ -42,6 +48,7 @@ public class Logic {
 		undoList.push(new ArrayList<Task>(allLists.getTaskList()));
 		DeleteTask command = new DeleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
+		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
 	
