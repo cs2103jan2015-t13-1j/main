@@ -11,7 +11,7 @@ public class AddTask {
 	
 	private static final String MESSAGE_SUCCESS = "Add task(s) operation is successful!\n\n";
 	private static final String MESSAGE_UNSUCCESS = "Add task(s) operation is unsuccessful!\n\n";
-	private static final long TASK_DURATION = 1;
+	//private static final long TASK_DURATION = 1;
 	private DateAndTime dateTimeCheck = new DateAndTime();
 	
 	public ResultSet execute(String taskInfo, ArrayList<Task> taskList) {
@@ -53,7 +53,7 @@ public class AddTask {
 						returnResult.setOpStatus(MESSAGE_UNSUCCESS);
 						return returnResult;
 					}
-					endTime = startTime.plusHours(TASK_DURATION);
+					//endTime = startTime.plusHours(TASK_DURATION);
 				}
 				
 				dueDate = dateTimeCheck.determineDate(taskDate);

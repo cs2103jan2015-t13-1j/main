@@ -45,7 +45,14 @@ public class DateAndTime {
 	}
 
 	public Object determineHour(String timeHRS) {
-		int hours = Integer.parseInt(timeHRS);
+		int hours = 0;
+		
+		if(timeHRS.equals("")) {
+			hours = -1;
+		} else {
+			hours = Integer.parseInt(timeHRS);
+		}
+		
 		if(hours < 0 || hours > 23) {
 			return null;
 		} else {
