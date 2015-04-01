@@ -18,8 +18,8 @@
           <TableColumn fx:id="taskTableIndexColumn" editable="false" prefWidth="50.0" text="No." />
           <TableColumn fx:id="taskTableNameColumn" editable="false" prefWidth="395.0" text="Task Name" />
             <TableColumn fx:id="taskTableDueDateColumn" editable="false" prefWidth="120.0" text="Due Date" />
-            <TableColumn fx:id="taskTableStartTimeColumn" editable="false" prefWidth="100.0" text="Start Time" />
-            <TableColumn fx:id="taskTableEndTimeColumn" editable="false" prefWidth="100.0" text="Start Time" />
+            <TableColumn fx:id="taskTableStartTimeColumn" editable="false" prefWidth="100.0" text="Start Time"/>
+            <TableColumn fx:id="taskTableEndTimeColumn" editable="false" prefWidth="100.0" text="End Time" />
             <TableColumn fx:id="taskTableStatusColumn" editable="false" prefWidth="100.0" text="Status" />
             <TableColumn fx:id="taskTablePriorityColumn" editable="false" prefWidth="147.5" resizable="false" text="Priority" />
         </columns>
