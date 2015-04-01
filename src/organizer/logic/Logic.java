@@ -104,6 +104,7 @@ public class Logic {
 		undoList.push(new ArrayList<Task>(allLists.getTaskList()));
 		EditTask command = new EditTask();
 		returnResult = command.execute(userContent, allLists, validOp);
+		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
 	
