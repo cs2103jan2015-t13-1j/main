@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
@@ -61,10 +61,10 @@ public class Storage {
 					task.setDueDate(LocalDate.parse(line.substring(dueDateFieldIdentifier.length())));
 				} else if(line.startsWith(startTimeFieldIdentifier)) {
 					begin = true;
-					task.setStartTime(LocalDateTime.parse(line.substring(startTimeFieldIdentifier.length())));
+					task.setStartTime(LocalTime.parse(line.substring(startTimeFieldIdentifier.length())));
 				} else if(line.startsWith(endTimeFieldIdentifier)) {
 					begin = true;
-					task.setStartTime(LocalDateTime.parse(line.substring(endTimeFieldIdentifier.length())));
+					task.setStartTime(LocalTime.parse(line.substring(endTimeFieldIdentifier.length())));
 				}else if (line.startsWith(statusFieldIdentifier)) {
 					begin = true;
 					task.setTaskStatus(line.substring(statusFieldIdentifier.length()));

@@ -1,7 +1,6 @@
 package organizer.gui;
 
 import java.util.stream.Collectors;
-import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -94,12 +93,12 @@ public class MainAppController {
 				cellData ->
 					cellData.getValue().taskStartTimeProperty().get() == null ?
 							new SimpleStringProperty("-") :
-							cellData.getValue().taskDueDateProperty().asString());
+							cellData.getValue().taskStartTimeProperty().asString());
 		taskTableEndTimeColumn.setCellValueFactory(
 				cellData ->
 					cellData.getValue().taskEndTimeProperty().get() == null ?
 							new SimpleStringProperty("-") :
-							cellData.getValue().taskDueDateProperty().asString());
+							cellData.getValue().taskEndTimeProperty().asString());
 		taskTablePriorityColumn.setCellValueFactory(
 				cellData ->
 					cellData.getValue().taskPriorityProperty().get() == null ?
