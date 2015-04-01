@@ -1,7 +1,9 @@
 package organizer.gui;
 
+import java.time.LocalDate;
 import java.util.stream.Collectors;
 import java.util.List;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -98,7 +100,7 @@ public class MainAppController {
 	
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
-		taskTable.setItems(this.mainApp.getTaskData());
+		updateTaskList();
 	}
 	
 	@FXML
@@ -117,15 +119,41 @@ public class MainAppController {
 	}
 	
 	private void updateTaskList() {
-		taskTable.setItems(this.mainApp.getTaskData());
+		taskTable.setItems(FXCollections.observableArrayList(this.mainApp.getTaskData()));
 		displayDueTasksInSidePanel();
 	}
 	
 	private void displayDueTasksInSidePanel() {
-		final ObservableList<TaskItem> list = this.mainApp.getTaskData();
+		final List<TaskItem> list = this.mainApp.getTaskData();
+		
+		// This month
+		final List<TaskItem> thisMonthList = list
+				.stream()
+				.filter(task -> task != null && task.getTaskDueDate().compareTo(LocalDate.now().plusMonths(1)) < 0)
+				.collect(Collectors.toList());
+		// This week
+		final List<TaskItem> thisWeekList = thisMonthList
+				.stream()
+				.filter(task -> task != null && task.getTaskDueDate().compareTo(LocalDate.now().plusWeeks(1)) < 0)
+				.collect(Collectors.toList());
+		// Today
+		final List<TaskItem> todayList = thisWeekList
+				.stream()
+				.filter(task -> task != null && task.getTaskDueDate().compareTo(LocalDate.now()) == 0)
+				.collect(Collectors.toList());
+		dueMonthTaskList.setItems(
+				FXCollections.observableArrayList(
+						todayList.stream()
+							.map(task -> task.getTaskName())
+							.collect(Collectors.toList())));
+		dueWeekTaskList.setItems(
+				FXCollections.observableArrayList(
+						thisWeekList.stream()
+							.map(task -> task.getTaskName())
+							.collect(Collectors.toList())));
 		dueTodayTaskList.setItems(
 				FXCollections.observableArrayList(
-					list.stream()
+					todayList.stream()
 						.map(task -> task.getTaskName())
 						.collect(Collectors.toList())));
 	}
