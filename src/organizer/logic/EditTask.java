@@ -48,7 +48,7 @@ public class EditTask {
 							tempList.get(taskID).setEndTime(endTime);
 						} else if(startTime != null && tempList.get(taskID).getEndTime() != null) {
 							tempList.get(taskID).setStartTime(startTime);
-						} else if(startTime != null && tempList.get(taskID).getEndTime() == null){
+						} else if(startTime != null && tempList.get(taskID).getEndTime() == null && endTime == null){
 							tempList.get(taskID).setStartTime(startTime);
 							tempList.get(taskID).setEndTime(startTime.plusHours(TASK_DURATION));
 						} else {

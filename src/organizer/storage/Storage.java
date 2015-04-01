@@ -64,7 +64,7 @@ public class Storage {
 					task.setStartTime(LocalTime.parse(line.substring(startTimeFieldIdentifier.length())));
 				} else if(line.startsWith(endTimeFieldIdentifier)) {
 					begin = true;
-					task.setStartTime(LocalTime.parse(line.substring(endTimeFieldIdentifier.length())));
+					task.setEndTime(LocalTime.parse(line.substring(endTimeFieldIdentifier.length())));
 				}else if (line.startsWith(statusFieldIdentifier)) {
 					begin = true;
 					task.setTaskStatus(line.substring(statusFieldIdentifier.length()));
@@ -122,6 +122,11 @@ public class Storage {
 					pw.print(dueDateFieldIdentifier);
 					pw.println(task.getDueDate().toString());
 				}
+				if (task.getStartTime() != null) {
+					pw.print(startTimeFieldIdentifier);
+					pw.println(task.getStartTime());
+				}
+				
 				if (task.getEndTime() != null) {
 					pw.print(endTimeFieldIdentifier);
 					pw.println(task.getEndTime());
@@ -132,10 +137,7 @@ public class Storage {
 					pw.print(priorityFieldIdentifier);
 					pw.println(task.getTaskPriority());
 				}
-				if (task.getStartTime() != null) {
-					pw.print(startTimeFieldIdentifier);
-					pw.println(task.getStartTime());
-				}
+				
 				pw.println(endIdentifier);
 			}
 		} catch (IOException e) {
