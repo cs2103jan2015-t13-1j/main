@@ -12,6 +12,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import organizer.logic.*;
 import organizer.parser.*;
 
@@ -29,8 +30,6 @@ public class MainApp extends Application {
     private List<Task> tasks;
     
     private MainAppController controller;
-  
-    MenuBar menuBar = new MenuBar();
     
     public MainApp() throws IOException {
         tasks =  CommandParser.loadStorage();
@@ -103,4 +102,15 @@ public class MainApp extends Application {
         }
     }
     
+    public void showHelpDialog() throws IOException {
+		final FXMLLoader loader = new FXMLLoader(getClass().getResource("HelpDialog.fxml"));
+		final AnchorPane root = loader.load();
+		final Scene scene = new Scene(root);
+		final Stage dialog = new Stage();
+		dialog.initStyle(StageStyle.UTILITY);
+		dialog.setScene(scene);
+		dialog.show();
+		final HelpDialogController controller = loader.getController();
+		controller.setMainApp(this);
+    }
 }

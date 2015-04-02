@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.input.*?>
 <?import javafx.geometry.*?>
 <?import java.net.*?>
 <?import java.lang.*?>
@@ -13,12 +14,39 @@
       <URL value="@mainstyle.css" />
    </stylesheets>
    <children>
+      <HBox prefHeight="31.0" prefWidth="1538.0">
+         <children>
+            <MenuBar HBox.hgrow="ALWAYS">
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Save and Exit">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="E" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Delete" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#openDialogHelp" text="Manual" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+         </children>
+      </HBox>
       <TableView fx:id="taskTable" layoutX="27.0" layoutY="100.0" prefHeight="364.0" prefWidth="1015.0">
         <columns>
           <TableColumn fx:id="taskTableIndexColumn" editable="false" prefWidth="50.0" text="No." />
           <TableColumn fx:id="taskTableNameColumn" editable="false" prefWidth="395.0" text="Task Name" />
             <TableColumn fx:id="taskTableDueDateColumn" editable="false" prefWidth="120.0" text="Due Date" />
-            <TableColumn fx:id="taskTableStartTimeColumn" editable="false" prefWidth="100.0" text="Start Time"/>
+            <TableColumn fx:id="taskTableStartTimeColumn" editable="false" prefWidth="100.0" text="Start Time" />
             <TableColumn fx:id="taskTableEndTimeColumn" editable="false" prefWidth="100.0" text="End Time" />
             <TableColumn fx:id="taskTableStatusColumn" editable="false" prefWidth="100.0" text="Status" />
             <TableColumn fx:id="taskTablePriorityColumn" editable="false" prefWidth="147.5" resizable="false" text="Priority" />

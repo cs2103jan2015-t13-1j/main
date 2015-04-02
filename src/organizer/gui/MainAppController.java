@@ -1,14 +1,18 @@
 package organizer.gui;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
 import java.util.List;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
@@ -17,6 +21,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 
 public class MainAppController {
 	private MainApp mainApp;
@@ -179,5 +184,10 @@ public class MainAppController {
 					todayList.stream()
 						.map(task -> task.getTaskName())
 						.collect(Collectors.toList())));
+	}
+	
+	@FXML
+	public void openDialogHelp() throws IOException {
+		mainApp.showHelpDialog();
 	}
 }
