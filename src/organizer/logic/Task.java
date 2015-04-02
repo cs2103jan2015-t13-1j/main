@@ -12,6 +12,7 @@ public class Task {
 	private LocalTime startTime = null;
 	private LocalTime endTime = null;
 	private String taskPriority = null;
+	private LocalDate startDate = null;
 
 
 	/**
@@ -94,7 +95,15 @@ public class Task {
 	public void setTaskPriority(String taskPriority) {
 		this.taskPriority = taskPriority;
 	}
-	
-	
+
+
+	public void setStartDate(LocalDate startDate) {
+		this.startDate  = startDate;
+	}
+
+
+	public LocalDate getStartDate() {
+		return startDate;
+	}
 
 }
