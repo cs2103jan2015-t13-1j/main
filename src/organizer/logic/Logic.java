@@ -10,7 +10,7 @@ import java.util.Stack;
 import organizer.storage.Storage;
 
 public class Logic {
-	private final static String MODE_INIT_VIEW = "incomplete";
+	private final static String MODE_INIT_VIEW = "today";
 	
 	Storage tempStorage = new Storage();
 	ResultSet returnResult = new ResultSet();
@@ -28,7 +28,7 @@ public class Logic {
 		tempStorage.writeFile(allLists.getTaskList());
 	}
 	
-	//to allow program to display "incomplete" tasklist even after adding/deleting tasks
+	//to allow program to display "today" tasklist even after commands
 	public ArrayList<Task> viewDefault() {
 		validOp.setIsView(true);
 		ViewTask command = new ViewTask();
@@ -71,6 +71,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		PostponeTask command = new PostponeTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
+		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
 	
@@ -84,6 +85,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		RankTask command = new RankTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
+		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
 	
@@ -91,6 +93,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		CompleteTask command = new CompleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
+		returnResult.setReturnList(viewDefault());
 		return returnResult;	
 	}
 	
@@ -98,6 +101,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		IncompleteTask command = new IncompleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
+		returnResult.setReturnList(viewDefault());
 		return returnResult;	
 	}
 	
@@ -112,6 +116,7 @@ public class Logic {
 	public ResultSet undoCommand() {
 		UndoCommand command = new UndoCommand();
 		returnResult = command.execute(allLists, undoList);
+		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
 	
@@ -134,12 +139,14 @@ public class Logic {
 	public ResultSet saveCommand() throws IOException {
 		SaveTask command = new SaveTask();
 		returnResult = command.executeSave(allLists.getTaskList());
+		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
 	
 	public ResultSet saveAsCommand(String fileName) throws IOException {
 		SaveTask command = new SaveTask();
 		returnResult = command.executeSaveAs(allLists.getTaskList(), fileName);
+		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
 	

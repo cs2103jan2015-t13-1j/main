@@ -17,7 +17,7 @@ public class ViewTask {
 		for(int i = 0; i < allLists.getTaskList().size(); i++) {
 			Task task = allLists.getTaskList().get(i);
 			if(task.getDueDate() == null) {
-				//do nothing
+				tempList.add(task);
 			} else {
 				if(viewType.trim().equals("today") && task.getDueDate().equals(currentDate)) {
 					tempList.add(task);
