@@ -5,6 +5,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.glass.ui.MenuBar;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -27,6 +29,8 @@ public class MainApp extends Application {
     private List<Task> tasks;
     
     private MainAppController controller;
+  
+    MenuBar menuBar = new MenuBar();
     
     public MainApp() throws IOException {
         tasks =  CommandParser.loadStorage();
