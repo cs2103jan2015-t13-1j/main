@@ -1,2 +1,25 @@
-asdfasdfasdf
-asdfasdfasdfadsfs
+add {task name} {%today/tomorrow/day/date} {@start-end/start(24hrs format)}
+*due date and task time are optional, however task time can only be added if user enter a date too.
+Example1: add do holiday assignment %tomorrow @16:35-17:40
+Example2: add do holiday assignment %friday @08:00
+
+
+edit {task number} {%today/tomorrow/day/date}
+edit {task number} {new task name}
+edit {task number} {@start-end/start/-end (only if there is a start time) 24hrs format}
+Example 1: edit 1 %2015-06-01
+Example 2: edit 2 %marathon training
+Example 3: edit 3 @-20:00 
+**Example 3 means that the task already have a start time or has both start and end time but user wish to modify end time. Please note the бо-бо before the end time.
+
+delete {task number}
+complete {task number}
+incomplete {task number}
+clear
+undo (undo add/delete/clear/edit)
+search {search term}
+view {today/complete/incomplete/all}
+rank {task number} {high/medium/low/remove}
+postpone {task number}
+save
+saveas {filename.txt}
