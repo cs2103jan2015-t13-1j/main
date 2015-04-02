@@ -30,6 +30,7 @@ public class Logic {
 	
 	//to allow program to display "incomplete" tasklist even after adding/deleting tasks
 	public ArrayList<Task> viewDefault() {
+		validOp.setIsView(true);
 		ViewTask command = new ViewTask();
 		ResultSet returnResult = command.execute(MODE_INIT_VIEW, allLists);
 		allLists.setInitList(returnResult.getReturnList());
