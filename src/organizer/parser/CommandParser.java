@@ -9,8 +9,8 @@ import organizer.logic.*;
 public class CommandParser {
 	private static final String MESSAGE_INVALID_COMMAND = "Unregconized command!";
 	
-	private static final String noContentCommandPattern = "clear|undo";
-	private static final String withContentCommandPattern = "add|delete|search|view|edit|rank|postpone|incomplete|complete";
+	private static final String noContentCommandPattern = "clear|undo|save";
+	private static final String withContentCommandPattern = "add|delete|search|view|edit|rank|postpone|incomplete|complete|save as";
 	
 	private static final String MODE_VIEW = "incomplete";
 
@@ -31,7 +31,7 @@ public class CommandParser {
 
 	enum COMMAND_TYPE {
 		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INCOMPLETE_TASK, CLEAR_TASK, EDIT_TASK, POSTPONE_TASK, RANK_TASK,
-		UNDO, INVALID, EXIT
+		UNDO, SAVE, SAVEAS, INVALID, EXIT
 	};
 
 	private static COMMAND_TYPE determineCommandType(String commandTypeString)
@@ -65,6 +65,10 @@ public class CommandParser {
 			return COMMAND_TYPE.RANK_TASK;
 		case "undo":
 			return COMMAND_TYPE.UNDO;
+		case "save":
+			return COMMAND_TYPE.SAVE;
+		case "saveas":
+			return COMMAND_TYPE.SAVEAS;
 		case "exit":
 			return COMMAND_TYPE.EXIT;
 		default:
@@ -119,6 +123,10 @@ public class CommandParser {
 			return logic.rankCommand(userContent);
 		case UNDO:
 			return logic.undoCommand();
+		case SAVE:
+			return logic.saveCommand();
+		case SAVEAS:
+			return logic.saveAsCommand(userContent);
 		case EXIT:
 			logic.writeStorage();
 			System.exit(0);
