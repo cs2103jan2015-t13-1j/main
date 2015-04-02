@@ -28,6 +28,7 @@ public class Storage {
 	public static final String defaultFileName = "storage.txt";
 
 	private static final String nameFieldIdentifier = "name: ";
+	private static final String startDateFieldIdentifier = "startdate: ";
 	private static final String dueDateFieldIdentifier = "duedate: ";
 	private static final String startTimeFieldIdentifier = "start: ";
 	private static final String endTimeFieldIdentifier = "end: ";
@@ -59,6 +60,9 @@ public class Storage {
 				} else if (line.startsWith(dueDateFieldIdentifier)) {
 					begin = true;
 					task.setDueDate(LocalDate.parse(line.substring(dueDateFieldIdentifier.length())));
+				} else if (line.startsWith(startDateFieldIdentifier)) {
+					begin = true;
+					task.setStartDate(LocalDate.parse(line.substring(startDateFieldIdentifier.length())));
 				} else if(line.startsWith(startTimeFieldIdentifier)) {
 					begin = true;
 					task.setStartTime(LocalTime.parse(line.substring(startTimeFieldIdentifier.length())));

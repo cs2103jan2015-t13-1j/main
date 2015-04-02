@@ -16,7 +16,7 @@ import organizer.parser.CommandParser;
 import organizer.storage.Storage;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class TestAll {
+public class UnitTesting {
 
 	CommandParser commandParse = new CommandParser();
 	Storage storage = new Storage();
@@ -84,7 +84,7 @@ public class TestAll {
 		Task tempTask_0 = new Task(0, "buy milk", "COMPLETE", today);
 		Task tempTask_1 = new Task(1, "buy ice cream", "COMPLETE", tomorrow);
 		Task tempTask_2 = new Task(2, "buy detergent", "COMPLETE", tomorrow);
-		Task tempTask_3 = new Task(3, "buy pie", "COMPLETE", today);
+		Task tempTask_3 = new Task(3, "buy pie", "COMPLETE", nextThursday);
 		testList.add(tempTask_0);
 		testList.add(tempTask_1);
 		testList.add(tempTask_2);
@@ -99,6 +99,7 @@ public class TestAll {
 	}
 
 	// ADD TASK
+	// INCLUDES ADDING TASK WITHOUT DATE
 	// TO TEST: public ResultSet addTask(String taskInfo) {...}
 	@Test
 	public void testAddSucessfullyAddsToEndOfList() throws IOException {
@@ -107,7 +108,7 @@ public class TestAll {
 		resultObj = commandParse.executeCommand("add buy milk %today");
 		resultObj = commandParse.executeCommand("add buy ice cream %tomorrow");
 		resultObj = commandParse.executeCommand("add buy detergent %thursday");
-		resultObj = commandParse.executeCommand("add buy pie %2015-04-01");
+		resultObj = commandParse.executeCommand("add buy pie");
 		taskList = resultObj.getReturnList();
 
 		for (int index = 0; index < taskList.size(); index++) {
@@ -116,7 +117,7 @@ public class TestAll {
 					toString(taskList.get(index)));
 		}
 	}
-
+	
 	// CLEAR TASK LIST
 	// TO TEST: public ResultSet clearCommand() {...}
 	@Test
@@ -206,11 +207,29 @@ public class TestAll {
 		}
 	}
 	
+	private ArrayList<Task> getFullTaskList() throws IOException {
+		resultObj = commandParse.executeCommand("add buy milk %today");
+		resultObj = commandParse.executeCommand("add buy ice cream %tomorrow");
+		resultObj = commandParse.executeCommand("add buy detergent %thursday");
+		resultObj = commandParse.executeCommand("add buy pie %today");
+		return resultObj.getReturnList();
+	}
+	
 	// UNDO
 	// TO TEST: public ResultSet undoCommand() {...}
 	@Test
-	public void testIfUndoRevertsToPreviousState() {
-		
+	public void testIfUndoRevertsToPreviousState() throws IOException {
+		addToTestList();
+		taskList.clear();
+		taskList = getFullTaskList();
+		resultObj = commandParse.executeCommand("delete 1");
+		resultObj = commandParse.executeCommand("undo");
+		taskList = resultObj.getReturnList();
+		for (int index = 0; index < taskList.size(); index++) {
+			assertEquals("Undo successful.",
+					toString(testList.get(index)),
+					toString(taskList.get(index)));
+		}
 	}
 
 	// VIEW LIST

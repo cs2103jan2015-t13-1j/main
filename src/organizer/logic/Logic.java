@@ -2,9 +2,8 @@ package organizer.logic;
 
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-
-
 import java.util.Stack;
 
 import organizer.storage.Storage;
@@ -18,6 +17,11 @@ public class Logic {
 	Validation validOp = new Validation();
 	UndoCommand undoOp = new UndoCommand();
 	Stack<ArrayList<Task>> undoList = new Stack<ArrayList<Task>>();
+	
+	public ArrayList<Task> loadStorage(InputStream in) throws IOException {
+		allLists.setTaskList(tempStorage.readFromStream(in));
+		return viewDefault();
+	}
 
 	public ArrayList<Task> loadStorage() throws IOException {
 		allLists.setTaskList(tempStorage.readFile());

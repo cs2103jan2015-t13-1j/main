@@ -15,7 +15,7 @@ import org.junit.rules.ExpectedException;
 import organizer.logic.Task;
 import organizer.storage.Storage;
 
-public class TestStorage {
+public class StorageTesting {
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 	
