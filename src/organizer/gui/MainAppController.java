@@ -150,7 +150,9 @@ public class MainAppController {
 		// This month
 		final List<TaskItem> thisMonthList = list
 				.stream()
-				.filter(task -> task != null && compareDateBefore(task.getTaskDueDate(), LocalDate.now().plusMonths(1)))
+				.filter(task -> task != null
+					&& compareDateBefore(task.getTaskDueDate(), LocalDate.now().plusMonths(1))
+					&& task.getTaskStatus().equals("INCOMPLETE"))
 				.collect(Collectors.toList());
 		// This week
 		final List<TaskItem> thisWeekList = thisMonthList
