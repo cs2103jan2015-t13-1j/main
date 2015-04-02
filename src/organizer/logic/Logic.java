@@ -131,6 +131,20 @@ public class Logic {
 		undoList.push(new ArrayList<Task>(tempTaskList));
 	}
 	
+	public ResultSet saveCommand() throws IOException {
+		SaveTask command = new SaveTask();
+		returnResult = command.executeSave(allLists.getTaskList());
+		return returnResult;
+	}
+	
+	public ResultSet saveAsCommand(String fileName) throws IOException {
+		SaveTask command = new SaveTask();
+		returnResult = command.executeSaveAs(allLists.getTaskList(), fileName);
+		return returnResult;
+	}
+	
+	
+	
 	
 	
 
