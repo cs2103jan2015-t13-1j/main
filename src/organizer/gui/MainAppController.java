@@ -40,56 +40,11 @@ public class MainAppController {
 	}
 	
 	private void setupEventHandlers() {
-//		taskTable
-//			.getSelectionModel()
-//			.selectedItemProperty()
-//			.addListener(new ChangeListener<TaskItem>() {
-//				@Override
-//				public void changed(
-//						ObservableValue<? extends TaskItem> observable,
-//						TaskItem oldValue, TaskItem newValue) {
-//					System.out.println("Select: ");
-//					final ObservableList<TaskItem> selectedTaskItems = taskTable.getSelectionModel().getSelectedItems();
-//					if (selectedTaskItems.size() == 0) {
-//					} else if (selectedTaskItems.size() == 1) {
-//					}
-//				}
-//			});
 	}
 	
 	@FXML
 	private void initialize() {
-		// set selection model
-//		taskTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		setupEventHandlers();
-		
-//		taskTableIndexColumn.setCellValueFactory(
-//				cellData -> cellData.getValue().taskIndexProperty());
-//		taskTableNameColumn.setCellValueFactory(
-//				cellData -> cellData.getValue().taskNameProperty());
-//		taskTableStatusColumn.setCellValueFactory(
-//				cellData -> cellData.getValue().taskStatusProperty());
-//		taskTableDueDateColumn.setCellValueFactory(
-//				cellData ->
-//					cellData.getValue().taskDueDateProperty().get() == null ?
-//							new SimpleStringProperty("Not Applicable") :
-//							cellData.getValue().taskDueDateProperty().asString());
-//		taskTableStartTimeColumn.setCellValueFactory(
-//				cellData ->
-//					cellData.getValue().taskStartTimeProperty().get() == null ?
-//							new SimpleStringProperty("-") :
-//							cellData.getValue().taskStartTimeProperty().asString());
-//		taskTableEndTimeColumn.setCellValueFactory(
-//				cellData ->
-//					cellData.getValue().taskEndTimeProperty().get() == null ?
-//							new SimpleStringProperty("-") :
-//							cellData.getValue().taskEndTimeProperty().asString());
-//		taskTablePriorityColumn.setCellValueFactory(
-//				cellData ->
-//					cellData.getValue().taskPriorityProperty().get() == null ?
-//							new SimpleStringProperty("Not Applicable") :
-//							cellData.getValue().taskPriorityProperty());
-		
 		commandStatus.setText("");
 
 	}
@@ -115,7 +70,6 @@ public class MainAppController {
 	}
 	
 	private void updateTaskList() {
-//		taskTable.setItems(FXCollections.observableArrayList(this.mainApp.getTaskData()));
 		final ObservableList<Node> children = deadlineTaskPane.getChildren();
 		children.clear();
 		final List<TaskCardController> controllers = this.mainApp.getTaskData().stream().map(
@@ -162,21 +116,6 @@ public class MainAppController {
 				.stream()
 				.filter(task -> task != null && compareDateEqual(task.getTaskDueDate(), LocalDate.now()))
 				.collect(Collectors.toList());
-//		dueMonthTaskList.setItems(
-//				FXCollections.observableArrayList(
-//						todayList.stream()
-//							.map(task -> task.getTaskName())
-//							.collect(Collectors.toList())));
-//		dueWeekTaskList.setItems(
-//				FXCollections.observableArrayList(
-//						thisWeekList.stream()
-//							.map(task -> task.getTaskName())
-//							.collect(Collectors.toList())));
-//		dueTodayTaskList.setItems(
-//				FXCollections.observableArrayList(
-//					todayList.stream()
-//						.map(task -> task.getTaskName())
-//						.collect(Collectors.toList())));
 	}
 	
 	@FXML

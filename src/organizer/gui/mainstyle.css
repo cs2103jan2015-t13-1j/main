@@ -3,28 +3,49 @@
 	-fx-border-width: 0;
 	-fx-border-radius: 0;
 	-fx-font-family: Roboto, sans-serif;
+	-fx-background-color: #1ABC9C;
 }
 
 #commandStatus {
 	-fx-text-fill: #ff0000;
 }
 
+.pane {
+	-fx-background-color: #7F8C8D;
+}
+
+.deadlinetaskpane {
+	-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0 , 1, 1 );
+}
+
 .command-input {
-	-fx-background-color: #30c528;
+	-fx-background-color: #27AE60;
 	-fx-background-image: url('res/left.png');
 	-fx-background-position: right center;
 	-fx-background-repeat: no-repeat;
 	-fx-text-fill: white;
+	-fx-border-radius: 0 0 0 0;
+	-fx-background-radius: 0 0 0 0;
+	-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 3, 0 , 1, 1 );
 }
 
 .taskcard.large.background {
 	-fx-background-color: white;
-	-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0 , 1, 1 );
+	-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 3, 0.1 , 1, 1 );
+}
+
+.taskcard.large.id {
+	-fx-text-fill: #cccccc;
+	-fx-font-style: italic;
 }
 
 .taskcard.large.name {
 	-fx-font-size: 20;
 	-fx-font-weight: bold;
+}
+
+.taskcard.large.separator {
+	-fx-stroke-dash-array: 2 2;
 }
 
 .taskcard.large.date {

@@ -42,7 +42,14 @@
             </MenuBar>
          </children>
       </HBox>
-      <FlowPane fx:id="deadlineTaskPane" hgap="50.0" layoutX="27.0" layoutY="101.0" prefHeight="405.0" prefWidth="1015.0" vgap="50.0" />
+      <FlowPane fx:id="deadlineTaskPane" hgap="5.0" layoutX="27.0" layoutY="85.0" prefHeight="439.0" prefWidth="682.0" vgap="5.0">
+         <padding>
+            <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
+         </padding>
+         <styleClass>
+            <String fx:value="deadlinetaskpane" />
+            <String fx:value="pane" />
+         </styleClass></FlowPane>
       <TextField fx:id="commandText" layoutX="27.0" layoutY="47.0" onAction="#performCommand" prefHeight="31.0" prefWidth="1015.0" styleClass="command-input" />
       <Label id="commandStatus" fx:id="commandStatus" layoutX="813.0" layoutY="548.0" text="Command result" />
    </children>
