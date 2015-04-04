@@ -50,6 +50,7 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("MnemoniCal");
+        this.primaryStage.setResizable(false);
         
         initRootLayout();
         

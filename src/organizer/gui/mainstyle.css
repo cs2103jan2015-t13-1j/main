@@ -1,10 +1,32 @@
-root {
-	/*display: block;*/
-}
-
 .root {
+	-fx-stroke: 0;
+	-fx-border-width: 0;
+	-fx-border-radius: 0;
+	-fx-font-family: Roboto, sans-serif;
 }
 
 #commandStatus {
 	-fx-text-fill: #ff0000;
+}
+
+.command-input {
+	-fx-background-color: #30c528;
+	-fx-background-image: url('res/left.png');
+	-fx-background-position: right center;
+	-fx-background-repeat: no-repeat;
+	-fx-text-fill: white;
+}
+
+.taskcard.large.background {
+	-fx-background-color: white;
+	-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0 , 1, 1 );
+}
+
+.taskcard.large.name {
+	-fx-font-size: 20;
+	-fx-font-weight: bold;
+}
+
+.taskcard.large.date {
+	-fx-font-size: 10;
 }

@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.input.*?>
 <?import javafx.geometry.*?>
-<?import java.net.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import java.net.* ?>
 
-<AnchorPane prefHeight="601.0" prefWidth="1538.0" styleClass="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="organizer.gui.MainAppController">
+<AnchorPane minWidth="-Infinity" prefHeight="601.0" prefWidth="1078.0" styleClass="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="organizer.gui.MainAppController">
    <stylesheets>
       <URL value="@mainstyle.css" />
    </stylesheets>
    <children>
-      <HBox prefHeight="31.0" prefWidth="1538.0">
+      <HBox prefHeight="31.0" prefWidth="1078.0">
          <children>
             <MenuBar HBox.hgrow="ALWAYS">
               <menus>
@@ -41,55 +42,8 @@
             </MenuBar>
          </children>
       </HBox>
-      <TableView fx:id="taskTable" layoutX="27.0" layoutY="100.0" prefHeight="364.0" prefWidth="1015.0">
-        <columns>
-          <TableColumn fx:id="taskTableIndexColumn" editable="false" prefWidth="50.0" text="No." />
-          <TableColumn fx:id="taskTableNameColumn" editable="false" prefWidth="395.0" text="Task Name" />
-            <TableColumn fx:id="taskTableDueDateColumn" editable="false" prefWidth="120.0" text="Due Date" />
-            <TableColumn fx:id="taskTableStartTimeColumn" editable="false" prefWidth="100.0" text="Start Time" />
-            <TableColumn fx:id="taskTableEndTimeColumn" editable="false" prefWidth="100.0" text="End Time" />
-            <TableColumn fx:id="taskTableStatusColumn" editable="false" prefWidth="100.0" text="Status" />
-            <TableColumn fx:id="taskTablePriorityColumn" editable="false" prefWidth="147.5" resizable="false" text="Priority" />
-        </columns>
-      </TableView>
-      <Label layoutX="27.0" layoutY="28.0" prefHeight="54.0" prefWidth="251.0" text="MnemoniCal">
-         <font>
-            <Font size="37.0" />
-         </font>
-      </Label>
-      <TextField fx:id="commandText" layoutX="27.0" layoutY="511.0" onAction="#performCommand" prefHeight="31.0" prefWidth="828.0" />
-      <Label layoutX="27.0" layoutY="473.0" text="Command">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Label>
-      <Label id="commandStatus" fx:id="commandStatus" layoutX="27.0" layoutY="556.0" text="" />
-      <TabPane fx:id="taskPane" layoutX="1055.0" layoutY="100.0" prefHeight="364.0" prefWidth="465.0" tabClosingPolicy="UNAVAILABLE">
-        <tabs>
-          <Tab fx:id="showTaskTab" text="Due tasks">
-               <content>
-               </content>
-               <content>
-                  <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" vmax="30.0">
-                    <content>
-                      <AnchorPane minWidth="0.0">
-                      	<children>
-	                        <Label text="Today" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0">
-	                           <opaqueInsets>
-	                              <Insets left="20.0" top="20.0" />
-	                           </opaqueInsets>
-	                        </Label>
-	                        <ListView fx:id="dueTodayTaskList" prefHeight="200.0" prefWidth="400.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="40.0" />
-	                        <Label text="This week" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="250.0" />
-	                        <ListView fx:id="dueWeekTaskList" prefHeight="200.0" prefWidth="400.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="280.0" />
-                            <Label text="This month" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="500.0" />
-                            <ListView fx:id="dueMonthTaskList" prefHeight="200.0" prefWidth="400.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="520.0" />
-                        </children>
-                      </AnchorPane>
-                    </content>
-                  </ScrollPane>
-               </content></Tab>
-        </tabs>
-      </TabPane>
+      <FlowPane fx:id="deadlineTaskPane" hgap="50.0" layoutX="27.0" layoutY="101.0" prefHeight="405.0" prefWidth="1015.0" vgap="50.0" />
+      <TextField fx:id="commandText" layoutX="27.0" layoutY="47.0" onAction="#performCommand" prefHeight="31.0" prefWidth="1015.0" styleClass="command-input" />
+      <Label id="commandStatus" fx:id="commandStatus" layoutX="813.0" layoutY="548.0" text="Command result" />
    </children>
 </AnchorPane>
