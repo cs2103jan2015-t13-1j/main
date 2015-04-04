@@ -25,6 +25,8 @@ public class MainAppController {
 	@FXML
 	private FlowPane deadlineTaskPane;
 	@FXML
+	private FlowPane floatingTaskPane;
+	@FXML
 	private Label pageStatus;
 	
 	
