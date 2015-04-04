@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.shape.*?>
 <?import java.net.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.input.*?>
@@ -50,7 +51,13 @@
             <String fx:value="deadlinetaskpane" />
             <String fx:value="pane" />
          </styleClass></FlowPane>
-      <TextField fx:id="commandText" layoutX="27.0" layoutY="47.0" onAction="#performCommand" prefHeight="31.0" prefWidth="1015.0" styleClass="command-input" />
+      <TextField fx:id="commandText" layoutX="27.0" layoutY="47.0" onAction="#performCommand" onKeyPressed="#keyPressHandler" prefHeight="31.0" prefWidth="1015.0" styleClass="command-input" />
       <Label id="commandStatus" fx:id="commandStatus" layoutX="813.0" layoutY="548.0" text="Command result" />
+      <StackPane layoutX="675.0" layoutY="85.0" prefHeight="68.0" prefWidth="36.0">
+         <children>
+            <Circle fill="DODGERBLUE" radius="34.0" stroke="BLACK" strokeType="INSIDE" styleClass="circle" />
+            <Label fx:id="pageStatus" styleClass="circle-text" text="0 of 0" wrapText="true" />
+         </children>
+      </StackPane>
    </children>
 </AnchorPane>

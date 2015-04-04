@@ -1,30 +1,20 @@
 package organizer.gui;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.stream.Collectors;
 import java.util.List;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
 
 public class MainAppController {
+	private static final int ITEMS_PER_PAGE = 6;
 	private MainApp mainApp;
 	
 	@FXML
@@ -34,7 +24,13 @@ public class MainAppController {
 	
 	@FXML
 	private FlowPane deadlineTaskPane;
+	@FXML
+	private Label pageStatus;
 	
+	
+	private int pageStart = 0;
+	private int pageCount = 0;
+	private List<TaskItem> taskData;
 	
 	public MainAppController() {
 	}
@@ -46,6 +42,7 @@ public class MainAppController {
 	private void initialize() {
 		setupEventHandlers();
 		commandStatus.setText("");
+		commandText.requestFocus();
 
 	}
 	
@@ -70,10 +67,26 @@ public class MainAppController {
 	}
 	
 	private void updateTaskList() {
+		taskData = this.mainApp.getTaskData();
+		if (taskData.size() == 0) {
+			pageCount = 0;
+		} else if (taskData.size() % ITEMS_PER_PAGE == 0) {
+			pageCount = taskData.size() / ITEMS_PER_PAGE;
+		} else {
+			pageCount = taskData.size() / ITEMS_PER_PAGE + 1;
+		}
+		pageStart = 0;
+		updatePage();
+	}
+	
+	private void updatePage() {
 		final ObservableList<Node> children = deadlineTaskPane.getChildren();
 		children.clear();
-		final List<TaskCardController> controllers = this.mainApp.getTaskData().stream().map(
-				task -> {
+		final List<TaskCardController> controllers = 
+				taskData.stream()
+				.skip(pageStart * ITEMS_PER_PAGE)
+				.limit(ITEMS_PER_PAGE)
+				.map(task -> {
 					try {
 						final TaskCardController controller = new TaskCardController();
 						controller.loadTask(task);
@@ -85,41 +98,58 @@ public class MainAppController {
 				})
 				.collect(Collectors.toList());
 		children.addAll(controllers);
-		displayDueTasksInSidePanel();
+		pageStatus.setText(String.format("%d of %d", pageStart + 1, pageCount));
 	}
 	
-	private static boolean compareDateBefore(LocalDate thisDate, LocalDate reference) {
-		return thisDate == null || reference == null || thisDate.compareTo(reference) < 0;
-	}
-	
-	private static boolean compareDateEqual(LocalDate thisDate, LocalDate reference) {
-		return thisDate == null || reference == null || thisDate.compareTo(reference) == 0;
-	}
+//	private static boolean compareDateBefore(LocalDate thisDate, LocalDate reference) {
+//		return thisDate == null || reference == null || thisDate.compareTo(reference) < 0;
+//	}
+//	
+//	private static boolean compareDateEqual(LocalDate thisDate, LocalDate reference) {
+//		return thisDate == null || reference == null || thisDate.compareTo(reference) == 0;
+//	}
 	
 	private void displayDueTasksInSidePanel() {
-		final List<TaskItem> list = this.mainApp.getTaskData();
-		
-		// This month
-		final List<TaskItem> thisMonthList = list
-				.stream()
-				.filter(task -> task != null
-					&& compareDateBefore(task.getTaskDueDate(), LocalDate.now().plusMonths(1))
-					&& task.getTaskStatus().equals("INCOMPLETE"))
-				.collect(Collectors.toList());
-		// This week
-		final List<TaskItem> thisWeekList = thisMonthList
-				.stream()
-				.filter(task -> task != null && compareDateBefore(task.getTaskDueDate(), LocalDate.now().plusWeeks(1)))
-				.collect(Collectors.toList());
-		// Today
-		final List<TaskItem> todayList = thisWeekList
-				.stream()
-				.filter(task -> task != null && compareDateEqual(task.getTaskDueDate(), LocalDate.now()))
-				.collect(Collectors.toList());
+//		final List<TaskItem> list = this.mainApp.getTaskData();
+//		
+//		// This month
+//		final List<TaskItem> thisMonthList = list
+//				.stream()
+//				.filter(task -> task != null
+//					&& compareDateBefore(task.getTaskDueDate(), LocalDate.now().plusMonths(1))
+//					&& task.getTaskStatus().equals("INCOMPLETE"))
+//				.collect(Collectors.toList());
+//		// This week
+//		final List<TaskItem> thisWeekList = thisMonthList
+//				.stream()
+//				.filter(task -> task != null && compareDateBefore(task.getTaskDueDate(), LocalDate.now().plusWeeks(1)))
+//				.collect(Collectors.toList());
+//		// Today
+//		final List<TaskItem> todayList = thisWeekList
+//				.stream()
+//				.filter(task -> task != null && compareDateEqual(task.getTaskDueDate(), LocalDate.now()))
+//				.collect(Collectors.toList());
 	}
 	
 	@FXML
 	public void openDialogHelp() throws IOException {
 		mainApp.showHelpDialog();
+	}
+	
+	@FXML
+	public void keyPressHandler(KeyEvent e) {
+		if (e.getCode() == KeyCode.PAGE_DOWN) {
+			System.out.println("NEXT");
+			if (pageStart + 1 < pageCount) {
+				++pageStart;
+				updatePage();
+			}
+		} else if (e.getCode() == KeyCode.PAGE_UP) {
+			System.out.println("PREV");
+			if (pageStart > 0) {
+				--pageStart;
+				updatePage();
+			}
+		}
 	}
 }
