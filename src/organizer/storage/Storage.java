@@ -28,11 +28,12 @@ public class Storage {
 	public static final String defaultFileName = "storage.txt";
 
 	private static final String nameFieldIdentifier = "name: ";
-	private static final String startDateFieldIdentifier = "startdate: ";
-	private static final String dueDateFieldIdentifier = "duedate: ";
-	private static final String startTimeFieldIdentifier = "start: ";
-	private static final String endTimeFieldIdentifier = "end: ";
+	private static final String startDateFieldIdentifier = "start date: ";
+	private static final String startTimeFieldIdentifier = "start time: ";
+	private static final String endDateFieldIdentifier = "end date: ";
+	private static final String endTimeFieldIdentifier = "end time: ";
 	private static final String statusFieldIdentifier = "status: ";
+	private static final String typeFieldIdentifier = "type: ";
 	private static final String taskIdFieldIdentifier = "id: ";
 	private static final String priorityFieldIdentifier = "priority: ";
 
@@ -57,21 +58,24 @@ public class Storage {
 				if (line.startsWith(nameFieldIdentifier)) {
 					begin = true;
 					task.setTaskName(line.substring(nameFieldIdentifier.length()));
-				} else if (line.startsWith(dueDateFieldIdentifier)) {
-					begin = true;
-					task.setDueDate(LocalDate.parse(line.substring(dueDateFieldIdentifier.length())));
 				} else if (line.startsWith(startDateFieldIdentifier)) {
 					begin = true;
-					task.setStartDate(LocalDate.parse(line.substring(startDateFieldIdentifier.length())));
+					task.setTaskStartDate(LocalDate.parse(line.substring(startDateFieldIdentifier.length())));
 				} else if(line.startsWith(startTimeFieldIdentifier)) {
 					begin = true;
-					task.setStartTime(LocalTime.parse(line.substring(startTimeFieldIdentifier.length())));
+					task.setTaskStartTime(LocalTime.parse(line.substring(startTimeFieldIdentifier.length())));
+				} else if(line.startsWith(endDateFieldIdentifier)) {
+					begin = true;
+					task.setTaskEndDate(LocalDate.parse(line.substring(endDateFieldIdentifier.length())));
 				} else if(line.startsWith(endTimeFieldIdentifier)) {
 					begin = true;
-					task.setEndTime(LocalTime.parse(line.substring(endTimeFieldIdentifier.length())));
+					task.setTaskEndTime(LocalTime.parse(line.substring(endTimeFieldIdentifier.length())));
 				}else if (line.startsWith(statusFieldIdentifier)) {
 					begin = true;
 					task.setTaskStatus(line.substring(statusFieldIdentifier.length()));
+				} else if(line.startsWith(typeFieldIdentifier)) {
+					begin = true;
+					task.setTaskType(line.substring(typeFieldIdentifier.length()));
 				} else if (line.equals(endIdentifier)) {
 					if (begin) {
 						taskList.add(task);
@@ -122,21 +126,28 @@ public class Storage {
 				pw.println(task.getTaskID());
 				pw.print(nameFieldIdentifier);
 				pw.println(task.getTaskName());
-				if (task.getDueDate() != null) {
-					pw.print(dueDateFieldIdentifier);
-					pw.println(task.getDueDate().toString());
+				if (task.getTaskStartDate() != null) {
+					pw.print(startDateFieldIdentifier);
+					pw.println(task.getTaskStartDate().toString());
 				}
-				if (task.getStartTime() != null) {
+				if (task.getTaskStartTime() != null) {
 					pw.print(startTimeFieldIdentifier);
-					pw.println(task.getStartTime());
+					pw.println(task.getTaskStartTime());
 				}
 				
-				if (task.getEndTime() != null) {
+				if (task.getTaskEndDate() != null) {
+					pw.print(endDateFieldIdentifier);
+					pw.println(task.getTaskEndDate().toString());
+				}
+				if (task.getTaskEndTime() != null) {
 					pw.print(endTimeFieldIdentifier);
-					pw.println(task.getEndTime());
+					pw.println(task.getTaskEndTime());
 				}
 				pw.print(statusFieldIdentifier);
 				pw.println(task.getTaskStatus());
+				pw.print(typeFieldIdentifier);
+				pw.println(task.getTaskType());
+				
 				if (task.getTaskPriority() != null) {
 					pw.print(priorityFieldIdentifier);
 					pw.println(task.getTaskPriority());

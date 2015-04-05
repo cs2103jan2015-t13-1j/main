@@ -3,16 +3,20 @@ package organizer.logic;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+
 public class Task {
 
+	private final static String STATUS_DEFAULT = "INCOMPLETE";
+	
 	private int taskID = 0;
 	private String taskName = null;
 	private String taskStatus = null;
-	private LocalDate dueDate = null;
-	private LocalTime startTime = null;
-	private LocalTime endTime = null;
+	private LocalDate taskStartDate = null;
+	private LocalTime taskStartTime = null;
+	private LocalDate taskEndDate = null;
+	private LocalTime taskEndTime = null;
 	private String taskPriority = null;
-	private LocalDate startDate = null;
+	private String taskType = null;
 
 
 	/**
@@ -21,19 +25,26 @@ public class Task {
 	public Task() {
 		taskID = 0;
 		taskName = null;
-		taskStatus = null;
-		dueDate = null;
-		startTime = null;
-		endTime = null;
+		taskStatus = STATUS_DEFAULT;
+		taskStartDate = null;
+		taskStartTime = null;
+		taskEndDate = null;
+		taskEndTime = null;
 		taskPriority = null;
+		taskType = null;
 	}
 
 
-	public Task(int taskID, String taskName, String taskStatus, LocalDate dueDate) {
+	public Task(int taskID, String taskName, LocalDate taskStartDate, LocalTime taskStartTime, LocalDate taskEndDate, LocalTime taskEndTime, String taskType) {
 		this.taskID = taskID;
 		this.taskName = taskName;
-		this.taskStatus = taskStatus;
-		this.dueDate = dueDate;
+		this.taskStatus = STATUS_DEFAULT;
+		this.taskStartDate = taskStartDate;
+		this.taskStartTime = taskStartTime;
+		this.taskEndDate = taskEndDate;
+		this.taskEndTime = taskEndTime;
+		this.taskType = taskType;
+		
 	}
 
 	/**
@@ -63,31 +74,38 @@ public class Task {
 		this.taskStatus = taskStatus;
 	}
 
-	public LocalDate getDueDate() {
-		return dueDate;
-	}
-
-	public void setDueDate(LocalDate dueDate) {
-		this.dueDate = dueDate;
+	public LocalDate getTaskStartDate() {
+		return taskStartDate;
 	}
 	
-	public LocalTime getStartTime() {
-		return startTime;
+	public void setTaskStartDate(LocalDate taskStartDate) {
+		this.taskStartDate = taskStartDate;
 	}
 	
-	public void setStartTime(LocalTime startTime) {
-		this.startTime = startTime;
+	public LocalTime getTaskStartTime() {
+		return taskStartTime;
 	}
 	
-	public LocalTime getEndTime() {
-		return endTime;
+	public void setTaskStartTime(LocalTime taskStartTime) {
+		this.taskStartTime = taskStartTime;
 	}
 	
-	public void setEndTime(LocalTime endTime) {
-		this.endTime = endTime;
+	public LocalDate getTaskEndDate() {
+		return taskEndDate;
 	}
 	
-
+	public void setTaskEndDate(LocalDate taskEndDate) {
+		this.taskEndDate = taskEndDate;
+	}
+	
+	public LocalTime getTaskEndTime() {
+		return taskEndTime;
+	}
+	
+	public void setTaskEndTime(LocalTime taskEndTime) {
+		this.taskEndTime = taskEndTime;
+	}
+	
 	public String getTaskPriority() {
 		return taskPriority;
 	}
@@ -95,15 +113,15 @@ public class Task {
 	public void setTaskPriority(String taskPriority) {
 		this.taskPriority = taskPriority;
 	}
-
-
-	public void setStartDate(LocalDate startDate) {
-		this.startDate  = startDate;
+	
+	public String getTaskType() {
+		return taskType;
 	}
-
-
-	public LocalDate getStartDate() {
-		return startDate;
+	
+	public void setTaskType(String taskType) {
+		this.taskType = taskType;
 	}
+	
+	
 
 }
