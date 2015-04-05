@@ -1,118 +1,50 @@
 package organizer.gui;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.stream.Collectors;
 import java.util.List;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.FlowPane;
 
 public class MainAppController {
+	private static final int ITEMS_PER_PAGE = 6;
 	private MainApp mainApp;
-
-	@FXML
-	private TableView<TaskItem> taskTable;
-	@FXML
-	private TableColumn<TaskItem, String> taskTableNameColumn;
-	@FXML
-	private TableColumn<TaskItem, String> taskTableStatusColumn;
-	@FXML
-	private TableColumn<TaskItem, String> taskTableDueDateColumn;
-	@FXML
-	private TableColumn<TaskItem, String> taskTableStartTimeColumn;
-	@FXML
-	private TableColumn<TaskItem, String> taskTableEndTimeColumn;
-	@FXML
-	private TableColumn<TaskItem, Number> taskTableIndexColumn;
-	@FXML
-	private TableColumn<TaskItem, String> taskTablePriorityColumn;
+	
 	@FXML
 	private TextField commandText;
 	@FXML
 	private Label commandStatus;
 	
 	@FXML
-	private TabPane taskPane;
+	private FlowPane deadlineTaskPane;
 	@FXML
-	private Tab showTaskTab;
+	private FlowPane floatingTaskPane;
 	@FXML
-	private ListView<String> dueTodayTaskList;
-	@FXML
-	private ListView<String> dueWeekTaskList;
-	@FXML
-	private ListView<String> dueMonthTaskList;
+	private Label pageStatus;
+	
+	
+	private int pageStart = 0;
+	private int pageCount = 0;
+	private List<TaskItem> taskData;
 	
 	public MainAppController() {
 	}
 	
 	private void setupEventHandlers() {
-		taskTable
-			.getSelectionModel()
-			.selectedItemProperty()
-			.addListener(new ChangeListener<TaskItem>() {
-				@Override
-				public void changed(
-						ObservableValue<? extends TaskItem> observable,
-						TaskItem oldValue, TaskItem newValue) {
-					System.out.println("Select: ");
-					final ObservableList<TaskItem> selectedTaskItems = taskTable.getSelectionModel().getSelectedItems();
-					if (selectedTaskItems.size() == 0) {
-					} else if (selectedTaskItems.size() == 1) {
-					}
-				}
-			});
 	}
 	
 	@FXML
 	private void initialize() {
-		// set selection model
-		taskTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		setupEventHandlers();
-		
-		taskTableIndexColumn.setCellValueFactory(
-				cellData -> cellData.getValue().taskIndexProperty());
-		taskTableNameColumn.setCellValueFactory(
-				cellData -> cellData.getValue().taskNameProperty());
-		taskTableStatusColumn.setCellValueFactory(
-				cellData -> cellData.getValue().taskStatusProperty());
-		taskTableDueDateColumn.setCellValueFactory(
-				cellData ->
-					cellData.getValue().taskDueDateProperty().get() == null ?
-							new SimpleStringProperty("Not Applicable") :
-							cellData.getValue().taskDueDateProperty().asString());
-		taskTableStartTimeColumn.setCellValueFactory(
-				cellData ->
-					cellData.getValue().taskStartTimeProperty().get() == null ?
-							new SimpleStringProperty("-") :
-							cellData.getValue().taskStartTimeProperty().asString());
-		taskTableEndTimeColumn.setCellValueFactory(
-				cellData ->
-					cellData.getValue().taskEndTimeProperty().get() == null ?
-							new SimpleStringProperty("-") :
-							cellData.getValue().taskEndTimeProperty().asString());
-		taskTablePriorityColumn.setCellValueFactory(
-				cellData ->
-					cellData.getValue().taskPriorityProperty().get() == null ?
-							new SimpleStringProperty("Not Applicable") :
-							cellData.getValue().taskPriorityProperty());
-		
 		commandStatus.setText("");
+		commandText.requestFocus();
 
 	}
 	
@@ -137,57 +69,89 @@ public class MainAppController {
 	}
 	
 	private void updateTaskList() {
-		taskTable.setItems(FXCollections.observableArrayList(this.mainApp.getTaskData()));
-		displayDueTasksInSidePanel();
+		taskData = this.mainApp.getTaskData();
+		if (taskData.size() == 0) {
+			pageCount = 0;
+		} else if (taskData.size() % ITEMS_PER_PAGE == 0) {
+			pageCount = taskData.size() / ITEMS_PER_PAGE;
+		} else {
+			pageCount = taskData.size() / ITEMS_PER_PAGE + 1;
+		}
+		pageStart = 0;
+		updatePage();
 	}
 	
-	private static boolean compareDateBefore(LocalDate thisDate, LocalDate reference) {
-		return thisDate == null || reference == null || thisDate.compareTo(reference) < 0;
+	private void updatePage() {
+		final ObservableList<Node> children = deadlineTaskPane.getChildren();
+		children.clear();
+		final List<TaskCardController> controllers = 
+				taskData.stream()
+				.skip(pageStart * ITEMS_PER_PAGE)
+				.limit(ITEMS_PER_PAGE)
+				.map(task -> {
+					try {
+						final TaskCardController controller = new TaskCardController();
+						controller.loadTask(task);
+						return controller;
+					} catch (Exception e) {
+						e.printStackTrace();
+						return null;
+					}
+				})
+				.collect(Collectors.toList());
+		children.addAll(controllers);
+		pageStatus.setText(String.format("%d of %d", pageStart + 1, pageCount));
 	}
 	
-	private static boolean compareDateEqual(LocalDate thisDate, LocalDate reference) {
-		return thisDate == null || reference == null || thisDate.compareTo(reference) == 0;
-	}
+//	private static boolean compareDateBefore(LocalDate thisDate, LocalDate reference) {
+//		return thisDate == null || reference == null || thisDate.compareTo(reference) < 0;
+//	}
+//	
+//	private static boolean compareDateEqual(LocalDate thisDate, LocalDate reference) {
+//		return thisDate == null || reference == null || thisDate.compareTo(reference) == 0;
+//	}
 	
 	private void displayDueTasksInSidePanel() {
-		final List<TaskItem> list = this.mainApp.getTaskData();
-		
-		// This month
-		final List<TaskItem> thisMonthList = list
-				.stream()
-				.filter(task -> task != null
-					&& compareDateBefore(task.getTaskDueDate(), LocalDate.now().plusMonths(1))
-					&& task.getTaskStatus().equals("INCOMPLETE"))
-				.collect(Collectors.toList());
-		// This week
-		final List<TaskItem> thisWeekList = thisMonthList
-				.stream()
-				.filter(task -> task != null && compareDateBefore(task.getTaskDueDate(), LocalDate.now().plusWeeks(1)))
-				.collect(Collectors.toList());
-		// Today
-		final List<TaskItem> todayList = thisWeekList
-				.stream()
-				.filter(task -> task != null && compareDateEqual(task.getTaskDueDate(), LocalDate.now()))
-				.collect(Collectors.toList());
-		dueMonthTaskList.setItems(
-				FXCollections.observableArrayList(
-						todayList.stream()
-							.map(task -> task.getTaskName())
-							.collect(Collectors.toList())));
-		dueWeekTaskList.setItems(
-				FXCollections.observableArrayList(
-						thisWeekList.stream()
-							.map(task -> task.getTaskName())
-							.collect(Collectors.toList())));
-		dueTodayTaskList.setItems(
-				FXCollections.observableArrayList(
-					todayList.stream()
-						.map(task -> task.getTaskName())
-						.collect(Collectors.toList())));
+//		final List<TaskItem> list = this.mainApp.getTaskData();
+//		
+//		// This month
+//		final List<TaskItem> thisMonthList = list
+//				.stream()
+//				.filter(task -> task != null
+//					&& compareDateBefore(task.getTaskDueDate(), LocalDate.now().plusMonths(1))
+//					&& task.getTaskStatus().equals("INCOMPLETE"))
+//				.collect(Collectors.toList());
+//		// This week
+//		final List<TaskItem> thisWeekList = thisMonthList
+//				.stream()
+//				.filter(task -> task != null && compareDateBefore(task.getTaskDueDate(), LocalDate.now().plusWeeks(1)))
+//				.collect(Collectors.toList());
+//		// Today
+//		final List<TaskItem> todayList = thisWeekList
+//				.stream()
+//				.filter(task -> task != null && compareDateEqual(task.getTaskDueDate(), LocalDate.now()))
+//				.collect(Collectors.toList());
 	}
 	
 	@FXML
 	public void openDialogHelp() throws IOException {
 		mainApp.showHelpDialog();
+	}
+	
+	@FXML
+	public void keyPressHandler(KeyEvent e) {
+		if (e.getCode() == KeyCode.PAGE_DOWN) {
+			System.out.println("NEXT");
+			if (pageStart + 1 < pageCount) {
+				++pageStart;
+				updatePage();
+			}
+		} else if (e.getCode() == KeyCode.PAGE_UP) {
+			System.out.println("PREV");
+			if (pageStart > 0) {
+				--pageStart;
+				updatePage();
+			}
+		}
 	}
 }

@@ -5,8 +5,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.glass.ui.MenuBar;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -50,6 +48,7 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("MnemoniCal");
+        this.primaryStage.setResizable(false);
         
         initRootLayout();
         
@@ -112,7 +111,5 @@ public class MainApp extends Application {
 		dialog.initStyle(StageStyle.UTILITY);
 		dialog.setScene(scene);
 		dialog.show();
-		final HelpDialogController controller = loader.getController();
-		controller.setMainApp(this);
     }
 }

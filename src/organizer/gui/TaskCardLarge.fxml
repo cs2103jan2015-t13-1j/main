@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.control.*?>
+<?import java.net.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import java.net.* ?>
+
+<AnchorPane minHeight="161.0" minWidth="209.0" prefHeight="209.0" prefWidth="209.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <stylesheets>
+      <URL value="@mainstyle.css" />
+   </stylesheets>
+   <styleClass>
+      <String fx:value="taskcard" />
+      <String fx:value="large" />
+      <String fx:value="background" />
+   </styleClass>
+   <children>
+      <Label fx:id="nameLabel" layoutX="18.0" layoutY="14.0" text="Name">
+         <styleClass>
+            <String fx:value="taskcard" />
+            <String fx:value="large" />
+            <String fx:value="name" />
+         </styleClass>
+      </Label>
+      <Label fx:id="startTimeLabel" layoutX="27.0" layoutY="153.0" text="Start">
+         <styleClass>
+            <String fx:value="taskcard" />
+            <String fx:value="large" />
+            <String fx:value="date" />
+         </styleClass>
+      </Label>
+      <Label fx:id="endTimeLabel" layoutX="27.0" layoutY="183.0" text="End">
+         <styleClass>
+            <String fx:value="taskcard" />
+            <String fx:value="large" />
+            <String fx:value="date" />
+         </styleClass>
+      </Label>
+      <Line endX="70.0" layoutX="120.0" layoutY="140.0" startX="-100.0" strokeLineJoin="ROUND">
+         <styleClass>
+            <String fx:value="taskcard" />
+            <String fx:value="large" />
+            <String fx:value="separator" />
+         </styleClass></Line>
+      <Label fx:id="idLabel" layoutX="184.0" layoutY="117.0" text="Id">
+         <styleClass>
+            <String fx:value="taskcard" />
+            <String fx:value="large" />
+            <String fx:value="id" />
+         </styleClass>
+      </Label>
+   </children>
+</AnchorPane>
