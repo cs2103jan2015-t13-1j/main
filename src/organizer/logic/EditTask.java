@@ -20,6 +20,7 @@ public class EditTask {
 	private static final String PATTERN_EDIT_ENDTIME = "(\\d)(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	private static final String PATTERN_EDIT_ENDDATETIME = "(\\d)(\\s)(\\bto\\b)(\\s)((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	private static final String PATTERN_EDIT_ENDDATE = "(\\d)(\\s)(\\bto\\b)(\\s)((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	private static final String PATTERN_EDIT_TITLE = "(\\d)(\\s)(.*)";
 	
 	private static final String TYPE_DEADLINE = "DEADLINE";
 	private static final String TYPE_FLOATING = "FLOATING";
@@ -27,7 +28,7 @@ public class EditTask {
 	private static final String DEADLINE_TIME = "23:59";
 
 	private Matcher EDIT_STARTENDDATETIME, EDIT_STARTDATETIME, EDIT_STARTDATE, EDIT_STARTTIME,
-	EDIT_ENDDATETIME, EDIT_ENDDATE, EDIT_ENDTIME;
+	EDIT_ENDDATETIME, EDIT_ENDDATE, EDIT_ENDTIME, EDIT_TITLE;
 	
 	private boolean isValidLineNum = false;
 
@@ -37,7 +38,7 @@ public class EditTask {
 		if((editStartEndDateTime(userContent, validOp, allLists)) || (editStartDateTime(userContent, validOp, allLists))
 				|| (editStartDate(userContent, validOp, allLists)) || (editStartTime(userContent, validOp, allLists))
 				|| (editEndDate(userContent, validOp, allLists)) || (editEndTime(userContent, validOp, allLists))
-				||(editEndDateTime(userContent, validOp, allLists))) {
+				||(editEndDateTime(userContent, validOp, allLists)) || (editTitle(userContent, validOp, allLists))) {
 			returnResult.setOpStatus(MESSAGE_SUCCESS);
 		} else {
 			returnResult.setOpStatus(MESSAGE_INVALID_CONTENT);
@@ -61,6 +62,34 @@ public class EditTask {
 		EDIT_ENDDATETIME = Pattern.compile(PATTERN_EDIT_ENDDATETIME).matcher(userContent);
 		EDIT_ENDDATE = Pattern.compile(PATTERN_EDIT_ENDDATE).matcher(userContent);
 		EDIT_ENDTIME = Pattern.compile(PATTERN_EDIT_ENDTIME).matcher(userContent);
+		EDIT_TITLE = Pattern.compile(PATTERN_EDIT_TITLE).matcher(userContent);
+	}
+
+	private boolean editTitle(String userContent, Validation validOp, TaskListSet allLists) {
+		Boolean isEdit = false;
+		if(EDIT_TITLE.matches()) {
+			int lineNum = Integer.parseInt(EDIT_TITLE.group(1));
+			String taskTitle = EDIT_TITLE.group(3);
+			
+			if(validOp.isValidTask(lineNum, allLists)) {
+				isValidLineNum = true;
+				int taskID = validOp.checkForTaskID(lineNum, allLists);
+				ArrayList<Task> taskList = allLists.getTaskList();
+				
+				for(int id = 0; id < taskList.size(); id++) {
+					Task tempTask = new Task();
+					tempTask = taskList.get(id);
+
+					if((taskID == tempTask.getTaskID())) {
+						tempTask.setTaskName(taskTitle);
+						isEdit = true;
+					}
+				}
+				
+			}
+		}
+		
+		return isEdit;
 	}
 
 	private boolean editStartEndDateTime(String userContent, Validation validOp, TaskListSet allLists) {
