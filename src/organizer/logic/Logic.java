@@ -124,6 +124,7 @@ public class Logic {
 		return returnResult;
 	}
 	
+<<<<<<< HEAD
 //	public void addToUndoList(ArrayList<Task> taskList) {
 //		ArrayList<Task> tempTaskList = new ArrayList<Task>();
 //		for(int index = 0; index < taskList.size(); index++) {
@@ -139,6 +140,23 @@ public class Logic {
 //		}
 //		undoList.push(new ArrayList<Task>(tempTaskList));
 //	}
+=======
+	public void addToUndoList(ArrayList<Task> taskList) {
+		ArrayList<Task> tempTaskList = new ArrayList<Task>();
+		for(int index = 0; index < taskList.size(); index++) {
+			Task tempTask = new Task();
+			tempTask.setTaskEndDate(taskList.get(index).getTaskEndDate());
+			tempTask.setTaskEndTime(taskList.get(index).getTaskEndTime());
+			tempTask.setTaskStartTime(taskList.get(index).getTaskStartTime());
+			tempTask.setTaskID(taskList.get(index).getTaskID());
+			tempTask.setTaskName(taskList.get(index).getTaskName());
+			tempTask.setTaskPriority(taskList.get(index).getTaskPriority());
+			tempTask.setTaskStatus(taskList.get(index).getTaskStatus());
+			tempTaskList.add(tempTask);
+		}
+		undoList.push(new ArrayList<Task>(tempTaskList));
+	}
+>>>>>>> 613859479a82c76e75683c2b85f407b6d4185327
 	
 	public ResultSet saveCommand() throws IOException {
 		SaveTask command = new SaveTask();

@@ -46,12 +46,12 @@ public class mainApp {
 		} else {
 			for (int i = 0; i < tasks.size(); i++) {
 				final Task task = tasks.get(i);
-				if(task.getDueDate() != null) {
+				if(task.getTaskEndDate() != null) {
 					printMessage(TASK_TEMPLATE,
 							i + 1,
 							task.getTaskName(),
 							task.getTaskStatus(),
-							task.getDueDate().toString());
+							task.getTaskEndDate().toString());
 				} else {
 					printMessage(TASK_TEMPLATE,
 							i + 1,

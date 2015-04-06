@@ -6,29 +6,63 @@ import java.util.ArrayList;
 public class ViewTask {
 	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
 	private static final String MESSAGE_SUCCESS = "View %1$s task(s) operation is successful!\n\n";
+	private enum ViewType {
+		TODAY,
+		COMPLETE,
+		INCOMPLETE,
+		ALL;
+		@Override
+		public String toString() {
+			switch (this) {
+			case TODAY: return "today";
+			case COMPLETE: return "complete";
+			case INCOMPLETE: return "incomplete";
+			case ALL: return "all";
+			default: return "any";
+			}
+		}
+	}
 
-	public ResultSet execute(String viewType, TaskListSet allLists){
+	public ResultSet execute(String viewTypeString, TaskListSet allLists){
 		LocalDate currentDate = LocalDate.now();
-		viewType = viewType.toLowerCase();
 		ArrayList<Task> tempList = new ArrayList<Task>();
 		allLists.setViewList(tempList);
 		ResultSet returnResult = new ResultSet();
+		
+		final ViewType viewType;
+		switch (viewTypeString.trim().toLowerCase()) {
+		case "today":
+			viewType = ViewType.TODAY;
+			break;
+		case "complete":
+			viewType = ViewType.COMPLETE;
+			break;
+		case "incomplete":
+			viewType = ViewType.INCOMPLETE;
+			break;
+		case "all":
+			viewType = ViewType.ALL;
+			break;
+		default:
+			viewType = null;
+			break;
+		}
 
 		for(int i = 0; i < allLists.getTaskList().size(); i++) {
 			Task task = allLists.getTaskList().get(i);
-			if(task.getDueDate() == null) {
+			if(task.getTaskStartDate() == null) {
 				tempList.add(task);
 			} else {
-				if(viewType.trim().equals("today") && task.getDueDate().equals(currentDate)) {
+				if(viewType == ViewType.TODAY && task.getTaskStartDate().equals(currentDate)) {
 					tempList.add(task);
 				}
 			}
 
-			if(viewType.trim().equals("complete") && task.getTaskStatus().toLowerCase().equals("complete")) {
+			if(viewType == ViewType.COMPLETE && task.getTaskStatus().toLowerCase().equals("complete")) {
 				tempList.add(task);
-			} else if(viewType.trim().equals("incomplete") && task.getTaskStatus().toLowerCase().equals("incomplete")) {
+			} else if(viewType == ViewType.INCOMPLETE && task.getTaskStatus().toLowerCase().equals("incomplete")) {
 				tempList.add(task);
-			}else if (viewType.trim().equalsIgnoreCase("all")){
+			}else if (viewType == ViewType.ALL){
 				tempList.add(task);
 			}
 
@@ -39,7 +73,7 @@ public class ViewTask {
 		if(allLists.getViewList().isEmpty()) {
 			returnResult.setOpStatus(MESSAGE_EMPTY_LIST);
 		} else {
-			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, viewType));
+			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, viewType == null ? "any" : viewType));
 		}
 
 		returnResult.setReturnList(allLists.getViewList());
