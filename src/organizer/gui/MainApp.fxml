@@ -17,33 +17,6 @@
       <URL value="@mainstyle.css" />
    </stylesheets>
    <children>
-      <HBox prefHeight="31.0" prefWidth="1078.0">
-         <children>
-            <MenuBar HBox.hgrow="ALWAYS">
-              <menus>
-                <Menu mnemonicParsing="false" text="File">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Save and Exit">
-                           <accelerator>
-                              <KeyCodeCombination alt="UP" code="E" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                           </accelerator>
-                        </MenuItem>
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                  <items>
-                    <MenuItem mnemonicParsing="false" onAction="#openDialogHelp" text="Manual" />
-                  </items>
-                </Menu>
-              </menus>
-            </MenuBar>
-         </children>
-      </HBox>
       <StackPane layoutX="27.0" layoutY="85.0" prefHeight="479.0" prefWidth="682.0">
          <children>
             <FlowPane fx:id="mainPane" hgap="15.0" vgap="15.0">
