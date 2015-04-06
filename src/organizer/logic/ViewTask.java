@@ -73,7 +73,7 @@ public class ViewTask {
 		if(viewList.isEmpty()) {
 			return MESSAGE_EMPTY_LIST;
 		} else {
-			return String.format(MESSAGE_SUCCESS, String.format(MESSAGE_UNSUCCESS, viewTypeString));
+			return String.format(MESSAGE_SUCCESS, viewTypeString);
 		}
 	}
 	
