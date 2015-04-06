@@ -10,7 +10,17 @@ public class ViewTask {
 		TODAY,
 		COMPLETE,
 		INCOMPLETE,
-		ALL
+		ALL;
+		@Override
+		public String toString() {
+			switch (this) {
+			case TODAY: return "today";
+			case COMPLETE: return "complete";
+			case INCOMPLETE: return "incomplete";
+			case ALL: return "all";
+			default: return "any";
+			}
+		}
 	}
 
 	public ResultSet execute(String viewTypeString, TaskListSet allLists){
@@ -63,7 +73,7 @@ public class ViewTask {
 		if(allLists.getViewList().isEmpty()) {
 			returnResult.setOpStatus(MESSAGE_EMPTY_LIST);
 		} else {
-			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, viewType));
+			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, viewType == null ? "any" : viewType));
 		}
 
 		returnResult.setReturnList(allLists.getViewList());
