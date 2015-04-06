@@ -58,6 +58,7 @@ public class ViewTask {
 			allLists.setViewList(viewDeadline(allLists.getTaskList()));
 			break;
 		default:
+			returnResult.setReturnList(allLists.getTaskList());
 			returnResult.setOpStatus(String.format(MESSAGE_UNSUCCESS, viewTypeString));
 			return returnResult;
 		}
