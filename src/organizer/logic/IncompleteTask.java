@@ -1,3 +1,4 @@
+//@author A0098824N
 package organizer.logic;
 
 import java.util.ArrayList;
@@ -5,6 +6,7 @@ import java.util.ArrayList;
 public class IncompleteTask {
     private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
     private static final String MESSAGE_SUCCESS = "Revert completed task(s) operation is successful!";
+    private static final String STATUS_TASK = "INCOMPLETE";
     
     public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {
         int lineNum = Integer.parseInt(taskInfo.trim());
@@ -13,7 +15,7 @@ public class IncompleteTask {
         
         if(validOp.isValidTask(lineNum, allLists)) {
             int taskID = validOp.checkForTaskID(lineNum, allLists);
-            tempList.get(taskID).setTaskStatus("INCOMPLETE");
+            tempList.get(taskID).setTaskStatus(STATUS_TASK);
             returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
         } else {
             returnResult.setOpStatus(MESSAGE_INVALID_TASK);
