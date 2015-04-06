@@ -15,7 +15,6 @@ import javafx.scene.layout.Region;
 
 public class TaskCardController extends Region {
 	private TaskItem task;
-	
 	@FXML
 	private Label nameLabel;
 	@FXML

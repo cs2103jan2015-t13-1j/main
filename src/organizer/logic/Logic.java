@@ -72,9 +72,15 @@ public class Logic {
 	}
 	
 	public ResultSet postponeCommand(String taskInfo) {
+<<<<<<< HEAD
 		addToUndoList(allLists.getTaskList());
 	//	PostponeTask command = new PostponeTask();
 	//	returnResult = command.execute(taskInfo, allLists, validOp);
+=======
+	//	addToUndoList(allLists.getTaskList());
+		PostponeTask command = new PostponeTask();
+		returnResult = command.execute(taskInfo, allLists, validOp);
+>>>>>>> 3b559fb4246b44087c5694904b77b96fec0a460c
 		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
