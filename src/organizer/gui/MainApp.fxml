@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import java.net.* ?>
+<?import javafx.scene.layout.StackPane?>
 
 <AnchorPane minWidth="-Infinity" prefHeight="617.0" prefWidth="1078.0" styleClass="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="organizer.gui.MainAppController">
    <stylesheets>
@@ -43,21 +44,40 @@
             </MenuBar>
          </children>
       </HBox>
-      <FlowPane fx:id="deadlineTaskPane" hgap="15.0" layoutX="27.0" layoutY="85.0" prefHeight="479.0" prefWidth="682.0" vgap="15.0">
-         <padding>
-            <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
-         </padding>
-         <styleClass>
-            <String fx:value="deadlinetaskpane" />
-            <String fx:value="pane" />
-         </styleClass></FlowPane>
-      <FlowPane fx:id="floatingTaskPane" layoutX="754.0" layoutY="85.0" prefHeight="448.0" prefWidth="258.0" vgap="15.0">
-         <padding>
-            <Insets top="30.0" />
-         </padding>
-      </FlowPane>
-      <TextField fx:id="commandText" layoutX="27.0" layoutY="47.0" onAction="#performCommand" onKeyPressed="#keyPressHandler" prefHeight="31.0" prefWidth="1015.0" styleClass="command-input" />
-      <Label id="commandStatus" fx:id="commandStatus" layoutX="903.0" layoutY="585.0" text="Command result" />
+      <StackPane layoutX="27.0" layoutY="85.0" prefHeight="479.0" prefWidth="682.0">
+         <children>
+            <FlowPane fx:id="mainPane" hgap="15.0" vgap="15.0">
+               <padding>
+                  <Insets bottom="30.0" left="10.0" right="10.0" top="30.0" />
+               </padding>
+               <styleClass>
+                  <String fx:value="deadlinetaskpane" />
+                  <String fx:value="pane" />
+               </styleClass>
+            </FlowPane>
+            <AnchorPane fx:id="mainPaneHintLayer" visible="false">
+               <children>
+                  <Label alignment="CENTER" layoutX="80.0" layoutY="80.0" prefHeight="64.0" prefWidth="64.0" styleClass="hintbox" text="1" />
+                  <Label alignment="CENTER" layoutX="300.0" layoutY="80.0" prefHeight="64.0" prefWidth="64.0" styleClass="hintbox" text="2" />
+                  <Label alignment="CENTER" layoutX="520.0" layoutY="80.0" prefHeight="64.0" prefWidth="64.0" styleClass="hintbox" text="3" />
+                  <Label alignment="CENTER" layoutX="80.0" layoutY="320.0" prefHeight="64.0" prefWidth="64.0" styleClass="hintbox" text="4" />
+                  <Label alignment="CENTER" layoutX="300.0" layoutY="320.0" prefHeight="64.0" prefWidth="64.0" styleClass="hintbox" text="5" />
+                  <Label alignment="CENTER" layoutX="520.0" layoutY="320.0" prefHeight="64.0" prefWidth="64.0" styleClass="hintbox" text="6" />
+               </children>
+            </AnchorPane>
+         </children></StackPane>
+      <StackPane layoutX="753.0" layoutY="85.0" prefHeight="467.0" prefWidth="289.0">
+         <children>
+            <Label fx:id="sidePaneHintLabel" alignment="CENTER" prefHeight="64.0" prefWidth="64.0" styleClass="hintbox" text="~&#10;Reset" visible="false" />
+            <FlowPane fx:id="sidePane" vgap="15.0">
+               <padding>
+                  <Insets top="30.0" />
+               </padding>
+            </FlowPane>
+         </children>
+      </StackPane>
+      <TextField fx:id="commandText" layoutX="27.0" layoutY="47.0" onAction="#performCommand" onKeyPressed="#keyPressHandler" onKeyReleased="#keyReleaseHandler" prefHeight="31.0" prefWidth="1015.0" styleClass="command-input" />
+      <Label id="commandStatus" fx:id="commandStatus" layoutX="600.0" layoutY="578.0" text="Command result" />
       <Label fx:id="pageStatus" layoutX="27.0" layoutY="570.0" styleClass="circle-text" text="0 of 0" wrapText="true">
          <padding>
             <Insets left="10.0" />

@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 
 public class MainAppController {
@@ -23,11 +24,16 @@ public class MainAppController {
 	private Label commandStatus;
 	
 	@FXML
-	private FlowPane deadlineTaskPane;
+	private FlowPane mainPane;
 	@FXML
-	private FlowPane floatingTaskPane;
+	private FlowPane sidePane;
 	@FXML
 	private Label pageStatus;
+	
+	@FXML
+	private AnchorPane mainPaneHintLayer;
+	@FXML
+	private Label sidePaneHintLabel;
 	
 	
 	private int pageStart = 0;
@@ -82,7 +88,7 @@ public class MainAppController {
 	}
 	
 	private void updatePage() {
-		final ObservableList<Node> children = deadlineTaskPane.getChildren();
+		final ObservableList<Node> children = mainPane.getChildren();
 		children.clear();
 		final List<TaskCardController> controllers = 
 				taskData.stream()
@@ -122,6 +128,46 @@ public class MainAppController {
 				--pageStart;
 				updatePage();
 			}
+		} else if (e.isControlDown()) {
+			hideControlKeyHint();
+			if (e.getCode() == KeyCode.BACK_QUOTE)
+				restoreSidePane();
+			else if (e.getCode() == KeyCode.DIGIT1)
+				displayTaskDetailSidePane(0);
+			else if (e.getCode() == KeyCode.DIGIT2)
+				displayTaskDetailSidePane(1);
+			else if (e.getCode() == KeyCode.DIGIT3)
+				displayTaskDetailSidePane(2);
+			else if (e.getCode() == KeyCode.DIGIT4)
+				displayTaskDetailSidePane(3);
+			else if (e.getCode() == KeyCode.DIGIT5)
+				displayTaskDetailSidePane(4);
+			else if (e.getCode() == KeyCode.DIGIT6)
+				displayTaskDetailSidePane(5);
+			else
+				showControlKeyHint();
 		}
+	}
+	
+	@FXML
+	public void keyReleaseHandler(KeyEvent e) {
+		if (!e.isControlDown()) {
+			hideControlKeyHint();
+		}
+	}
+	
+	private void displayTaskDetailSidePane(int index) {
+	}
+	
+	private void restoreSidePane() {
+	}
+	
+	private void showControlKeyHint() {
+		mainPaneHintLayer.setVisible(true);
+		sidePaneHintLabel.setVisible(true);
+	}
+	private void hideControlKeyHint() {
+		mainPaneHintLayer.setVisible(false);
+		sidePaneHintLabel.setVisible(false);
 	}
 }

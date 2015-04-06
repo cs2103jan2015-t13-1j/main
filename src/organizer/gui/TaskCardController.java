@@ -1,6 +1,12 @@
 package organizer.gui;
 
+/*@author */
+
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.TextStyle;
+import java.util.Locale;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +18,10 @@ public class TaskCardController extends Region {
 	
 	@FXML
 	private Label nameLabel;
+	@FXML
+	private Label priorityLabel;
+	@FXML
+	private Label statusLabel;
 	@FXML
 	private Label startTimeLabel;
 	@FXML
@@ -38,21 +48,37 @@ public class TaskCardController extends Region {
 		this.task = task;
 		nameLabel.textProperty().bind(task.taskNameProperty());
 		idLabel.setText(Integer.toString(task.getTaskIndex()));
-		startTimeLabel.setText(
-				String.format(
-						"from %s %s, %d, %d:%d",
-						task.getTaskStartDate() == null ? "" : task.getTaskStartDate().getDayOfMonth(),
-						task.getTaskStartDate() == null ? "" : task.getTaskStartDate().getMonth().getValue(),
-						task.getTaskStartDate() == null ? 0 : task.getTaskStartDate().getYear(),
-						task.getTaskStartTime() == null ? 0 : task.getTaskStartTime().getHour(),
-						task.getTaskStartTime() == null ? 0 : task.getTaskStartTime().getMinute()));
-		endTimeLabel.setText(
-				String.format(
-						"to %s %s, %d, %d:%d",
-						task.getTaskEndDate() == null ? "" : task.getTaskEndDate().getDayOfMonth(),
-						task.getTaskEndDate() == null ? "" : task.getTaskEndDate().getMonth().getValue(),
-						task.getTaskEndDate() == null ? 0 : task.getTaskEndDate().getYear(),
-						task.getTaskEndTime() == null ? 0 : task.getTaskEndTime().getHour(),
-						task.getTaskEndTime() == null ? 0 : task.getTaskEndTime().getMinute()));
+		statusLabel.textProperty().bind(task.taskStatusProperty());
+		priorityLabel.textProperty().bind(task.taskPriorityProperty());
+		if (task.getTaskStartDate() != null || task.getTaskStartTime() != null)
+			startTimeLabel.setText("from " + formatDateString(task.getTaskStartDate(), task.getTaskStartTime()));
+		else
+			startTimeLabel.setText("");
+		if (task.getTaskEndDate() != null || task.getTaskEndTime() != null)
+			endTimeLabel.setText("to " + formatDateString(task.getTaskEndDate(), task.getTaskEndTime()));
+		else
+			endTimeLabel.setText("");
+	}
+
+	private static String formatDateString(
+			LocalDate date,
+			LocalTime time) {
+		StringBuilder strb = new StringBuilder();
+		if (date != null) {
+			strb.append(date.getDayOfMonth());
+			strb.append(' ');
+			strb.append(date.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()));
+			strb.append(',');
+			strb.append(date.getYear());
+		}
+		if (date != null && time != null) {
+			strb.append(' ');
+		}
+		if (time != null) {
+			strb.append(time.getHour());
+			strb.append(':');
+			strb.append(time.getMinute());
+		}
+		return strb.toString();
 	}
 }
