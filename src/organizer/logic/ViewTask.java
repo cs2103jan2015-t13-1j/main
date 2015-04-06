@@ -58,22 +58,22 @@ public class ViewTask {
 			allLists.setViewList(viewDeadline(allLists.getTaskList()));
 			break;
 		default:
-			returnResult.setOpStatus(MESSAGE_UNSUCCESS);
+			returnResult.setOpStatus(String.format(MESSAGE_UNSUCCESS, viewTypeString));
 			return returnResult;
 		}
 		
 		returnResult.setReturnList(allLists.getViewList());
-		returnResult.setOpStatus(isEmptyView(allLists.getViewList()));
+		returnResult.setOpStatus(isEmptyView(allLists.getViewList(), viewTypeString));
 		
 		return returnResult;
 
 	}
 	
-	private String isEmptyView(ArrayList<Task> viewList) {
+	private String isEmptyView(ArrayList<Task> viewList, String viewTypeString) {
 		if(viewList.isEmpty()) {
 			return MESSAGE_EMPTY_LIST;
 		} else {
-			return MESSAGE_SUCCESS;
+			return String.format(MESSAGE_SUCCESS, String.format(MESSAGE_UNSUCCESS, viewTypeString));
 		}
 	}
 	
