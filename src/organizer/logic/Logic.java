@@ -16,6 +16,8 @@ public class Logic {
 	TaskListSet allLists = new TaskListSet();
 	Validation validOp = new Validation();
 	UndoCommand undoOp = new UndoCommand();
+	boolean isDefaultFile = true;
+	String userFile = "";
 	Stack<ArrayList<Task>> undoList = new Stack<ArrayList<Task>>();
 	
 	public ArrayList<Task> loadStorage(InputStream in) throws IOException {
@@ -44,7 +46,7 @@ public class Logic {
 	public ResultSet addCommand(String taskInfo) {
 		addToUndoList(allLists.getTaskList());
 		AddTask command = new AddTask();
-		returnResult = command.execute(taskInfo, allLists.getTaskList());
+		returnResult = command.execute(taskInfo, allLists);
 		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
@@ -151,7 +153,12 @@ public class Logic {
 	
 	public ResultSet saveCommand() throws IOException {
 		SaveTask command = new SaveTask();
-		returnResult = command.executeSave(allLists.getTaskList());
+		if(isDefaultFile) {
+			returnResult = command.executeSave(allLists.getTaskList());
+		} else {
+			returnResult = command.executeSaveAs(allLists.getTaskList(), userFile);
+		}
+		
 		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
@@ -160,6 +167,17 @@ public class Logic {
 		SaveTask command = new SaveTask();
 		returnResult = command.executeSaveAs(allLists.getTaskList(), fileName);
 		returnResult.setReturnList(viewDefault());
+		isDefaultFile = false;
+		userFile = fileName;
+		return returnResult;
+	}
+	
+	public ResultSet loadFileCommand(String fileName) throws IOException {
+		LoadTask command = new LoadTask();
+		returnResult = command.execute(allLists, fileName);
+		returnResult.setReturnList(viewDefault());
+		isDefaultFile = false;
+		userFile = fileName;
 		return returnResult;
 	}
 }

@@ -10,7 +10,7 @@ public class CommandParser {
 	private static final String MESSAGE_INVALID_COMMAND = "Unregconized command!";
 	
 	private static final String noContentCommandPattern = "clear|undo|save";
-	private static final String withContentCommandPattern = "add|delete|search|view|edit|rank|postpone|incomplete|complete|save as|float";
+	private static final String withContentCommandPattern = "add|delete|search|view|edit|rank|postpone|incomplete|complete|save as|float|load";
 	
 	private static final String MODE_VIEW = "incomplete";
 
@@ -31,7 +31,7 @@ public class CommandParser {
 
 	enum COMMAND_TYPE {
 		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INCOMPLETE_TASK, CLEAR_TASK, EDIT_TASK, POSTPONE_TASK, RANK_TASK,
-		UNDO, SAVE, FLOAT_TASK, SAVEAS, INVALID, EXIT
+		UNDO, SAVE, LOAD, FLOAT_TASK, SAVEAS, INVALID, EXIT
 	};
 
 	private static COMMAND_TYPE determineCommandType(String commandTypeString)
@@ -71,6 +71,8 @@ public class CommandParser {
 			return COMMAND_TYPE.FLOAT_TASK;
 		case "saveas":
 			return COMMAND_TYPE.SAVEAS;
+		case "load":
+			return COMMAND_TYPE.LOAD;
 		case "exit":
 			return COMMAND_TYPE.EXIT;
 		default:
@@ -131,8 +133,10 @@ public class CommandParser {
 			return logic.saveCommand();
 		case SAVEAS:
 			return logic.saveAsCommand(userContent);
+		case LOAD:
+			return logic.loadFileCommand(userContent);
 		case EXIT:
-			logic.writeStorage();
+			logic.saveCommand();
 			System.exit(0);
 		default:
 			// throw an error if the command is not recognized

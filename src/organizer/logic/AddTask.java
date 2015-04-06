@@ -43,10 +43,12 @@ public class AddTask {
 
 
 	
-	public ResultSet execute(String taskInfo, ArrayList<Task> taskList) {
+	public ResultSet execute(String taskInfo, TaskListSet allLists) {
 		String taskName = null;
 		String taskDateTime = null;
-		int taskID = taskList.size();
+		ArrayList<Task> taskList = allLists.getTaskList();
+		int taskID = allLists.getTaskList().size();
+		System.out.println(taskID);
 		Task tempItem = new Task();
 		ResultSet returnResult = new ResultSet();
 		
