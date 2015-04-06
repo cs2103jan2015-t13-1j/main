@@ -46,21 +46,9 @@ public class AddTask {
 	
 	public ResultSet execute(String taskInfo, ArrayList<Task> taskList) {
 		String taskName = null;
-<<<<<<< HEAD
 		String taskDateTime = null;
 		int taskID = taskList.size();
 		Task tempItem = new Task();
-=======
-		String taskDate = null;
-		String taskStartTime = null;
-		String taskEndTime = null;
-		String taskTime = null;
-		LocalDate endDate = LocalDate.now();
-		
-		LocalTime startTime = null;
-		LocalTime endTime = null;
-		Task tempTask = new Task();
->>>>>>> 613859479a82c76e75683c2b85f407b6d4185327
 		ResultSet returnResult = new ResultSet();
 		
 		if(taskInfo.contains(KEYWORD_DEADLINE)) {
@@ -76,7 +64,6 @@ public class AddTask {
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_TIMED_TODAY)).trim();
 			tempItem =  addTimedTask_TODAYTMRW(taskName, taskDateTime, taskID);
 			
-<<<<<<< HEAD
 		} else if(taskInfo.contains(KEYWORD_TIMED_TMRW)) {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_TIMED_TMRW)).trim();
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_TIMED_TMRW)).trim();
@@ -84,51 +71,6 @@ public class AddTask {
 		} else {
 			taskName = taskInfo;
 			tempItem = addFloatingTask(taskName, taskID);
-=======
-			//only with date then we have time
-			if(dateTime.contains(timeFieldIdentifier)) {
-				taskDate = dateTime.substring(0, dateTime.indexOf(timeFieldIdentifier));
-				taskTime = dateTime.substring(dateTime.indexOf(timeFieldIdentifier)+1);
-				
-				//by default, no end time means is 1 hour later
-				if(taskTime.contains(timeFieldSeparator)) {
-					taskStartTime = taskTime.substring(0, taskTime.indexOf(timeFieldSeparator));
-					taskEndTime = taskTime.substring(taskTime.indexOf(timeFieldSeparator)+1);
-					startTime = dateTimeCheck.determineTime(taskStartTime);
-					endTime = dateTimeCheck.determineTime(taskEndTime);
-					if(startTime == null || endTime == null) {
-						returnResult.setOpStatus(MESSAGE_UNSUCCESS);
-						return returnResult;
-					}
-				} else {
-					startTime = dateTimeCheck.determineTime(taskTime);
-					if(startTime == null) {
-						returnResult.setOpStatus(MESSAGE_UNSUCCESS);
-						return returnResult;
-					}
-					//endTime = startTime.plusHours(TASK_DURATION);
-				}
-				
-				endDate = dateTimeCheck.determineDate(taskDate);
-				if(endDate == null) {
-					returnResult.setOpStatus(MESSAGE_UNSUCCESS);
-					return returnResult;
-				}
-				
-			} else {
-				taskDate = dateTime;
-				endDate = dateTimeCheck.determineDate(taskDate);
-				if(endDate == null) {
-					returnResult.setOpStatus(MESSAGE_UNSUCCESS);
-					return returnResult;
-				}
-			}
-		} else {
-			taskName = taskInfo;
-			endDate = null;
-			startTime = null;
-			endTime = null;
->>>>>>> 613859479a82c76e75683c2b85f407b6d4185327
 		}
 		
 		
@@ -143,18 +85,8 @@ public class AddTask {
 		Pattern dateOnly;
 		Matcher dateOnlyMatch;
 		
-<<<<<<< HEAD
 		dateOnly = Pattern.compile(PATTERN_DEADLINE_DATEONLY);	
 		dateOnlyMatch = dateOnly.matcher(taskDateTime);
-=======
-		tempTask.setTaskName(taskName);
-		tempTask.setTaskEndDate(endDate);
-		tempTask.setTaskStartTime(startTime);
-		tempTask.setTaskEndTime(endTime);
-		tempTask.setTaskStatus("INCOMPLETE");
-		tempTask.setTaskPriority(null);
-		tempTask.setTaskID(taskList.size());
->>>>>>> 613859479a82c76e75683c2b85f407b6d4185327
 
 		Task deadlineTask = new Task();
 		
