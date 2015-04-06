@@ -31,14 +31,13 @@ public class ViewTask {
 	}
 
 	public ResultSet execute(String viewTypeString, TaskListSet allLists){
-		LocalDate currentDate = LocalDate.now();
 		ArrayList<Task> tempList = new ArrayList<Task>();
 		allLists.setViewList(tempList);
 		ResultSet returnResult = new ResultSet();
 		
 		switch (viewTypeString.trim().toLowerCase()) {
 		case "today":
-			
+			allLists.setViewList(viewToday(allLists.getTaskList()));
 			break;
 		case "complete":
 			allLists.setViewList(viewComplete(allLists.getTaskList()));
@@ -76,6 +75,18 @@ public class ViewTask {
 		} else {
 			return MESSAGE_SUCCESS;
 		}
+	}
+	
+	private ArrayList<Task> viewToday(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			if(taskList.get(index).getTaskEndDate().equals(LocalDate.now())) {
+				tempList.add(taskList.get(index));
+			}
+		}
+		
+		return tempList;
 	}
 	
 	private ArrayList<Task> viewComplete(ArrayList<Task> taskList) {
