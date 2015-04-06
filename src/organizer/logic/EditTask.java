@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 public class EditTask {
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
 	private static final String MESSAGE_INVALID_CONTENT = "Edit task operation failed for invalid content!";
-	private static final String MESSAGE_SUCCESS = "Edit task(s) operation is successful!\n\n";
+	private static final String MESSAGE_SUCCESS = "Edit task(s) operation is successful!";
 
 
 	private static final String PATTERN_EDIT_STARTENDDATETIME = "(\\d)(\\s)(\\bfrom\\b)(\\s)((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))"
@@ -25,7 +25,6 @@ public class EditTask {
 	private static final String TYPE_FLOATING = "FLOATING";
 	private static final String TYPE_TIMED = "TIMED";
 	private static final String DEADLINE_TIME = "23:59";
-
 
 	private Matcher EDIT_STARTENDDATETIME, EDIT_STARTDATETIME, EDIT_STARTDATE, EDIT_STARTTIME,
 	EDIT_ENDDATETIME, EDIT_ENDDATE, EDIT_ENDTIME;

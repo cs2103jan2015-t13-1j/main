@@ -38,8 +38,7 @@ public class AddTask {
 	//add {taskname} {today|tomorrow} {time}
 	private static final String PATTERN_TIMED_START_TODAYTMRW = "(today|tomorrow)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 
-	private static final String MESSAGE_SUCCESS = "Add task(s) operation is successful!\n\n";
-	//private static final String MESSAGE_UNSUCCESS = "Add task(s) operation is unsuccessful!\n\n";
+	private static final String MESSAGE_SUCCESS = "Add task(s) operation is successful!";
 	private DateAndTime dtCheck = new DateAndTime();
 
 

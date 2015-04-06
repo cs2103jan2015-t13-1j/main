@@ -50,7 +50,7 @@ public class Logic {
 	}
 	
 	public ResultSet deleteCommand(String taskInfo) {
-		//addToUndoList(allLists.getTaskList());
+		addToUndoList(allLists.getTaskList());
 		DeleteTask command = new DeleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
 		returnResult.setReturnList(viewDefault());
@@ -72,7 +72,6 @@ public class Logic {
 	}
 	
 	public ResultSet postponeCommand(String taskInfo) {
-
 		addToUndoList(allLists.getTaskList());
 		PostponeTask command = new PostponeTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
@@ -124,6 +123,14 @@ public class Logic {
 		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
+	
+	public ResultSet floatCommand(String userContent) {
+		addToUndoList(allLists.getTaskList());
+		FloatTask command = new FloatTask();
+		returnResult = command.execute(userContent, allLists, validOp);
+		returnResult.setReturnList(viewDefault());
+		return returnResult;
+	}
 
 	public void addToUndoList(ArrayList<Task> taskList) {
 		ArrayList<Task> tempTaskList = new ArrayList<Task>();
@@ -155,17 +162,4 @@ public class Logic {
 		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
-	
-	
-	
-	
-	
-
-	
-	
-	
-	
-	
-	
-	
 }

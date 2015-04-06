@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class CompleteTask {
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
-	private static final String MESSAGE_SUCCESS = "Complete task(s) operation is successful!\n\n";
+	private static final String MESSAGE_SUCCESS = "Complete task(s) operation is successful!";
 	private static final String STATUS_COMPLETE = "COMPLETE";
 	
 	public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {

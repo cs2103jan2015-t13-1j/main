@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 public class ViewTask {
 	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
-	private static final String MESSAGE_SUCCESS = "View %1$s task(s) operation is successful!\n\n";
-	private static final String MESSAGE_UNSUCCESS = "View %1$s task(s) operation is unsuccessful!\n\n";
+	private static final String MESSAGE_SUCCESS = "View %1$s task(s) operation is successful!";
+	private static final String MESSAGE_UNSUCCESS = "View %1$s task(s) operation is unsuccessful!";
 	private enum ViewType {
 		TODAY,
 		DEADLINE,

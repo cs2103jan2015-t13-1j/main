@@ -3,7 +3,7 @@ package organizer.logic;
 import java.util.ArrayList;
 
 public class DeleteTask {
-	private static final String MESSAGE_SUCCESS = "Delete task(s) operation is successful!\n\n";
+	private static final String MESSAGE_SUCCESS = "Delete task(s) operation is successful!";
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
 	
 	public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {

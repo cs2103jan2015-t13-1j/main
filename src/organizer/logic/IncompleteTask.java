@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class IncompleteTask {
     private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
-    private static final String MESSAGE_SUCCESS = "Revert completed task(s) operation is successful!\n\n";
+    private static final String MESSAGE_SUCCESS = "Revert completed task(s) operation is successful!";
     
     public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {
         int lineNum = Integer.parseInt(taskInfo.trim());
