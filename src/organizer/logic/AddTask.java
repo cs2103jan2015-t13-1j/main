@@ -54,7 +54,6 @@ public class AddTask {
 		String taskDateTime = null;
 		ArrayList<Task> taskList = allLists.getTaskList();
 		int taskID = allLists.getTaskList().size();
-		System.out.println(taskID);
 		Task tempItem = new Task();
 		ResultSet returnResult = new ResultSet();
 		
