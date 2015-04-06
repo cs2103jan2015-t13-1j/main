@@ -96,21 +96,22 @@ public class AddTask {
 		
 		if(DEADLINE_DATEONLY.matches()) {
 			deadlineTask.setTaskEndDate(LocalDate.parse(taskDateTime));
+			deadlineTask.setTaskEndTime(LocalTime.parse(TIME_DEADLINE));
 		} else if(taskDateTime.matches(PATTERN_DEADLINE_DAYASDATE)) {
 			deadlineTask.setTaskEndDate(dtCheck.determineDate(taskDateTime));
+			deadlineTask.setTaskEndTime(LocalTime.parse(TIME_DEADLINE));
 		} else if(DEADLINE_DATETIME.matches()) {
-			deadlineTask.setTaskStartDate(LocalDate.parse(DEADLINE_DATETIME.group(1)));
-			deadlineTask.setTaskStartTime(dtCheck.determineHour(DEADLINE_DATETIME.group(6)));
+			deadlineTask.setTaskEndDate(LocalDate.parse(DEADLINE_DATETIME.group(1)));
+			deadlineTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_DATETIME.group(6)));
 		} else if(DEADLINE_DAYTIME.matches()) {
-			deadlineTask.setTaskStartDate(dtCheck.determineDate(DEADLINE_DAYTIME.group(1)));
-			deadlineTask.setTaskStartTime(dtCheck.determineHour(DEADLINE_DAYTIME.group(3)));
+			deadlineTask.setTaskEndDate(dtCheck.determineDate(DEADLINE_DAYTIME.group(1)));
+			deadlineTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_DAYTIME.group(3)));
 		} else {
 			taskName = taskName.concat(" "+taskDateTime);
 		}
 		
 		deadlineTask.setTaskName(taskName);
 		deadlineTask.setTaskID(taskID);
-		deadlineTask.setTaskEndTime(LocalTime.parse(TIME_DEADLINE));
 		deadlineTask.setTaskType(TYPE_DEADLINE);
 		
 		return deadlineTask;
