@@ -42,7 +42,7 @@ public class Logic {
 	}
 	
 	public ResultSet addCommand(String taskInfo) {
-		addToUndoList(allLists.getTaskList());
+		//addToUndoList(allLists.getTaskList());
 		AddTask command = new AddTask();
 		returnResult = command.execute(taskInfo, allLists.getTaskList());
 		returnResult.setReturnList(viewDefault());
@@ -50,7 +50,7 @@ public class Logic {
 	}
 	
 	public ResultSet deleteCommand(String taskInfo) {
-		addToUndoList(allLists.getTaskList());
+		//addToUndoList(allLists.getTaskList());
 		DeleteTask command = new DeleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
 		returnResult.setReturnList(viewDefault());
@@ -72,9 +72,9 @@ public class Logic {
 	}
 	
 	public ResultSet postponeCommand(String taskInfo) {
-		addToUndoList(allLists.getTaskList());
-		PostponeTask command = new PostponeTask();
-		returnResult = command.execute(taskInfo, allLists, validOp);
+	//	addToUndoList(allLists.getTaskList());
+	//	PostponeTask command = new PostponeTask();
+	//	returnResult = command.execute(taskInfo, allLists, validOp);
 		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
@@ -86,7 +86,7 @@ public class Logic {
 	}
 	
 	public ResultSet rankCommand(String taskInfo) {
-		addToUndoList(allLists.getTaskList());
+	//	addToUndoList(allLists.getTaskList());
 		RankTask command = new RankTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
 		returnResult.setReturnList(viewDefault());
@@ -94,7 +94,7 @@ public class Logic {
 	}
 	
 	public ResultSet completeCommand(String taskInfo) {
-		addToUndoList(allLists.getTaskList());
+	//	addToUndoList(allLists.getTaskList());
 		CompleteTask command = new CompleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
 		returnResult.setReturnList(viewDefault());
@@ -102,7 +102,7 @@ public class Logic {
 	}
 	
 	public ResultSet incompleteCommand(String taskInfo) {
-		addToUndoList(allLists.getTaskList());
+		//addToUndoList(allLists.getTaskList());
 		IncompleteTask command = new IncompleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
 		returnResult.setReturnList(viewDefault());
@@ -110,9 +110,9 @@ public class Logic {
 	}
 	
 	public ResultSet editCommand(String userContent) {
-		addToUndoList(allLists.getTaskList());
-		EditTask command = new EditTask();
-		returnResult = command.execute(userContent, allLists, validOp);
+		//addToUndoList(allLists.getTaskList());
+		//EditTask command = new EditTask();
+		//returnResult = command.execute(userContent, allLists, validOp);
 		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
@@ -124,21 +124,21 @@ public class Logic {
 		return returnResult;
 	}
 	
-	public void addToUndoList(ArrayList<Task> taskList) {
-		ArrayList<Task> tempTaskList = new ArrayList<Task>();
-		for(int index = 0; index < taskList.size(); index++) {
-			Task tempTask = new Task();
-			tempTask.setDueDate(taskList.get(index).getDueDate());
-			tempTask.setEndTime(taskList.get(index).getEndTime());
-			tempTask.setStartTime(taskList.get(index).getStartTime());
-			tempTask.setTaskID(taskList.get(index).getTaskID());
-			tempTask.setTaskName(taskList.get(index).getTaskName());
-			tempTask.setTaskPriority(taskList.get(index).getTaskPriority());
-			tempTask.setTaskStatus(taskList.get(index).getTaskStatus());
-			tempTaskList.add(tempTask);
-		}
-		undoList.push(new ArrayList<Task>(tempTaskList));
-	}
+//	public void addToUndoList(ArrayList<Task> taskList) {
+//		ArrayList<Task> tempTaskList = new ArrayList<Task>();
+//		for(int index = 0; index < taskList.size(); index++) {
+//			Task tempTask = new Task();
+//			tempTask.setDueDate(taskList.get(index).getDueDate());
+//			tempTask.setEndTime(taskList.get(index).getEndTime());
+//			tempTask.setStartTime(taskList.get(index).getStartTime());
+//			tempTask.setTaskID(taskList.get(index).getTaskID());
+//			tempTask.setTaskName(taskList.get(index).getTaskName());
+//			tempTask.setTaskPriority(taskList.get(index).getTaskPriority());
+//			tempTask.setTaskStatus(taskList.get(index).getTaskStatus());
+//			tempTaskList.add(tempTask);
+//		}
+//		undoList.push(new ArrayList<Task>(tempTaskList));
+//	}
 	
 	public ResultSet saveCommand() throws IOException {
 		SaveTask command = new SaveTask();
