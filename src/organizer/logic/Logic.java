@@ -9,7 +9,7 @@ import java.util.Stack;
 import organizer.storage.Storage;
 
 public class Logic {
-	private final static String MODE_INIT_VIEW = "today";
+	private final static String MODE_INIT_VIEW = "all";
 	
 	Storage tempStorage = new Storage();
 	ResultSet returnResult = new ResultSet();

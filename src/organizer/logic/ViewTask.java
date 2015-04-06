@@ -6,17 +6,24 @@ import java.util.ArrayList;
 public class ViewTask {
 	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
 	private static final String MESSAGE_SUCCESS = "View %1$s task(s) operation is successful!\n\n";
+	private static final String MESSAGE_UNSUCCESS = "View %1$s task(s) operation is unsuccessful!\n\n";
 	private enum ViewType {
 		TODAY,
+		DEADLINE,
+		FLOATING,
+		TIMED,
 		COMPLETE,
 		INCOMPLETE,
 		ALL;
-		@Override
+
 		public String toString() {
 			switch (this) {
 			case TODAY: return "today";
-			case COMPLETE: return "complete";
-			case INCOMPLETE: return "incomplete";
+			case COMPLETE: return "COMPLETE";
+			case INCOMPLETE: return "INCOMPLETE";
+			case DEADLINE: return "DEADLINE";
+			case FLOATING: return "FLOATING";
+			case TIMED: return "TIMED";
 			case ALL: return "all";
 			default: return "any";
 			}
@@ -29,57 +36,108 @@ public class ViewTask {
 		allLists.setViewList(tempList);
 		ResultSet returnResult = new ResultSet();
 		
-		final ViewType viewType;
 		switch (viewTypeString.trim().toLowerCase()) {
 		case "today":
-			viewType = ViewType.TODAY;
+			
 			break;
 		case "complete":
-			viewType = ViewType.COMPLETE;
+			allLists.setViewList(viewComplete(allLists.getTaskList()));
 			break;
 		case "incomplete":
-			viewType = ViewType.INCOMPLETE;
+			allLists.setViewList(viewIncomplete(allLists.getTaskList()));
 			break;
 		case "all":
-			viewType = ViewType.ALL;
+			allLists.setViewList(allLists.getTaskList());
+			break;
+		case "floating":
+			allLists.setViewList(viewFloating(allLists.getTaskList()));
+			break;
+		case "timed":
+			allLists.setViewList(viewTimed(allLists.getTaskList()));
+			break;
+		case "deadline":
+			allLists.setViewList(viewDeadline(allLists.getTaskList()));
 			break;
 		default:
-			viewType = null;
-			break;
+			returnResult.setOpStatus(MESSAGE_UNSUCCESS);
+			return returnResult;
 		}
-
-		for(int i = 0; i < allLists.getTaskList().size(); i++) {
-			Task task = allLists.getTaskList().get(i);
-			if(task.getTaskStartDate() == null) {
-				tempList.add(task);
-			} else {
-				if(viewType == ViewType.TODAY && task.getTaskStartDate().equals(currentDate)) {
-					tempList.add(task);
-				}
-			}
-
-			if(viewType == ViewType.COMPLETE && task.getTaskStatus().toLowerCase().equals("complete")) {
-				tempList.add(task);
-			} else if(viewType == ViewType.INCOMPLETE && task.getTaskStatus().toLowerCase().equals("incomplete")) {
-				tempList.add(task);
-			}else if (viewType == ViewType.ALL){
-				tempList.add(task);
-			}
-
-		}
-
-		allLists.setViewList(tempList);
-
-		if(allLists.getViewList().isEmpty()) {
-			returnResult.setOpStatus(MESSAGE_EMPTY_LIST);
-		} else {
-			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS, viewType == null ? "any" : viewType));
-		}
-
+		
 		returnResult.setReturnList(allLists.getViewList());
+		returnResult.setOpStatus(isEmptyView(allLists.getViewList()));
+		
 		return returnResult;
 
 	}
-
+	
+	private String isEmptyView(ArrayList<Task> viewList) {
+		if(viewList.isEmpty()) {
+			return MESSAGE_EMPTY_LIST;
+		} else {
+			return MESSAGE_SUCCESS;
+		}
+	}
+	
+	private ArrayList<Task> viewComplete(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			if(taskList.get(index).getTaskStatus().equals(ViewType.COMPLETE.toString())) {
+				tempList.add(taskList.get(index));
+			}
+		}
+		
+		return tempList;
+	}
+	
+	private ArrayList<Task> viewIncomplete(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			if(taskList.get(index).getTaskStatus().equals(ViewType.INCOMPLETE.toString())) {
+				tempList.add(taskList.get(index));
+			}
+		}
+		
+		return tempList;
+	}
+	
+	private ArrayList<Task> viewFloating(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			if(taskList.get(index).getTaskType().equals(ViewType.FLOATING.toString())) {
+				tempList.add(taskList.get(index));
+			}
+		}
+		
+		return tempList;
+	}
+	
+	private ArrayList<Task> viewTimed(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			if(taskList.get(index).getTaskType().equals(ViewType.TIMED.toString())) {
+				tempList.add(taskList.get(index));
+			}
+		}
+		
+		return tempList;
+	}
+	
+	private ArrayList<Task> viewDeadline(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			if(taskList.get(index).getTaskType().equals(ViewType.DEADLINE.toString())) {
+				tempList.add(taskList.get(index));
+			}
+		}
+		
+		return tempList;
+	}
+	
+	
 }
 
