@@ -1,6 +1,7 @@
 package organizer.logic;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class ViewTask {
@@ -14,6 +15,7 @@ public class ViewTask {
 		TIMED,
 		COMPLETE,
 		INCOMPLETE,
+		OVERDUE,
 		ALL;
 
 		public String toString() {
@@ -24,6 +26,7 @@ public class ViewTask {
 			case DEADLINE: return "DEADLINE";
 			case FLOATING: return "FLOATING";
 			case TIMED: return "TIMED";
+			case OVERDUE: return "OVERDUE";
 			case ALL: return "all";
 			default: return "any";
 			}
@@ -56,6 +59,8 @@ public class ViewTask {
 			break;
 		case "deadline":
 			allLists.setViewList(viewDeadline(allLists.getTaskList()));
+		case "overdue":
+			allLists.setViewList(viewOverDue(allLists.getTaskList()));
 			break;
 		default:
 			returnResult.setReturnList(allLists.getTaskList());
@@ -149,6 +154,29 @@ public class ViewTask {
 		
 		return tempList;
 	}
+	
+	private ArrayList<Task> viewOverDue(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		Task tempTask = new Task();
+		LocalDate currentDate = LocalDate.now();
+		LocalTime currentTime = LocalTime.now();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			tempTask = taskList.get(index);
+			if(tempTask.getTaskEndDate() != null && tempTask.getTaskEndTime() != null) {
+				if((tempTask.getTaskEndDate().compareTo(currentDate) < 0) && (tempTask.getTaskEndTime().compareTo(currentTime) < 0)) {
+					tempList.add(tempTask);
+				}
+			} else if(tempTask.getTaskEndDate() != null && tempTask.getTaskEndTime() == null ) {
+				if(tempTask.getTaskEndDate().compareTo(currentDate) < 0) {
+					tempList.add(tempTask);
+				}
+			}
+		}
+		
+		return tempList;
+	}
+	
 	
 	
 }
