@@ -68,6 +68,7 @@ public class MainAppController {
 		mainApp.performCommand(commandString);
 		updateTaskList();
 		setCommandStatus();
+		restoreSidePane();
 	}
 
 	private void setCommandStatus() {
@@ -115,7 +116,7 @@ public class MainAppController {
 	}
 	
 	@FXML
-	public void keyPressHandler(KeyEvent e) {
+	public void keyPressHandler(KeyEvent e) throws Exception {
 		if (e.getCode() == KeyCode.PAGE_DOWN) {
 			System.out.println("NEXT");
 			if (pageStart + 1 < pageCount) {
@@ -156,22 +157,25 @@ public class MainAppController {
 		}
 	}
 	
-	private void displayTaskDetailSidePane(int index) {
+	private void displayTaskDetailSidePane(int index) throws IOException {
 		sidePane.getChildren().clear();
-		try {
-			final TaskCardController controller = new TaskCardController(TaskCardController.CardSize.XLARGE);
+		final TaskCardController controller = new TaskCardController(TaskCardController.CardSize.XLARGE);
+		if (pageStart * ITEMS_PER_PAGE + index < taskData.size()) {
 			controller.loadTask(taskData.get(pageStart * ITEMS_PER_PAGE + index));
 			sidePane.getChildren().add(controller);
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 	
 	private void restoreSidePane() {
+		sidePane.getChildren().clear();
 	}
 	
 	private void showControlKeyHint() {
 		mainPaneHintLayer.setVisible(true);
+		for (int i = 0, start = pageStart * ITEMS_PER_PAGE, size = taskData.size();
+				i < 6;
+				++i, ++start)
+			mainPaneHintLayer.getChildren().get(i).setVisible(start < size);
 		sidePaneHintLabel.setVisible(true);
 	}
 	private void hideControlKeyHint() {

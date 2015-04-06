@@ -8,10 +8,6 @@
 	-fx-background-size: cover;
 }
 
-#commandStatus {
-	-fx-text-fill: #ff0000;
-}
-
 .circle {
 	-fx-stroke-width: 0;
 	-fx-fill: rgba(255,30,0,0.8);
