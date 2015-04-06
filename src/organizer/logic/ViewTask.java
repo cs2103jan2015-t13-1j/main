@@ -9,6 +9,7 @@ public class ViewTask {
 	private static final String MESSAGE_SUCCESS = "View %1$s task(s) operation is successful!";
 	private static final String MESSAGE_UNSUCCESS = "View %1$s task(s) operation is unsuccessful!";
 	private static final String STATUS_INCOMPLETE = "INCOMPLETE";
+	
 	private enum ViewType {
 		TODAY,
 		DEADLINE,
@@ -60,6 +61,7 @@ public class ViewTask {
 			break;
 		case "deadline":
 			allLists.setViewList(viewDeadline(allLists.getTaskList()));
+			break;
 		case "overdue":
 			allLists.setViewList(viewOverDue(allLists.getTaskList()));
 			break;
@@ -146,10 +148,12 @@ public class ViewTask {
 	
 	private ArrayList<Task> viewDeadline(ArrayList<Task> taskList) {
 		ArrayList<Task> tempList = new ArrayList<Task>();
+		Task tempTask = new Task();
 		
 		for(int index = 0; index < taskList.size(); index++) {
-			if(taskList.get(index).getTaskType().equals(ViewType.DEADLINE.toString())) {
-				tempList.add(taskList.get(index));
+			tempTask = taskList.get(index);
+			if(tempTask.getTaskType().equals(ViewType.DEADLINE.toString())) {
+				tempList.add(tempTask);
 			}
 		}
 		

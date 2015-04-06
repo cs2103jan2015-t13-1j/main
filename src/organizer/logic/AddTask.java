@@ -80,7 +80,7 @@ public class AddTask {
 			tempItem = addFloatingTask(taskName, taskID);
 		}
 		
-		
+		tempItem.setTaskID(taskID);
 		taskList.add(tempItem);
 		allLists.setTaskList(taskList);
 		returnResult.setOpStatus(MESSAGE_SUCCESS);
@@ -122,9 +122,6 @@ public class AddTask {
 		}
 		
 		deadlineTask.setTaskName(taskName);
-		deadlineTask.setTaskID(taskID);
-		
-		
 		return deadlineTask;
 		
 	}
