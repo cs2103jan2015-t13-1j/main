@@ -41,18 +41,18 @@ public class TaskCardController extends Region {
 		startTimeLabel.setText(
 				String.format(
 						"from %s %s, %d, %d:%d",
-						task.getTaskStartDate().getDayOfMonth(),
-						task.getTaskStartDate().getMonth().getValue(),
-						task.getTaskStartDate().getYear(),
-						task.getTaskStartTime().getHour(),
-						task.getTaskStartTime().getMinute()));
+						task.getTaskStartDate() == null ? "" : task.getTaskStartDate().getDayOfMonth(),
+						task.getTaskStartDate() == null ? "" : task.getTaskStartDate().getMonth().getValue(),
+						task.getTaskStartDate() == null ? 0 : task.getTaskStartDate().getYear(),
+						task.getTaskStartTime() == null ? 0 : task.getTaskStartTime().getHour(),
+						task.getTaskStartTime() == null ? 0 : task.getTaskStartTime().getMinute()));
 		endTimeLabel.setText(
 				String.format(
 						"to %s %s, %d, %d:%d",
-						task.getTaskEndDate().getDayOfMonth(),
-						task.getTaskEndDate().getMonth().getValue(),
-						task.getTaskEndDate().getYear(),
-						task.getTaskEndTime().getHour(),
-						task.getTaskEndTime().getMinute()));
+						task.getTaskEndDate() == null ? "" : task.getTaskEndDate().getDayOfMonth(),
+						task.getTaskEndDate() == null ? "" : task.getTaskEndDate().getMonth().getValue(),
+						task.getTaskEndDate() == null ? 0 : task.getTaskEndDate().getYear(),
+						task.getTaskEndTime() == null ? 0 : task.getTaskEndTime().getHour(),
+						task.getTaskEndTime() == null ? 0 : task.getTaskEndTime().getMinute()));
 	}
 }

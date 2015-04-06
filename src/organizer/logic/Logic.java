@@ -128,9 +128,9 @@ public class Logic {
 		ArrayList<Task> tempTaskList = new ArrayList<Task>();
 		for(int index = 0; index < taskList.size(); index++) {
 			Task tempTask = new Task();
-			tempTask.setDueDate(taskList.get(index).getDueDate());
-			tempTask.setEndTime(taskList.get(index).getEndTime());
-			tempTask.setStartTime(taskList.get(index).getStartTime());
+			tempTask.setTaskEndDate(taskList.get(index).getTaskEndDate());
+			tempTask.setTaskEndTime(taskList.get(index).getTaskEndTime());
+			tempTask.setTaskStartTime(taskList.get(index).getTaskStartTime());
 			tempTask.setTaskID(taskList.get(index).getTaskID());
 			tempTask.setTaskName(taskList.get(index).getTaskName());
 			tempTask.setTaskPriority(taskList.get(index).getTaskPriority());

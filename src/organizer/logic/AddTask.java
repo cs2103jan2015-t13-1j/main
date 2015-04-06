@@ -20,7 +20,7 @@ public class AddTask {
 		String taskStartTime = null;
 		String taskEndTime = null;
 		String taskTime = null;
-		LocalDate dueDate = LocalDate.now();
+		LocalDate endDate = LocalDate.now();
 		
 		LocalTime startTime = null;
 		LocalTime endTime = null;
@@ -56,23 +56,23 @@ public class AddTask {
 					//endTime = startTime.plusHours(TASK_DURATION);
 				}
 				
-				dueDate = dateTimeCheck.determineDate(taskDate);
-				if(dueDate == null) {
+				endDate = dateTimeCheck.determineDate(taskDate);
+				if(endDate == null) {
 					returnResult.setOpStatus(MESSAGE_UNSUCCESS);
 					return returnResult;
 				}
 				
 			} else {
 				taskDate = dateTime;
-				dueDate = dateTimeCheck.determineDate(taskDate);
-				if(dueDate == null) {
+				endDate = dateTimeCheck.determineDate(taskDate);
+				if(endDate == null) {
 					returnResult.setOpStatus(MESSAGE_UNSUCCESS);
 					return returnResult;
 				}
 			}
 		} else {
 			taskName = taskInfo;
-			dueDate = null;
+			endDate = null;
 			startTime = null;
 			endTime = null;
 		}
@@ -80,9 +80,9 @@ public class AddTask {
 
 		
 		tempTask.setTaskName(taskName);
-		tempTask.setDueDate(dueDate);
-		tempTask.setStartTime(startTime);
-		tempTask.setEndTime(endTime);
+		tempTask.setTaskEndDate(endDate);
+		tempTask.setTaskStartTime(startTime);
+		tempTask.setTaskEndTime(endTime);
 		tempTask.setTaskStatus("INCOMPLETE");
 		tempTask.setTaskPriority(null);
 		tempTask.setTaskID(taskList.size());

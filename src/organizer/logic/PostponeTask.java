@@ -14,8 +14,8 @@ public class PostponeTask {
 
 		if(validOp.isValidTask(lineNum, allLists)) {
 			tempList = allLists.getTaskList();
-			LocalDate newDueDate = tempList.get(lineNum - 1).getDueDate().plusDays(1);
-			tempList.get(lineNum - 1).setDueDate(newDueDate);
+			LocalDate newDueDate = tempList.get(lineNum - 1).getTaskEndDate().plusDays(1);
+			tempList.get(lineNum - 1).setTaskEndDate(newDueDate);
 			allLists.setTaskList(tempList);
 			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
 		} else {

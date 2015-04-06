@@ -33,7 +33,7 @@ public class EditTask {
 			if(editContent.indexOf(" ") >= 0) {
 				if(editContent.contains(dateFieldIdentifier)) {
 					LocalDate dueDate = dateTime.determineDate(editContent.substring(editContent.indexOf(dateFieldIdentifier)+1));
-					tempList.get(taskID).setDueDate(dueDate);
+					tempList.get(taskID).setTaskEndDate(dueDate);
 				} else if(editContent.contains(timeFieldIdentifier)) {
 					String timeInfo = editContent.substring(editContent.indexOf(timeFieldIdentifier)+1);
 					if(timeInfo.contains(timeFieldSeparator)) {
@@ -41,21 +41,21 @@ public class EditTask {
 						taskEndTime = timeInfo.substring(timeInfo.indexOf(timeFieldSeparator)+1);
 						startTime = dateTimeCheck.determineTime(taskStartTime);
 						endTime = dateTimeCheck.determineTime(taskEndTime);
-						if((startTime == null && endTime == null) || (endTime != null && startTime == null && tempList.get(taskID).getStartTime() == null
-								&& tempList.get(taskID).getEndTime() == null)) {
+						if((startTime == null && endTime == null) || (endTime != null && startTime == null && tempList.get(taskID).getTaskStartTime() == null
+								&& tempList.get(taskID).getTaskEndTime() == null)) {
 							returnResult.setReturnList(allLists.getTaskList());
 							returnResult.setOpStatus(MESSAGE_INVALID_CONTENT);
 							return returnResult;
-						} else if(endTime != null && tempList.get(taskID).getStartTime() != null) {
-							tempList.get(taskID).setEndTime(endTime);
-						} else if(startTime != null && tempList.get(taskID).getEndTime() != null) {
-							tempList.get(taskID).setStartTime(startTime);
-						} else if(startTime != null && tempList.get(taskID).getEndTime() == null && endTime == null){
-							tempList.get(taskID).setStartTime(startTime);
-							tempList.get(taskID).setEndTime(startTime.plusHours(TASK_DURATION));
+						} else if(endTime != null && tempList.get(taskID).getTaskStartTime() != null) {
+							tempList.get(taskID).setTaskEndTime(endTime);
+						} else if(startTime != null && tempList.get(taskID).getTaskEndTime() != null) {
+							tempList.get(taskID).setTaskStartTime(startTime);
+						} else if(startTime != null && tempList.get(taskID).getTaskEndTime() == null && endTime == null){
+							tempList.get(taskID).setTaskStartTime(startTime);
+							tempList.get(taskID).setTaskEndTime(startTime.plusHours(TASK_DURATION));
 						} else {
-							tempList.get(taskID).setStartTime(startTime);
-							tempList.get(taskID).setEndTime(endTime);
+							tempList.get(taskID).setTaskStartTime(startTime);
+							tempList.get(taskID).setTaskEndTime(endTime);
 						} 
 					} else {
 						startTime = dateTimeCheck.determineTime(timeInfo);
@@ -63,7 +63,7 @@ public class EditTask {
 							returnResult.setOpStatus(MESSAGE_INVALID_CONTENT);
 							return returnResult;
 						} else {
-							tempList.get(taskID).setStartTime(startTime);
+							tempList.get(taskID).setTaskStartTime(startTime);
 						}
 					}
 

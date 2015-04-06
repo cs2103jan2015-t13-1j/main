@@ -27,7 +27,7 @@ public class StorageTesting {
 	public void testStorageFields() throws IOException {
 		final Task targetTask = new Task();
 		targetTask.setTaskID(0);
-		targetTask.setDueDate(LocalDate.parse("2001-01-01"));
+		targetTask.setTaskEndDate(LocalDate.parse("2001-01-01"));
 		targetTask.setTaskName("buy milk");
 		targetTask.setTaskPriority("low");
 		targetTask.setTaskStatus("COMPLETE");
@@ -49,7 +49,7 @@ public class StorageTesting {
 		assertNotNull(oneTask);
 		assertEquals(oneTask.getTaskID(), targetTask.getTaskID());
 		assertEquals(oneTask.getTaskName(), targetTask.getTaskName());
-		assertEquals(oneTask.getDueDate(), targetTask.getDueDate());
+		assertEquals(oneTask.getTaskEndDate(), targetTask.getTaskEndDate());
 		assertEquals(oneTask.getTaskPriority(), targetTask.getTaskPriority());
 		assertEquals(oneTask.getTaskStatus(), targetTask.getTaskStatus());
 	}
