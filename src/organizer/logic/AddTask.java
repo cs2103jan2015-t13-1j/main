@@ -20,8 +20,6 @@ public class AddTask {
 	private static final String TIME_DEADLINE ="23:59";
 	
 	private static final String KEYWORD_TIMED_DATE = " on ";
-//	private static final String KEYWORD_TIMED_START = " from ";
-//	private static final String KEYWORD_TIMED_END = " to ";
 	private static final String KEYWORD_TIMED_TODAY = " today ";
 	private static final String KEYWORD_TIMED_TMRW = " tomorrow ";
 	

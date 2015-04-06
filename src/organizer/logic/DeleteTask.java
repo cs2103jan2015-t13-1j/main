@@ -6,19 +6,19 @@ public class DeleteTask {
 	private static final String MESSAGE_SUCCESS = "Delete task(s) operation is successful!\n\n";
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
 	
-	public ResultSet execute(String taskInfo, TaskListSet allList, Validation validOp) {
+	public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {
 		int lineNum = Integer.parseInt(taskInfo.trim());
 		ResultSet returnResult = new ResultSet();
 		
-		if(validOp.isValidTask(lineNum, allList)) {
-			int taskID = validOp.checkForTaskID(lineNum, allList);
-			removeFromTaskList(taskID, allList.getTaskList());
+		if(validOp.isValidTask(lineNum, allLists)) {
+			int taskID = validOp.checkForTaskID(lineNum, allLists);
+			removeFromTaskList(taskID, allLists.getTaskList());
 			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
 		} else {
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
 		}
 
-		returnResult.setReturnList(allList.getTaskList());
+		returnResult.setReturnList(allLists.getTaskList());
 
 		return returnResult;
 	}
