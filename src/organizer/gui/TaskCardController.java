@@ -29,13 +29,26 @@ public class TaskCardController extends Region {
 	@FXML
 	private Label idLabel;
 	
+	public enum CardSize {
+		SMALL,
+		LARGE,
+		XLARGE;
+		public String getResourceName() {
+			switch (this) {
+			case SMALL: return "TaskCardSmall.fxml";
+			case LARGE: return "TaskCardLarge.fxml";
+			case XLARGE: return "TaskCardXLarge.fxml";
+			default: throw new RuntimeException("Unimplememented size: " + this);
+			}
+		}
+	}
+	
 	public TaskCardController() throws IOException {
-		this(true);	// default size is small
+		this(CardSize.LARGE);	// default size is large
 	}
 
-	public TaskCardController(boolean largeSize) throws IOException {
-        final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
-        		largeSize ? "TaskCardLarge.fxml" : "TaskCardSmall.fxml"));
+	public TaskCardController(CardSize size) throws IOException {
+        final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(size.getResourceName()));
         fxmlLoader.setController(this);
         this.getChildren().add(fxmlLoader.load());
 	}
@@ -65,18 +78,24 @@ public class TaskCardController extends Region {
 			LocalTime time) {
 		StringBuilder strb = new StringBuilder();
 		if (date != null) {
-			strb.append(date.getDayOfMonth());
-			strb.append(' ');
-			strb.append(date.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()));
-			strb.append(',');
-			strb.append(date.getYear());
+			strb.append(date.getDayOfMonth())
+				.append(' ')
+				.append(date.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()))
+				.append(',')
+				.append(date.getYear());
 		}
 		if (date != null && time != null) {
 			strb.append(' ');
 		}
 		if (time != null) {
-			strb.append(time.getHour());
-			strb.append(':');
+			final int hour = time.getHour(), minute = time.getMinute();
+			if (hour < 10)
+				strb.append('0');
+			strb
+				.append(time.getHour())
+				.append(':');
+			if (minute < 10)
+				strb.append('0');
 			strb.append(time.getMinute());
 		}
 		return strb.toString();

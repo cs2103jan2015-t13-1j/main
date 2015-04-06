@@ -157,6 +157,14 @@ public class MainAppController {
 	}
 	
 	private void displayTaskDetailSidePane(int index) {
+		sidePane.getChildren().clear();
+		try {
+			final TaskCardController controller = new TaskCardController(TaskCardController.CardSize.XLARGE);
+			controller.loadTask(taskData.get(pageStart * ITEMS_PER_PAGE + index));
+			sidePane.getChildren().add(controller);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void restoreSidePane() {

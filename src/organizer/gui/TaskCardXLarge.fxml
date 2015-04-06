@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.control.*?>
+<?import java.net.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import java.net.* ?>
+
+<AnchorPane minHeight="161.0" minWidth="209.0" prefHeight="382.0" prefWidth="250.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <stylesheets>
+      <URL value="@mainstyle.css" />
+   </stylesheets>
+   <styleClass>
+      <String fx:value="taskcard" />
+      <String fx:value="large" />
+      <String fx:value="background" />
+   </styleClass>
+   <children>
+      <Label fx:id="nameLabel" alignment="TOP_LEFT" layoutX="18.0" layoutY="14.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="187.0" prefWidth="208.0" text="Name" textOverrun="WORD_ELLIPSIS" wrapText="true">
+         <styleClass>
+            <String fx:value="taskcard" />
+            <String fx:value="large" />
+            <String fx:value="name" />
+         </styleClass>
+      </Label>
+      <Label fx:id="statusLabel" layoutX="16.0" layoutY="212.0" text="Status" textAlignment="RIGHT">
+         <styleClass>
+            <String fx:value="taskcard" />
+            <String fx:value="large" />
+            <String fx:value="status" />
+         </styleClass>
+      </Label>
+      <Label fx:id="priorityLabel" layoutX="14.0" layoutY="258.0" text="Priority">
+         <styleClass>
+            <String fx:value="taskcard" />
+            <String fx:value="large" />
+            <String fx:value="priority" />
+         </styleClass>
+      </Label>
+      <Label fx:id="startTimeLabel" layoutX="25.0" layoutY="306.0" text="Start">
+         <styleClass>
+            <String fx:value="taskcard" />
+            <String fx:value="large" />
+            <String fx:value="date" />
+         </styleClass>
+      </Label>
+      <Label fx:id="endTimeLabel" layoutX="28.0" layoutY="345.0" text="End">
+         <styleClass>
+            <String fx:value="taskcard" />
+            <String fx:value="large" />
+            <String fx:value="date" />
+         </styleClass>
+      </Label>
+      <Label fx:id="idLabel" layoutX="230.0" layoutY="6.0" text="Id" textAlignment="RIGHT">
+         <styleClass>
+            <String fx:value="taskcard" />
+            <String fx:value="large" />
+            <String fx:value="id" />
+         </styleClass>
+      </Label>
+   </children>
+</AnchorPane>
