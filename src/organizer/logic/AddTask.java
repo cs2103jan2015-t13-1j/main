@@ -8,9 +8,11 @@ import java.util.regex.Pattern;
 
 public class AddTask {
 	private static final String PATTERN_DEADLINE_DATEONLY = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
-
 	private static final String PATTERN_DEADLINE_DAYASDATE = "monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow";
 
+	private static final String PATTERN_DEADLINE_DATETIME = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_DEADLINE_DAYTIME = "(\\w+)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	
 	private static final String KEYWORD_DEADLINE = " by ";
 	private static final String TYPE_DEADLINE = "DEADLINE";
 	private static final String TYPE_FLOATING = "FLOATING";
@@ -82,18 +84,26 @@ public class AddTask {
 	}
 	
 	public Task addDeadlineTask(String taskName, String taskDateTime, int taskID) {
-		Pattern dateOnly;
-		Matcher dateOnlyMatch;
+		Matcher DEADLINE_DATEONLY;
+		Matcher DEADLINE_DATETIME;
+		Matcher DEADLINE_DAYTIME;
 		
-		dateOnly = Pattern.compile(PATTERN_DEADLINE_DATEONLY);	
-		dateOnlyMatch = dateOnly.matcher(taskDateTime);
-
+		DEADLINE_DATEONLY = Pattern.compile(PATTERN_DEADLINE_DATEONLY).matcher(taskDateTime);
+		DEADLINE_DATETIME = Pattern.compile(PATTERN_DEADLINE_DATETIME).matcher(taskDateTime);
+		DEADLINE_DAYTIME = Pattern.compile(PATTERN_DEADLINE_DAYTIME).matcher(taskDateTime);
+		
 		Task deadlineTask = new Task();
 		
-		if(dateOnlyMatch.matches()) {
+		if(DEADLINE_DATEONLY.matches()) {
 			deadlineTask.setTaskEndDate(LocalDate.parse(taskDateTime));
 		} else if(taskDateTime.matches(PATTERN_DEADLINE_DAYASDATE)) {
 			deadlineTask.setTaskEndDate(dtCheck.determineDate(taskDateTime));
+		} else if(DEADLINE_DATETIME.matches()) {
+			deadlineTask.setTaskStartDate(LocalDate.parse(DEADLINE_DATETIME.group(1)));
+			deadlineTask.setTaskStartTime(dtCheck.determineHour(DEADLINE_DATETIME.group(6)));
+		} else if(DEADLINE_DAYTIME.matches()) {
+			deadlineTask.setTaskStartDate(dtCheck.determineDate(DEADLINE_DAYTIME.group(1)));
+			deadlineTask.setTaskStartTime(dtCheck.determineHour(DEADLINE_DAYTIME.group(3)));
 		} else {
 			taskName = taskName.concat(" "+taskDateTime);
 		}
@@ -156,7 +166,7 @@ public class AddTask {
 			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_START_DAY.group(1)));
 			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_START_DAY.group(3)));
 		} else {
-			//need some debugging
+			taskName = taskName.concat(" "+taskDateTime);
 		}
 
 		timedTask.setTaskType(TYPE_TIMED);
@@ -183,7 +193,7 @@ public class AddTask {
 			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_START_TODAYTMRW.group(3)));
 			
 		} else {
-			//need to do some debugging
+			taskName = taskName.concat(" "+ taskDatetime);
 		}
 		
 		timedTask.setTaskType(TYPE_TIMED);
