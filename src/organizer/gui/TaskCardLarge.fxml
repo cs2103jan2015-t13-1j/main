@@ -18,11 +18,25 @@
       <String fx:value="background" />
    </styleClass>
    <children>
-      <Label fx:id="nameLabel" layoutX="18.0" layoutY="14.0" text="Name">
+      <Label fx:id="nameLabel" alignment="TOP_LEFT" layoutX="18.0" layoutY="14.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="81.0" prefWidth="171.0" text="Name" textOverrun="WORD_ELLIPSIS" wrapText="true">
          <styleClass>
             <String fx:value="taskcard" />
             <String fx:value="large" />
             <String fx:value="name" />
+         </styleClass>
+      </Label>
+      <Label fx:id="statusLabel" layoutX="16.0" layoutY="97.0" text="Status" textAlignment="RIGHT">
+         <styleClass>
+            <String fx:value="taskcard" />
+            <String fx:value="large" />
+            <String fx:value="status" />
+         </styleClass>
+      </Label>
+      <Label fx:id="priorityLabel" layoutX="16.0" layoutY="117.0" text="Priority">
+         <styleClass>
+            <String fx:value="taskcard" />
+            <String fx:value="large" />
+            <String fx:value="priority" />
          </styleClass>
       </Label>
       <Label fx:id="startTimeLabel" layoutX="27.0" layoutY="153.0" text="Start">
@@ -45,7 +59,7 @@
             <String fx:value="large" />
             <String fx:value="separator" />
          </styleClass></Line>
-      <Label fx:id="idLabel" layoutX="184.0" layoutY="117.0" text="Id">
+      <Label fx:id="idLabel" layoutX="189.0" layoutY="6.0" text="Id" textAlignment="RIGHT">
          <styleClass>
             <String fx:value="taskcard" />
             <String fx:value="large" />
