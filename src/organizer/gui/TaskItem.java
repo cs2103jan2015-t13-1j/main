@@ -12,7 +12,8 @@ public class TaskItem {
 	private final StringProperty taskStatus;
 	private final StringProperty taskPriority;
 	private final IntegerProperty taskIndex;
-	private final ObjectProperty<LocalDate> taskDueDate;
+	private final ObjectProperty<LocalDate> taskStartDate;
+	private final ObjectProperty<LocalDate> taskEndDate;
 	private final ObjectProperty<LocalTime> taskStartTime;
 	private final ObjectProperty<LocalTime> taskEndTime;
 	
@@ -20,9 +21,10 @@ public class TaskItem {
 		this.task = task;
 		taskName = new SimpleStringProperty(task.getTaskName());
 		taskStatus = new SimpleStringProperty(task.getTaskStatus());
-		taskDueDate = new SimpleObjectProperty<>(task.getDueDate());
-		taskStartTime = new SimpleObjectProperty<>(task.getStartTime());
-		taskEndTime = new SimpleObjectProperty<>(task.getEndTime());
+		taskStartDate = new SimpleObjectProperty<>(task.getTaskStartDate());
+		taskEndDate = new SimpleObjectProperty<>(task.getTaskEndDate());
+		taskStartTime = new SimpleObjectProperty<>(task.getTaskStartTime());
+		taskEndTime = new SimpleObjectProperty<>(task.getTaskEndTime());
 		taskIndex = new SimpleIntegerProperty(index);
 		taskPriority = new SimpleStringProperty(task.getTaskPriority());
 	}
@@ -35,12 +37,20 @@ public class TaskItem {
 		return taskName;
 	}
 	
-	public LocalDate getTaskDueDate() {
-		return taskDueDate.get();
+	public LocalDate getTaskStartDate() {
+		return taskStartDate.get();
 	}
 	
-	public ObjectProperty<LocalDate> taskDueDateProperty() {
-		return taskDueDate;
+	public ObjectProperty<LocalDate> taskStartDateProperty() {
+		return taskStartDate;
+	}
+	
+	public LocalDate getTaskEndDate() {
+		return taskEndDate.get();
+	}
+	
+	public ObjectProperty<LocalDate> taskEndDateProperty() {
+		return taskEndDate;
 	}
 	
 	public int getTaskIndex() {
@@ -68,7 +78,7 @@ public class TaskItem {
 	}
 	
 	public LocalTime getTaskStartTime() {
-		return task.getStartTime();
+		return task.getTaskStartTime();
 	}
 	
 	public ObjectProperty<LocalTime> taskStartTimeProperty() {
@@ -76,7 +86,7 @@ public class TaskItem {
 	}
 	
 	public LocalTime getTaskEndTime() {
-		return task.getEndTime();
+		return task.getTaskEndTime();
 	}
 	
 	public ObjectProperty<LocalTime> taskEndTimeProperty() {

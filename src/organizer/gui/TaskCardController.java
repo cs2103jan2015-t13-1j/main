@@ -38,5 +38,21 @@ public class TaskCardController extends Region {
 		this.task = task;
 		nameLabel.textProperty().bind(task.taskNameProperty());
 		idLabel.setText(Integer.toString(task.getTaskIndex()));
+		startTimeLabel.setText(
+				String.format(
+						"from %s %s, %d, %d:%d",
+						task.getTaskStartDate().getDayOfMonth(),
+						task.getTaskStartDate().getMonth().getValue(),
+						task.getTaskStartDate().getYear(),
+						task.getTaskStartTime().getHour(),
+						task.getTaskStartTime().getMinute()));
+		endTimeLabel.setText(
+				String.format(
+						"to %s %s, %d, %d:%d",
+						task.getTaskEndDate().getDayOfMonth(),
+						task.getTaskEndDate().getMonth().getValue(),
+						task.getTaskEndDate().getYear(),
+						task.getTaskEndTime().getHour(),
+						task.getTaskEndTime().getMinute()));
 	}
 }
