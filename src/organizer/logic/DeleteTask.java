@@ -17,7 +17,7 @@ public class DeleteTask {
 		} else {
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
 		}
-
+		
 		returnResult.setReturnList(allLists.getTaskList());
 
 		return returnResult;

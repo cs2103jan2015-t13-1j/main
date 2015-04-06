@@ -10,7 +10,6 @@ import organizer.storage.Storage;
 
 public class Logic {
 	private final static String MODE_INIT_VIEW = "all";
-	
 	Storage tempStorage = new Storage();
 	ResultSet returnResult = new ResultSet();
 	TaskListSet allLists = new TaskListSet();
@@ -74,6 +73,7 @@ public class Logic {
 	}
 	
 	public ResultSet postponeCommand(String taskInfo) {
+		
 		addToUndoList(allLists.getTaskList());
 		PostponeTask command = new PostponeTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);

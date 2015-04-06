@@ -8,6 +8,7 @@ public class ViewTask {
 	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
 	private static final String MESSAGE_SUCCESS = "View %1$s task(s) operation is successful!";
 	private static final String MESSAGE_UNSUCCESS = "View %1$s task(s) operation is unsuccessful!";
+	private static final String STATUS_INCOMPLETE = "INCOMPLETE";
 	private enum ViewType {
 		TODAY,
 		DEADLINE,
@@ -163,14 +164,18 @@ public class ViewTask {
 		
 		for(int index = 0; index < taskList.size(); index++) {
 			tempTask = taskList.get(index);
-			if(tempTask.getTaskEndDate() != null && tempTask.getTaskEndTime() != null) {
-				if((tempTask.getTaskEndDate().compareTo(currentDate) < 0) && (tempTask.getTaskEndTime().compareTo(currentTime) < 0)) {
-					tempList.add(tempTask);
-				}
-			} else if(tempTask.getTaskEndDate() != null && tempTask.getTaskEndTime() == null ) {
+			
+			if(tempTask.getTaskEndDate() != null && tempTask.getTaskStatus().equals(STATUS_INCOMPLETE)) {
+				//date already overdue
 				if(tempTask.getTaskEndDate().compareTo(currentDate) < 0) {
 					tempList.add(tempTask);
+					//date is the same as current date so proceed to check time
+				} else if((tempTask.getTaskEndDate().compareTo(currentDate) == 0) && tempTask.getTaskEndTime() != null) {
+					if(tempTask.getTaskEndTime().compareTo(currentTime) < 0) {
+						tempList.add(tempTask);
+					}
 				}
+			
 			}
 		}
 		
