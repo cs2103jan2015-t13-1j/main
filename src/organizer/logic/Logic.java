@@ -124,7 +124,7 @@ public class Logic {
 		return returnResult;
 	}
 	
-<<<<<<< HEAD
+
 //	public void addToUndoList(ArrayList<Task> taskList) {
 //		ArrayList<Task> tempTaskList = new ArrayList<Task>();
 //		for(int index = 0; index < taskList.size(); index++) {
@@ -140,7 +140,7 @@ public class Logic {
 //		}
 //		undoList.push(new ArrayList<Task>(tempTaskList));
 //	}
-=======
+
 	public void addToUndoList(ArrayList<Task> taskList) {
 		ArrayList<Task> tempTaskList = new ArrayList<Task>();
 		for(int index = 0; index < taskList.size(); index++) {
@@ -156,7 +156,7 @@ public class Logic {
 		}
 		undoList.push(new ArrayList<Task>(tempTaskList));
 	}
->>>>>>> 613859479a82c76e75683c2b85f407b6d4185327
+
 	
 	public ResultSet saveCommand() throws IOException {
 		SaveTask command = new SaveTask();
