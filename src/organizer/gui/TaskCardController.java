@@ -27,6 +27,8 @@ public class TaskCardController extends Region {
 	private Label endTimeLabel;
 	@FXML
 	private Label idLabel;
+	@FXML
+	private Label typeLabel;
 	
 	public enum CardSize {
 		SMALL,
@@ -62,6 +64,7 @@ public class TaskCardController extends Region {
 		idLabel.setText(Integer.toString(task.getTaskIndex()));
 		statusLabel.textProperty().bind(task.taskStatusProperty());
 		priorityLabel.textProperty().bind(task.taskPriorityProperty());
+		typeLabel.setText(task.getTaskType());
 		if (task.getTaskStartDate() != null || task.getTaskStartTime() != null)
 			startTimeLabel.setText("from " + formatDateString(task.getTaskStartDate(), task.getTaskStartTime()));
 		else

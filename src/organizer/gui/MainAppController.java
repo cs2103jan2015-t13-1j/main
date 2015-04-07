@@ -78,7 +78,7 @@ public class MainAppController {
 	private void updateTaskList() {
 		taskData = this.mainApp.getTaskData();
 		if (taskData.size() == 0) {
-			pageCount = 0;
+			pageCount = 1;
 		} else if (taskData.size() % ITEMS_PER_PAGE == 0) {
 			pageCount = taskData.size() / ITEMS_PER_PAGE;
 		} else {

@@ -39,6 +39,12 @@
             <String fx:value="priority" />
          </styleClass>
       </Label>
+      <Label fx:id="typeLabel" layoutX="129.0" layoutY="118.0" text="Type">
+         <styleClass>
+            <String fx:value="taskcard" />
+            <String fx:value="large" />
+            <String fx:value="type" />
+         </styleClass></Label>
       <Label fx:id="startTimeLabel" layoutX="27.0" layoutY="153.0" text="Start">
          <styleClass>
             <String fx:value="taskcard" />

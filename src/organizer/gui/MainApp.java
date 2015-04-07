@@ -28,11 +28,9 @@ public class MainApp extends Application {
     private List<Task> tasks;
     
     private MainAppController controller;
-
-//    MenuBar menuBar = new MenuBar();
     
     public MainApp() throws IOException {
-        tasks =  CommandParser.loadStorage();
+        tasks = CommandParser.loadStorage();
         fillTaskList();
     }
     

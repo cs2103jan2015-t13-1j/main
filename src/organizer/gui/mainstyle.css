@@ -49,6 +49,10 @@
 	-fx-font-style: italic;
 }
 
+.taskcard.large.type {
+	-fx-font-size: 10;
+}
+
 .taskcard.large.name {
 	-fx-font-size: 20;
 	-fx-font-weight: bold;

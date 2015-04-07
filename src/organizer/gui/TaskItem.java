@@ -29,6 +29,10 @@ public class TaskItem {
 		taskPriority = new SimpleStringProperty(task.getTaskPriority());
 	}
 	
+	public String getTaskType() {
+		return task.getTaskType();
+	}
+	
 	public String getTaskName() {
 		return taskName.get();
 	}
