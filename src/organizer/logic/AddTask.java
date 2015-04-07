@@ -18,6 +18,7 @@ public class AddTask {
 	private static final String TYPE_DEADLINE = "DEADLINE";
 	private static final String TYPE_FLOATING = "FLOATING";
 	private static final String TYPE_TIMED = "TIMED";
+	private static final String TYPE_ERROR = "ERROR";
 	private static final String TIME_DEADLINE ="23:59";
 	
 	private static final String KEYWORD_TIMED_DATE = " on ";
@@ -45,18 +46,21 @@ public class AddTask {
 	//add {taskname} {today|tomorrow} {time}
 	private static final String PATTERN_TIMED_START_TODAYTMRWTIME = "(today|tomorrow)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 
-	private static final String MESSAGE_SUCCESS = "Add task(s) operation is successful!";
+	private static final String MESSAGE_SUCCESS = "Add task operation is successful!";
+	private static final String MESSAGE_UNSUCCESS = "Add task operation is unsuccessful! End date/time error!";
+	
 	private DateAndTime dtCheck = new DateAndTime();
-
+	
+	ResultSet returnResult = new ResultSet();
 
 	
 	public ResultSet execute(String taskInfo, TaskListSet allLists) {
+		returnResult = new ResultSet();
 		String taskName = null;
 		String taskDateTime = null;
 		ArrayList<Task> taskList = allLists.getTaskList();
 		int taskID = allLists.getTaskList().size();
 		Task tempItem = new Task();
-		ResultSet returnResult = new ResultSet();
 		
 		if(taskInfo.contains(KEYWORD_DEADLINE)) {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_DEADLINE)).trim();
@@ -70,7 +74,6 @@ public class AddTask {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_TIMED_TODAY)).trim();
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_TIMED_TODAY)).trim();
 			tempItem =  addTimedTask_TODAYTMRW(taskName, taskDateTime, tempItem);
-			
 		} else if(taskInfo.contains(KEYWORD_TIMED_TMRW)) {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_TIMED_TMRW)).trim();
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_TIMED_TMRW)).trim();
@@ -81,9 +84,14 @@ public class AddTask {
 		}
 		
 		tempItem.setTaskID(taskID);
-		taskList.add(tempItem);
+		if(tempItem.getTaskType().equals(TYPE_ERROR)) {
+			returnResult.setOpStatus(MESSAGE_UNSUCCESS);
+		} else {
+			taskList.add(tempItem);
+			returnResult.setOpStatus(MESSAGE_SUCCESS);
+		}
+		
 		allLists.setTaskList(taskList);
-		returnResult.setOpStatus(MESSAGE_SUCCESS);
 		returnResult.setReturnList(taskList);
 		
 		return returnResult;
@@ -131,6 +139,7 @@ public class AddTask {
 	}
 	
 	public Task addTimedTask_DATEDAY(String taskName, String taskDateTime, Task timedTask) {
+		
 		Matcher TIMED_STARTEND_2DATE;
 		Matcher TIMED_STARTEND_1DATE;
 		Matcher TIMED_STARTEND_1DAY;
@@ -150,23 +159,47 @@ public class AddTask {
 		if(TIMED_STARTEND_1DATE.matches()) {
 			timedTask.setTaskStartDate(LocalDate.parse(TIMED_STARTEND_1DATE.group(1)));
 			timedTask.setTaskEndDate(timedTask.getTaskStartDate());
-			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_STARTEND_1DATE.group(8)));
-			timedTask.setTaskEndTime(dtCheck.determineHour(TIMED_STARTEND_1DATE.group(14)));
-			timedTask.setTaskType(TYPE_TIMED);
+			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_1DATE.group(8));
+			LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_1DATE.group(14));
+			
+			if(dtCheck.isValidDueDT(null, null, startTime, endTime)) {
+				timedTask.setTaskStartTime(startTime);
+				timedTask.setTaskEndTime(endTime);
+				timedTask.setTaskType(TYPE_TIMED);
+			} else {
+				timedTask.setTaskType(TYPE_ERROR);
+			}
+
 			
 		} else if(TIMED_STARTEND_1DAY.matches()) {
 			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_STARTEND_1DAY.group(1)));
 			timedTask.setTaskEndDate(timedTask.getTaskStartDate());
-			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_STARTEND_1DAY.group(5)));
-			timedTask.setTaskEndTime(dtCheck.determineHour(TIMED_STARTEND_1DAY.group(11)));
-			timedTask.setTaskType(TYPE_TIMED);
+			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_1DAY.group(5));
+			LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_1DAY.group(11));
 			
+			if(dtCheck.isValidDueDT(null, null, startTime, endTime)) {
+				timedTask.setTaskStartTime(startTime);
+				timedTask.setTaskEndTime(endTime);
+				timedTask.setTaskType(TYPE_TIMED);
+			} else {
+				timedTask.setTaskType(TYPE_ERROR);
+			}
+
 		} else if(TIMED_STARTEND_2DATE.matches()) {
-			timedTask.setTaskStartDate(LocalDate.parse(TIMED_STARTEND_2DATE.group(1)));
-			timedTask.setTaskEndDate(LocalDate.parse(TIMED_STARTEND_2DATE.group(14)));
-			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_STARTEND_2DATE.group(8)));
-			timedTask.setTaskEndTime(dtCheck.determineHour(TIMED_STARTEND_2DATE.group(19)));
-			timedTask.setTaskType(TYPE_TIMED);
+			LocalDate startDate = LocalDate.parse(TIMED_STARTEND_2DATE.group(1));
+			LocalDate endDate = LocalDate.parse(TIMED_STARTEND_2DATE.group(14));
+			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_2DATE.group(8));
+		    LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_2DATE.group(19));
+		    if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+		    	timedTask.setTaskStartDate(startDate);
+				timedTask.setTaskEndDate(endDate);
+				timedTask.setTaskStartTime(startTime);
+				timedTask.setTaskEndTime(endTime);
+				timedTask.setTaskType(TYPE_TIMED);
+		    } else {
+		    	timedTask.setTaskType(TYPE_ERROR);
+		    }
+
 			
 		} else if(TIMED_START_DATETIME.matches()) {
 			timedTask.setTaskStartDate(LocalDate.parse(TIMED_START_DATETIME.group(1)));
@@ -204,9 +237,17 @@ public class AddTask {
 		if(TIMED_STARTEND_TODAYTMRWTIMERANGE.matches()) {
 			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_STARTEND_TODAYTMRWTIMERANGE.group(1)));
 			timedTask.setTaskEndDate(timedTask.getTaskStartDate());
-			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_STARTEND_TODAYTMRWTIMERANGE.group(5)));
-			timedTask.setTaskEndTime(dtCheck.determineHour(TIMED_STARTEND_TODAYTMRWTIMERANGE.group(11)));
-			timedTask.setTaskType(TYPE_TIMED);
+			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_TODAYTMRWTIMERANGE.group(5));
+			LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_TODAYTMRWTIMERANGE.group(11));
+
+			if(dtCheck.isValidDueDT(null, null, startTime, endTime)) {
+				timedTask.setTaskStartTime(startTime);
+				timedTask.setTaskEndTime(endTime);
+				timedTask.setTaskType(TYPE_TIMED);
+			} else {
+				timedTask.setTaskType(TYPE_ERROR);
+			}
+
 			
 		} else if(TIMED_START_TODAYTMRWTIME.matches()) {
 			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_START_TODAYTMRWTIME.group(1)));

@@ -2,6 +2,7 @@
 package organizer.logic;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,27 @@ public class DateAndTime {
 	private static final String dayPattern = "monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun";
 	private static final String singleDigitTime = "0";
 	
+	public boolean isValidDueDT(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+		boolean isValid = true;
+
+		if(endDate != null) {
+			String startDT = startDate.toString().concat("T").concat(startTime.toString());
+			String endDT = endDate.toString().concat("T").concat(endTime.toString());
+			LocalDateTime startDateTime = LocalDateTime.parse(startDT);
+			LocalDateTime endDateTime = LocalDateTime.parse(endDT);
+			
+			if(startDateTime.compareTo(endDateTime) >= 0) {
+				return false;
+			}
+			
+		} else {
+			if(startTime.compareTo(endTime) >= 0) {
+				return false;
+			}
+		}
+		
+		return isValid;
+	}
 	public LocalTime determineHour(String time) {
 		if(time.substring(0, time.indexOf(":")).length() == 1) {
 			time = singleDigitTime.concat(time);
