@@ -2,6 +2,7 @@ package organizer.logic;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import organizer.storage.Storage;
 
@@ -14,7 +15,17 @@ public class LoadTask {
 	
 	public ResultSet execute(TaskListSet allLists, String fileName) throws IOException {
 		if(!allLists.getTaskList().isEmpty()) {
-			tempStorage.writeFile(allLists.getTaskList(), FILE_TEMP_STORAGE);
+			File tempFile = new File(fileName);
+			tempFile.createNewFile();
+			
+			if(!tempFile.exists()) {
+				PrintWriter writer = new PrintWriter(tempFile);
+				writer.print("");
+				writer.close();
+			} else {
+				tempStorage.writeFile(allLists.getTaskList(), FILE_TEMP_STORAGE);
+			}
+			
 		}
 		
 		File userFile = new File(fileName);
