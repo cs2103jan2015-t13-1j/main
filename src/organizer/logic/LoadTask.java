@@ -33,11 +33,11 @@ public class LoadTask {
 	
 	public ResultSet execute(TaskListSet allLists, String fileName) throws IOException {
 		if(!allLists.getTaskList().isEmpty()) {
-			File tempFile = new File(fileName);
+			File tempFile = new File(FILE_TEMP_STORAGE);
 			tempFile.createNewFile();
 			
 			if(!tempFile.exists()) {
-				PrintWriter writer = new PrintWriter(tempFile);
+				PrintWriter writer = new PrintWriter(FILE_TEMP_STORAGE);
 				writer.print("");
 				writer.close();
 			} else {
