@@ -90,7 +90,8 @@ public class ViewTask {
 		ArrayList<Task> tempList = new ArrayList<Task>();
 		
 		for(int index = 0; index < taskList.size(); index++) {
-			if(taskList.get(index).getTaskEndDate() != null && taskList.get(index).getTaskEndDate().equals(LocalDate.now()) ) {
+			if((taskList.get(index).getTaskEndDate() != null && taskList.get(index).getTaskEndDate().equals(LocalDate.now())) 
+					|| (taskList.get(index).getTaskStartDate() != null && taskList.get(index).getTaskStartDate().equals(LocalDate.now()))) {
 				tempList.add(taskList.get(index));
 			}
 		}

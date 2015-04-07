@@ -22,8 +22,9 @@ public class AddTask {
 	private static final String TIME_DEADLINE ="23:59";
 	
 	private static final String KEYWORD_TIMED_DATE = " on ";
-	private static final String KEYWORD_TIMED_TODAY = " today ";
-	private static final String KEYWORD_TIMED_TMRW = " tomorrow ";
+	private static final String KEYWORD_TIMED_TODAY = "today";
+	private static final String KEYWORD_TIMED_TMRW = "tomorrow";
+	private static final String KEYWORD_NOTIMED_DATE = " from ";
 	
 	//add {taskname} {on} {date}
 	private static final String PATTERN_TIMED_START_DATE = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
@@ -39,6 +40,8 @@ public class AddTask {
 	private static final String PATTERN_TIMED_STARTEND_TODAYTMRWTIMERANGE = "(today|tomorrow)(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	//add {taskname} {on} {date} {from} {time} {to} {date} {time}
 	private static final String PATTERN_TIMED_STARTEND_2DATE = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	//add {taskname} {from} {date} {to} {date}
+	private static final String PATTERN_NOTIMED_STARTEND_2DATE = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(\\bto\\b)(\\s)((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
 	//add {taskname} {on} {date} {time}
 	private static final String PATTERN_TIMED_START_DATETIME = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	//add {taskname} {on} {mon-sun} {time}
@@ -78,6 +81,10 @@ public class AddTask {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_TIMED_TMRW)).trim();
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_TIMED_TMRW)).trim();
 			tempItem =  addTimedTask_TODAYTMRW(taskName, taskDateTime, tempItem);
+		} else if(taskInfo.contains(KEYWORD_NOTIMED_DATE)) {
+			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_NOTIMED_DATE)).trim();
+			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_NOTIMED_DATE)+KEYWORD_NOTIMED_DATE.length()).trim();
+			tempItem = addTimedTask_DATEDAY(taskName, taskDateTime, tempItem);
 		} else {
 			taskName = taskInfo;
 			tempItem = addFloatingTask(taskName, tempItem);
@@ -147,6 +154,7 @@ public class AddTask {
 		Matcher TIMED_START_DAYTIME;
 		Matcher TIMED_START_DATE;
 		Matcher TIMED_START_DAY;
+		Matcher NOTIMED_STARTEND_2DATE;
 		
 		TIMED_STARTEND_2DATE = Pattern.compile(PATTERN_TIMED_STARTEND_2DATE).matcher(taskDateTime);
 		TIMED_STARTEND_1DATE = Pattern.compile(PATTERN_TIMED_STARTEND_1DATE).matcher(taskDateTime);
@@ -155,6 +163,7 @@ public class AddTask {
 		TIMED_START_DAYTIME = Pattern.compile(PATTERN_TIMED_START_DAYTIME).matcher(taskDateTime);
 		TIMED_START_DATE = Pattern.compile(PATTERN_TIMED_START_DATE).matcher(taskDateTime);
 		TIMED_START_DAY = Pattern.compile(PATTERN_TIMED_START_DAY).matcher(taskDateTime);
+		NOTIMED_STARTEND_2DATE = Pattern.compile(PATTERN_NOTIMED_STARTEND_2DATE).matcher(taskDateTime);
 		
 		if(TIMED_STARTEND_1DATE.matches()) {
 			timedTask.setTaskStartDate(LocalDate.parse(TIMED_STARTEND_1DATE.group(1)));
@@ -200,6 +209,16 @@ public class AddTask {
 		    	timedTask.setTaskType(TYPE_ERROR);
 		    }
 
+		} else if(NOTIMED_STARTEND_2DATE.matches()) {
+			LocalDate startDate = LocalDate.parse(NOTIMED_STARTEND_2DATE.group(1));
+			LocalDate endDate = LocalDate.parse(NOTIMED_STARTEND_2DATE.group(8));
+			if(dtCheck.isValidDueDT(startDate, endDate, null, null)) {
+				timedTask.setTaskStartDate(startDate);
+				timedTask.setTaskEndDate(endDate);
+				timedTask.setTaskType(TYPE_TIMED);
+			} else {
+				timedTask.setTaskType(TYPE_ERROR);
+			}
 			
 		} else if(TIMED_START_DATETIME.matches()) {
 			timedTask.setTaskStartDate(LocalDate.parse(TIMED_START_DATETIME.group(1)));

@@ -15,7 +15,7 @@ public class DateAndTime {
 	public boolean isValidDueDT(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
 		boolean isValid = true;
 
-		if(endDate != null) {
+		if(endDate != null && startDate != null && endTime != null && startTime != null) {
 			String startDT = startDate.toString().concat("T").concat(startTime.toString());
 			String endDT = endDate.toString().concat("T").concat(endTime.toString());
 			LocalDateTime startDateTime = LocalDateTime.parse(startDT);
@@ -25,8 +25,12 @@ public class DateAndTime {
 				return false;
 			}
 			
-		} else {
+		} else if(startTime != null && endTime != null && endDate == startDate) {
 			if(startTime.compareTo(endTime) >= 0) {
+				return false;
+			}
+		} else if(endDate != null && startDate != null && endTime == null) {
+			if(startDate.compareTo(endDate) >= 0) {
 				return false;
 			}
 		}
@@ -71,7 +75,7 @@ public class DateAndTime {
 		dayMap.put("saturday",7);
 		dayMap.put("sun",8);
 		dayMap.put("mon",9);
-		dayMap.put("tue",10);
+		dayMap.put("tues",10);
 		dayMap.put("wed",11);
 		dayMap.put("thurs",12);
 		dayMap.put("fri",13);
