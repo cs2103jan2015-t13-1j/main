@@ -47,10 +47,21 @@ public class DateAndTime {
 		dayMap.put("thursday",5);
 		dayMap.put("friday",6);
 		dayMap.put("saturday",7);
+		dayMap.put("sun",8);
+		dayMap.put("mon",9);
+		dayMap.put("tue",10);
+		dayMap.put("wed",11);
+		dayMap.put("thurs",12);
+		dayMap.put("fri",13);
+		dayMap.put("sat",14);
 
 
 		int numOfDay = dayMap.get(dayOfWeek).intValue();
 		int numOfTaskDay = dayMap.get(dateInfo).intValue();
+		
+		if(numOfTaskDay > daysPerWeek) {
+			numOfTaskDay -= daysPerWeek;
+		}
 
 		if(numOfDay == numOfTaskDay) {
 			taskDate = LocalDate.now().plusDays(daysPerWeek);

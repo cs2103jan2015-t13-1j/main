@@ -61,23 +61,23 @@ public class AddTask {
 		if(taskInfo.contains(KEYWORD_DEADLINE)) {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_DEADLINE)).trim();
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_DEADLINE)+KEYWORD_DEADLINE.length()).trim();
-			tempItem = addDeadlineTask(taskName, taskDateTime, taskID);
+			tempItem = addDeadlineTask(taskName, taskDateTime, tempItem);
 		} else if(taskInfo.contains(KEYWORD_TIMED_DATE)) {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_TIMED_DATE)).trim();
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_TIMED_DATE)+KEYWORD_TIMED_DATE.length()).trim();
-			tempItem = addTimedTask_DATEDAY(taskName, taskDateTime, taskID);
+			tempItem = addTimedTask_DATEDAY(taskName, taskDateTime, tempItem);
 		} else if(taskInfo.contains(KEYWORD_TIMED_TODAY)) {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_TIMED_TODAY)).trim();
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_TIMED_TODAY)).trim();
-			tempItem =  addTimedTask_TODAYTMRW(taskName, taskDateTime, taskID);
+			tempItem =  addTimedTask_TODAYTMRW(taskName, taskDateTime, tempItem);
 			
 		} else if(taskInfo.contains(KEYWORD_TIMED_TMRW)) {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_TIMED_TMRW)).trim();
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_TIMED_TMRW)).trim();
-			tempItem =  addTimedTask_TODAYTMRW(taskName, taskDateTime, taskID);
+			tempItem =  addTimedTask_TODAYTMRW(taskName, taskDateTime, tempItem);
 		} else {
 			taskName = taskInfo;
-			tempItem = addFloatingTask(taskName, taskID);
+			tempItem = addFloatingTask(taskName, tempItem);
 		}
 		
 		tempItem.setTaskID(taskID);
@@ -89,7 +89,7 @@ public class AddTask {
 		return returnResult;
 	}
 	
-	public Task addDeadlineTask(String taskName, String taskDateTime, int taskID) {
+	public Task addDeadlineTask(String taskName, String taskDateTime, Task deadlineTask) {
 		Matcher DEADLINE_DATEONLY;
 		Matcher DEADLINE_DATETIME;
 		Matcher DEADLINE_DAYTIME;
@@ -97,8 +97,6 @@ public class AddTask {
 		DEADLINE_DATEONLY = Pattern.compile(PATTERN_DEADLINE_DATEONLY).matcher(taskDateTime);
 		DEADLINE_DATETIME = Pattern.compile(PATTERN_DEADLINE_DATETIME).matcher(taskDateTime);
 		DEADLINE_DAYTIME = Pattern.compile(PATTERN_DEADLINE_DAYTIME).matcher(taskDateTime);
-		
-		Task deadlineTask = new Task();
 		
 		if(DEADLINE_DATEONLY.matches()) {
 			deadlineTask.setTaskEndDate(LocalDate.parse(taskDateTime));
@@ -126,17 +124,13 @@ public class AddTask {
 		
 	}
 	
-	public Task addFloatingTask(String taskName, int taskID) {
-		Task floatTask = new Task();
+	public Task addFloatingTask(String taskName, Task floatTask) {
 		floatTask.setTaskName(taskName);
-		floatTask.setTaskID(taskID);
 		floatTask.setTaskType(TYPE_FLOATING);
-		
 		return floatTask;
 	}
 	
-	public Task addTimedTask_DATEDAY(String taskName, String taskDateTime, int taskID) {
-		Task timedTask = new Task();
+	public Task addTimedTask_DATEDAY(String taskName, String taskDateTime, Task timedTask) {
 		Matcher TIMED_STARTEND_2DATE;
 		Matcher TIMED_STARTEND_1DATE;
 		Matcher TIMED_STARTEND_1DAY;
@@ -198,8 +192,7 @@ public class AddTask {
 		return timedTask;
 	}
 	
-	public Task addTimedTask_TODAYTMRW(String taskName, String taskDatetime, int taskID) {
-		Task timedTask = new Task();
+	public Task addTimedTask_TODAYTMRW(String taskName, String taskDatetime, Task timedTask) {
 		Matcher TIMED_STARTEND_TODAYTMRWTIMERANGE;
 		Matcher TIMED_START_TODAYTMRWTIME;
 		Matcher TIMED_START_TODAYTMRW;
