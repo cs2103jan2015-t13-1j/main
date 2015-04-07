@@ -291,6 +291,9 @@ public class EditTask {
 
 					if((taskID == tempTask.getTaskID())) {
 						if((tempTask.getTaskType().equals(TYPE_TIMED)) || (tempTask.getTaskType().equals(TYPE_DEADLINE)))  {
+							if(tempTask.getTaskType().equals(TYPE_TIMED) && tempTask.getTaskEndDate() == null) {
+								tempTask.setTaskEndDate(tempTask.getTaskStartDate());
+							}
 							tempTask.setTaskEndTime(endTime);
 							isEdit = true;
 						} else {

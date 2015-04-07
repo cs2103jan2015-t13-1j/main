@@ -138,6 +138,8 @@ public class Logic {
 		ArrayList<Task> tempTaskList = new ArrayList<Task>();
 		for(int index = 0; index < taskList.size(); index++) {
 			Task tempTask = new Task();
+			tempTask.setTaskStartDate(taskList.get(index).getTaskStartDate());
+			tempTask.setTaskType(taskList.get(index).getTaskType());
 			tempTask.setTaskEndDate(taskList.get(index).getTaskEndDate());
 			tempTask.setTaskEndTime(taskList.get(index).getTaskEndTime());
 			tempTask.setTaskStartTime(taskList.get(index).getTaskStartTime());
@@ -178,6 +180,13 @@ public class Logic {
 		returnResult.setReturnList(viewDefault());
 		isDefaultFile = false;
 		userFile = fileName;
+		return returnResult;
+	}
+	
+	public ResultSet recoverFileCommand() throws IOException {
+		LoadTask command = new LoadTask();
+		returnResult = command.recoverTempList(allLists);
+		returnResult.setReturnList(viewDefault());
 		return returnResult;
 	}
 }

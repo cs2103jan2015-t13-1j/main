@@ -31,7 +31,7 @@ public class CommandParser {
 
 	enum COMMAND_TYPE {
 		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INCOMPLETE_TASK, CLEAR_TASK, EDIT_TASK, POSTPONE_TASK, RANK_TASK,
-		UNDO, SAVE, LOAD, FLOAT_TASK, SAVEAS, INVALID, EXIT
+		UNDO, SAVE, LOAD, FLOAT_TASK, SAVEAS, INVALID, RECOVER, EXIT
 	};
 
 	private static COMMAND_TYPE determineCommandType(String commandTypeString)
@@ -73,6 +73,8 @@ public class CommandParser {
 			return COMMAND_TYPE.SAVEAS;
 		case "load":
 			return COMMAND_TYPE.LOAD;
+		case "recover":
+			return COMMAND_TYPE.RECOVER;
 		case "exit":
 			return COMMAND_TYPE.EXIT;
 		default:
@@ -135,6 +137,8 @@ public class CommandParser {
 			return logic.saveAsCommand(userContent);
 		case LOAD:
 			return logic.loadFileCommand(userContent);
+		case RECOVER:
+			return logic.recoverFileCommand();
 		case EXIT:
 			logic.saveCommand();
 			System.exit(0);
