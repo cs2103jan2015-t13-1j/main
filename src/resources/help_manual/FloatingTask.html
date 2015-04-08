@@ -1,7 +1,7 @@
 ﻿<html>
 	
 <head>
-	<title>Loading task(s) lists from File</title>
+	<title>Floating Task</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="generator" content="HelpNDoc Personal Edition 4.7.1.684">
 	<meta name="keywords" content="">
@@ -30,7 +30,7 @@
 			}
 			else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
 			{
-				top.FrameTOC.SelectTocItem("LoadingtaskslistsfromFile");
+				top.FrameTOC.SelectTocItem("FloatingTask");
 			}
 		});
 	</script>
@@ -41,17 +41,17 @@
 
 <div id="topic_header">
 			<div id="topic_header_content">
-				<h1 id="topic_header_text">Loading task(s) lists from File</h1>
+				<h1 id="topic_header_text">Floating Task</h1>
 				
 				<div id="topic_breadcrumb">
-					<a href="GettingStarted.html">Getting Started</a> &rsaquo;&rsaquo; </div>
+					<a href="GettingStarted.html">Getting Started</a> &rsaquo;&rsaquo; <a href="AddingTasks.html">Adding Tasks</a> &rsaquo;&rsaquo; </div>
 				</div>
 			<div id="topic_header_nav">
-				<a href="GettingStarted.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				<a href="AddingTasks.html"><img src="img/arrow_up.png" alt="Parent"/></a>
 				
-				<a href="SavingtaskslisttoFile.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				<a href="TimedTask.html"><img src="img/arrow_left.png" alt="Previous"/></a>
 				
-				<a href="RecoveringfromTemporaryFile.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				<a href="DeletingTasks.html"><img src="img/arrow_right.png" alt="Next"/></a>
 				
 				</div>
 			<div class="clear"></div>
@@ -59,26 +59,22 @@
 	<div id="topic_content">
 		
 <p></p>
-<h2 class="rvps6"><span class="rvts0"><span class="rvts16">Loading Task(s) list from File</span></span></h2>
+<h2 class="rvps6"><span class="rvts0"><span class="rvts16">Floating Task</span></span></h2>
 <p class="rvps3"><span class="rvts8">Keyword: nil</span></p>
 <p class="rvps3"><span class="rvts8"><br/></span></p>
 <p class="rvps3"><span class="rvts8">Commands available:</span></p>
 <p class="rvps3"><span class="rvts8"><br/></span></p>
 <div class="rvps3"><table width="100%" border="1" cellpadding="1" cellspacing="2" style="border-color: #000000; border-style: solid; border-spacing: 2px;">
 <tr valign="top">
-<td width="308" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts15">Command Format</span></p>
+<td width="459" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts15">Command Format</span></p>
 </td>
-<td width="732" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts15">Example</span></p>
-</td>
-<td width="572" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts15">Remarks</span></p>
+<td width="1089" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts15">Example</span></p>
 </td>
 </tr>
 <tr valign="top">
-<td width="308" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts8">load {filename}</span></p>
+<td width="459" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts8">add {task name}</span></p>
 </td>
-<td width="732" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts8">load mylist.txt</span></p>
-</td>
-<td width="572" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts8">File will be loaded and program will work on this file thereafter</span></p>
+<td width="1089" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts8">add apply for gym membership</span></p>
 </td>
 </tr>
 </table>
@@ -86,13 +82,11 @@
 <p class="rvps3"><span class="rvts8"><br/></span></p>
 <p class="rvps3"><span class="rvts8">Note:</span></p>
 <p class="rvps3"><span class="rvts8"><br/></span></p>
-<p class="rvps3"><span class="rvts8">Load command can be requested anytime.</span></p>
+<p class="rvps3"><span class="rvts8">Default deadline time is 23:59</span></p>
+<p class="rvps3"><span class="rvts8">Other types of tasks which do not follow the format, will be set as a floating task.</span></p>
 <p class="rvps3"><span class="rvts8"><br/></span></p>
-<p class="rvps3"><span class="rvts8">By default, the file is "storage.txt" and will be loaded when program starts, no need to call for this command.</span></p>
-<p class="rvps3"><span class="rvts8"><br/></span></p>
-<p class="rvps3"><span class="rvts8">If user accidentally loaded a file and wants to revert back, the user can use the recover command.</span></p>
 <p></p>
-<p class="rvps2"><span class="rvts6">Created with the Personal Edition of HelpNDoc: </span><a class="rvts7" href="http://www.helpndoc.com/feature-tour/create-ebooks-for-amazon-kindle">Generate Kindle eBooks with ease</a></p>
+<p class="rvps2"><span class="rvts6">Created with the Personal Edition of HelpNDoc: </span><a class="rvts7" href="http://www.helpndoc.com/help-authoring-tool">Single source CHM, PDF, DOC and HTML Help creation</a></p>
 </div>
 	
 	<div id="topic_footer">

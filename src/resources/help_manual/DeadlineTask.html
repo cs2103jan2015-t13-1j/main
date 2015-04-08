@@ -1,7 +1,7 @@
 ﻿<html>
 	
 <head>
-	<title>Undo Function</title>
+	<title>Deadline Task</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="generator" content="HelpNDoc Personal Edition 4.7.1.684">
 	<meta name="keywords" content="">
@@ -30,7 +30,7 @@
 			}
 			else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
 			{
-				top.FrameTOC.SelectTocItem("UndoFunction");
+				top.FrameTOC.SelectTocItem("DeadlineTask");
 			}
 		});
 	</script>
@@ -41,17 +41,17 @@
 
 <div id="topic_header">
 			<div id="topic_header_content">
-				<h1 id="topic_header_text">Undo Function</h1>
+				<h1 id="topic_header_text">Deadline Task</h1>
 				
 				<div id="topic_breadcrumb">
-					<a href="GettingStarted.html">Getting Started</a> &rsaquo;&rsaquo; </div>
+					<a href="GettingStarted.html">Getting Started</a> &rsaquo;&rsaquo; <a href="AddingTasks.html">Adding Tasks</a> &rsaquo;&rsaquo; </div>
 				</div>
 			<div id="topic_header_nav">
-				<a href="GettingStarted.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				<a href="AddingTasks.html"><img src="img/arrow_up.png" alt="Parent"/></a>
 				
-				<a href="FilterTasks.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				<a href="AddingTasks.html"><img src="img/arrow_left.png" alt="Previous"/></a>
 				
-				<a href="PrioritizeTask.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				<a href="TimedTask.html"><img src="img/arrow_right.png" alt="Next"/></a>
 				
 				</div>
 			<div class="clear"></div>
@@ -59,8 +59,8 @@
 	<div id="topic_content">
 		
 <p></p>
-<h2 class="rvps6"><span class="rvts0"><span class="rvts16">Undo Function</span></span></h2>
-<p class="rvps3"><span class="rvts8">Keyword: nil</span></p>
+<h2 class="rvps6"><span class="rvts0"><span class="rvts16">Deadline Task</span></span></h2>
+<p class="rvps3"><span class="rvts8">Keyword: by</span></p>
 <p class="rvps3"><span class="rvts8"><br/></span></p>
 <p class="rvps3"><span class="rvts8">Commands available:</span></p>
 <p class="rvps3"><span class="rvts8"><br/></span></p>
@@ -72,9 +72,27 @@
 </td>
 </tr>
 <tr valign="top">
-<td width="459" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts8">undo</span></p>
+<td width="459" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts8">add {task name} {by} {date}</span></p>
 </td>
-<td width="1089" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts8">-</span></p>
+<td width="1089" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts8">add apply for gym membership by 2015-04-18</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="459" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts8">add {task name} {by} {monday-sunday/today/tomorrow}</span></p>
+</td>
+<td width="1089" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts8">add apply for gym membership by monday</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="459" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts8">add {task name} {by} {date} {time}</span></p>
+</td>
+<td width="1089" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts8">add apply for gym membership by 2015-04-18 19:00</span></p>
+</td>
+</tr>
+<tr valign="top">
+<td width="459" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts8">add {task name} {by} {mon-sun/today/tomorrow} {time}</span></p>
+</td>
+<td width="1089" style="border-color: #000000; border-style: solid; padding: 1px;"><p class="rvps3"><span class="rvts8">add apply for gym membership by monday 19:00</span></p>
 </td>
 </tr>
 </table>
@@ -82,12 +100,8 @@
 <p class="rvps3"><span class="rvts8"><br/></span></p>
 <p class="rvps3"><span class="rvts8">Note:</span></p>
 <p class="rvps3"><span class="rvts8"><br/></span></p>
-<p class="rvps3"><span class="rvts8">Undo command can be requested anytime.</span></p>
-<p class="rvps3"><span class="rvts8"><br/></span></p>
-<p class="rvps3"><span class="rvts8">There is no limit to number of actions stored.</span></p>
-<p class="rvps3"><span class="rvts8"><br/></span></p>
-<p class="rvps3"><span class="rvts8">Message will be displayed if no more actions to undo.</span></p>
-<p class="rvps3"><span class="rvts8"><br/></span></p>
+<p class="rvps3"><span class="rvts8">{time} - 24hrs format</span></p>
+<p class="rvps3"><span class="rvts8">{monday-sunday} - If entered day has already passed in the week, it will be deemed as following week.</span></p>
 <p></p>
 <p class="rvps2"><span class="rvts6">Created with the Personal Edition of HelpNDoc: </span><a class="rvts7" href="http://www.helpndoc.com/create-epub-ebooks">Produce electronic books easily</a></p>
 </div>
