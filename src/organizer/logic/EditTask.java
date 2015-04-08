@@ -43,14 +43,18 @@ public class EditTask {
 
 		if(!isValidLineNum) {
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+			returnResult.setIsSuccessful(false);
 		} else {
 			isValidLineNum = false;
+			returnResult.setIsSuccessful(true);
 		}
 
 		if(!isValidDT) {
 			returnResult.setOpStatus(MESSAGE_UNSUCCESS);
+			returnResult.setIsSuccessful(false);
 		} else {
 			isValidDT = false;
+			returnResult.setIsSuccessful(true);
 		}
 
 		returnResult.setReturnList(allLists.getTaskList());

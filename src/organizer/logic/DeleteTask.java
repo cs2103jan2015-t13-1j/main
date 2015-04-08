@@ -4,7 +4,7 @@ package organizer.logic;
 import java.util.ArrayList;
 
 public class DeleteTask {
-	private static final String MESSAGE_SUCCESS = "Delete task(s) operation is successful!";
+	private static final String MESSAGE_SUCCESS = "Delete task operation is successful!";
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
 	
 	public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {
@@ -14,8 +14,10 @@ public class DeleteTask {
 		if(validOp.isValidTask(lineNum, allLists)) {
 			int taskID = validOp.checkForTaskID(lineNum, allLists);
 			removeFromTaskList(taskID, allLists.getTaskList());
+			returnResult.setIsSuccessful(true);
 			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
 		} else {
+			returnResult.setIsSuccessful(false);
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
 		}
 		

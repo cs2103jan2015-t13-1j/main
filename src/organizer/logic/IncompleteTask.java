@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class IncompleteTask {
     private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
-    private static final String MESSAGE_SUCCESS = "Revert completed task(s) operation is successful!";
+    private static final String MESSAGE_SUCCESS = "Revert completed task operation is successful!";
     private static final String STATUS_TASK = "INCOMPLETE";
     
     public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {
@@ -17,8 +17,10 @@ public class IncompleteTask {
             int taskID = validOp.checkForTaskID(lineNum, allLists);
             tempList.get(taskID).setTaskStatus(STATUS_TASK);
             returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
+            returnResult.setIsSuccessful(true);
         } else {
             returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+            returnResult.setIsSuccessful(false);
         }
         
         allLists.setTaskList(tempList);

@@ -18,6 +18,7 @@ public class SaveTask {
 		tempStorage.writeFile(taskList);
 		returnResult.setOpStatus(MESSAGE_SAVE_SUCCESS);
 		returnResult.setReturnList(taskList);
+		returnResult.setIsSuccessful(true);
 		return returnResult;
 	}
 	
@@ -25,6 +26,7 @@ public class SaveTask {
 		tempStorage.writeFile(taskList, fileName);
 		returnResult.setOpStatus(String.format(MESSAGE_SAVEAS_SUCCESS, fileName));
 		returnResult.setReturnList(taskList);
+		returnResult.setIsSuccessful(true);
 		return returnResult;
 	}
 	

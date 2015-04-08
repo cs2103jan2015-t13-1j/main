@@ -7,7 +7,6 @@ import java.util.Stack;
 public class UndoCommand {
 	private final static String MESSAGE_UNDO_SUCCESS = "Undo successfully!";
 	private final static String MESSAGE_UNDO_FAIL = "No actions to undo!";
-	private final static String MODE_VIEW = "incomplete";
 	ResultSet returnResult = new ResultSet();
 	ViewTask refreshTask = new ViewTask();
 	
@@ -15,10 +14,12 @@ public class UndoCommand {
 		if(!undoList.isEmpty()) {
 			allLists.setTaskList(undoList.pop());
 			returnResult.setOpStatus(MESSAGE_UNDO_SUCCESS);
+			returnResult.setIsSuccessful(true);
 		} else {
 			returnResult.setOpStatus(MESSAGE_UNDO_FAIL);
+			returnResult.setIsSuccessful(false);
 		}
-		returnResult.setReturnList(refreshTask.execute(MODE_VIEW, allLists).getReturnList());
+		returnResult.setReturnList(allLists.getTaskList());
 		return returnResult;
 	}
 	

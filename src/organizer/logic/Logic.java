@@ -61,7 +61,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		DeleteTask command = new DeleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
-		setViewMode();
+		setViewMode(returnResult.getIsSuccessful());
 		return returnResult;
 	}
 	
@@ -83,7 +83,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		PostponeTask command = new PostponeTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
-		setViewMode();
+		setViewMode(returnResult.getIsSuccessful());
 		return returnResult;
 	}
 	
@@ -98,7 +98,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		RankTask command = new RankTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
-		setViewMode();
+		setViewMode(returnResult.getIsSuccessful());
 		return returnResult;
 	}
 	
@@ -106,7 +106,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		CompleteTask command = new CompleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
-		setViewMode();
+		setViewMode(returnResult.getIsSuccessful());
 		return returnResult;	
 	}
 	
@@ -114,7 +114,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		IncompleteTask command = new IncompleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
-		setViewMode();
+		setViewMode(returnResult.getIsSuccessful());
 		return returnResult;	
 	}
 	
@@ -122,14 +122,14 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		EditTask command = new EditTask();
 		returnResult = command.execute(userContent, allLists, validOp);
-		setViewMode();
+		setViewMode(returnResult.getIsSuccessful());
 		return returnResult;
 	}
 	
 	public ResultSet undoCommand() {
 		UndoCommand command = new UndoCommand();
 		returnResult = command.execute(allLists, undoList);
-		setViewMode();
+		setViewMode(returnResult.getIsSuccessful());
 		return returnResult;
 	}
 	
@@ -137,7 +137,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		FloatTask command = new FloatTask();
 		returnResult = command.execute(userContent, allLists, validOp);
-		setViewMode();
+		setViewMode(returnResult.getIsSuccessful());
 		return returnResult;
 	}
 
@@ -167,23 +167,25 @@ public class Logic {
 		} else {
 			returnResult = command.executeSaveAs(allLists.getTaskList(), userFile);
 		}
-		setViewMode();
+		setViewMode(returnResult.getIsSuccessful());
 		return returnResult;
 	}
 	
 	public ResultSet saveAsCommand(String fileName) throws IOException {
 		SaveTask command = new SaveTask();
 		returnResult = command.executeSaveAs(allLists.getTaskList(), fileName);
-		setViewMode();
+		setViewMode(returnResult.getIsSuccessful());
 		isDefaultFile = false;
 		userFile = fileName;
 		return returnResult;
 	}
 
-	private void setViewMode() {
+	private void setViewMode(Boolean isSuccessful) {
 		returnResult.setReturnList(viewDefault());
-		validOp.setIsView(false);
-		validOp.setIsSearch(false);
+		if(isSuccessful) {
+			validOp.setIsView(false);
+			validOp.setIsSearch(false);
+		}
 	}
 	
 	public ResultSet loadFileCommand(String fileName) throws IOException {

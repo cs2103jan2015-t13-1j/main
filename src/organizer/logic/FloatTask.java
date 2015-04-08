@@ -4,7 +4,7 @@ package organizer.logic;
 import java.util.ArrayList;
 
 public class FloatTask {
-	private static final String MESSAGE_SUCCESS = "Set float task(s) operation is successful!";
+	private static final String MESSAGE_SUCCESS = "Set float task operation is successful!";
 	private static final String MESSAGE_INVALID_TYPE = "Selected task is already a floating task!";
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
 	
@@ -19,8 +19,10 @@ public class FloatTask {
 		if(validOp.isValidTask(lineNum, allLists)) {
 			int taskID = validOp.checkForTaskID(lineNum, allLists);
 			returnResult.setOpStatus(setTaskToFloat(taskID, allLists.getTaskList()));
+			returnResult.setIsSuccessful(true);
 		} else {
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+			returnResult.setIsSuccessful(false);
 		}
 
 		returnResult.setReturnList(allLists.getTaskList());

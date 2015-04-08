@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class ViewTask {
 	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
 	private static final String MESSAGE_SUCCESS = "View %1$s task(s) operation is successful!";
-	private static final String MESSAGE_UNSUCCESS = "View %1$s task(s) operation is unsuccessful!";
+	private static final String MESSAGE_UNSUCCESS = "Invalid view filter!";
 	private static final String STATUS_INCOMPLETE = "INCOMPLETE";
 	
 	private enum ViewType {
@@ -67,7 +67,7 @@ public class ViewTask {
 			allLists.setViewList(viewOverDue(allLists.getTaskList()));
 			break;
 		default:
-			returnResult.setReturnList(allLists.getTaskList());
+			returnResult.setReturnList(allLists.getViewList());
 			returnResult.setOpStatus(String.format(MESSAGE_UNSUCCESS, viewTypeString));
 			return returnResult;
 		}
