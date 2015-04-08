@@ -1,6 +1,10 @@
 package organizer.gui;
 
+import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.util.stream.Collectors;
 import java.util.List;
 
@@ -16,6 +20,7 @@ import javafx.scene.layout.FlowPane;
 
 public class MainAppController {
 	private static final int ITEMS_PER_PAGE = 6;
+	private static final String URL_HELP_MANUAL = "src/resources/help_manual/Mnemonical User Manual.html";
 	private MainApp mainApp;
 	
 	@FXML
@@ -131,22 +136,35 @@ public class MainAppController {
 			}
 		} else if (e.isControlDown()) {
 			hideControlKeyHint();
-			if (e.getCode() == KeyCode.BACK_QUOTE)
+			if (e.getCode() == KeyCode.BACK_QUOTE) {
 				restoreSidePane();
-			else if (e.getCode() == KeyCode.DIGIT1)
+			}
+			else if (e.getCode() == KeyCode.DIGIT1) {
 				displayTaskDetailSidePane(0);
-			else if (e.getCode() == KeyCode.DIGIT2)
+			}
+			else if (e.getCode() == KeyCode.DIGIT2) {
 				displayTaskDetailSidePane(1);
-			else if (e.getCode() == KeyCode.DIGIT3)
+			}
+			else if (e.getCode() == KeyCode.DIGIT3) {
 				displayTaskDetailSidePane(2);
-			else if (e.getCode() == KeyCode.DIGIT4)
+			}
+			else if (e.getCode() == KeyCode.DIGIT4) {
 				displayTaskDetailSidePane(3);
-			else if (e.getCode() == KeyCode.DIGIT5)
+			}
+			else if (e.getCode() == KeyCode.DIGIT5) {
 				displayTaskDetailSidePane(4);
-			else if (e.getCode() == KeyCode.DIGIT6)
+			}
+			else if (e.getCode() == KeyCode.DIGIT6) {
 				displayTaskDetailSidePane(5);
+			}
 			else
 				showControlKeyHint();
+		} else if(e.getCode() == KeyCode.F1) {
+			if(Desktop.isDesktopSupported())
+			{
+				URI helpManual = new File(URL_HELP_MANUAL).toURI();
+				Desktop.getDesktop().browse(helpManual);
+			}
 		}
 	}
 	
