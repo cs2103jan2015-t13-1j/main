@@ -91,7 +91,7 @@ public class AddTask {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_DEADLINE)).trim();
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_DEADLINE)+KEYWORD_DEADLINE.length()).trim();
 			tempItem = addDeadlineTask(taskName, taskDateTime, tempItem);
-		} else if(taskInfo.contains(KEYWORD_TIMED_DATE)) {
+		} else if(taskInfo.contains(KEYWORD_TIMED_DATE) && keywordOnCheck(taskInfo)) {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_TIMED_DATE)).trim();
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_TIMED_DATE)+KEYWORD_TIMED_DATE.length()).trim();
 			tempItem = addTimedTask_DATEDAY(taskName, taskDateTime, tempItem);
@@ -126,7 +126,7 @@ public class AddTask {
 		return returnResult;
 	}
 	
-	private boolean keywordByChecker(String taskInfo){
+	private boolean keywordByChecker(String taskDateTime){
 		boolean isChecked = false;
 		
 		Matcher DEADLINE_DATEONLY;
@@ -134,16 +134,44 @@ public class AddTask {
 		Matcher DEADLINE_DAYTIME;
 		Matcher DEADLINE_DAYASDATE; 
 		
-		taskInfo = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_DEADLINE)+KEYWORD_DEADLINE.length()).trim();
+		taskDateTime = taskDateTime.substring(taskDateTime.lastIndexOf(KEYWORD_DEADLINE)+KEYWORD_DEADLINE.length()).trim();
 		
-		DEADLINE_DATEONLY = Pattern.compile(PATTERN_DEADLINE_DATEONLY).matcher(taskInfo);
-		DEADLINE_DATETIME = Pattern.compile(PATTERN_DEADLINE_DATETIME).matcher(taskInfo);
-		DEADLINE_DAYTIME = Pattern.compile(PATTERN_DEADLINE_DAYTIME).matcher(taskInfo);
-		DEADLINE_DAYASDATE = Pattern.compile(PATTERN_DEADLINE_DAYASDATE).matcher(taskInfo);
+		DEADLINE_DATEONLY = Pattern.compile(PATTERN_DEADLINE_DATEONLY).matcher(taskDateTime);
+		DEADLINE_DATETIME = Pattern.compile(PATTERN_DEADLINE_DATETIME).matcher(taskDateTime);
+		DEADLINE_DAYTIME = Pattern.compile(PATTERN_DEADLINE_DAYTIME).matcher(taskDateTime);
+		DEADLINE_DAYASDATE = Pattern.compile(PATTERN_DEADLINE_DAYASDATE).matcher(taskDateTime);
 		
 		if(DEADLINE_DATEONLY.matches() || DEADLINE_DATETIME.matches() || DEADLINE_DAYTIME.matches() || DEADLINE_DAYASDATE.matches()){
 			isChecked = true;
 		}
+		return isChecked;
+	}
+	
+	private boolean keywordOnCheck(String taskDateTime) {
+		boolean isChecked = false;
+		Matcher TIMED_STARTEND_2DATE;
+		Matcher TIMED_STARTEND_1DATE;
+		Matcher TIMED_STARTEND_1DAY;
+		Matcher TIMED_START_DATETIME;
+		Matcher TIMED_START_DAYTIME;
+		Matcher TIMED_START_DATE;
+		Matcher TIMED_START_DAY;
+		
+		taskDateTime = taskDateTime.substring(taskDateTime.lastIndexOf(KEYWORD_TIMED_DATE)+KEYWORD_TIMED_DATE.length()).trim();
+		
+		TIMED_STARTEND_2DATE = Pattern.compile(PATTERN_TIMED_STARTEND_2DATE).matcher(taskDateTime);
+		TIMED_STARTEND_1DATE = Pattern.compile(PATTERN_TIMED_STARTEND_1DATE).matcher(taskDateTime);
+		TIMED_STARTEND_1DAY = Pattern.compile(PATTERN_TIMED_STARTEND_1DAY).matcher(taskDateTime);
+		TIMED_START_DATETIME = Pattern.compile(PATTERN_TIMED_START_DATETIME).matcher(taskDateTime);
+		TIMED_START_DAYTIME = Pattern.compile(PATTERN_TIMED_START_DAYTIME).matcher(taskDateTime);
+		TIMED_START_DATE = Pattern.compile(PATTERN_TIMED_START_DATE).matcher(taskDateTime);
+		TIMED_START_DAY = Pattern.compile(PATTERN_TIMED_START_DAY).matcher(taskDateTime);
+
+		if(TIMED_STARTEND_2DATE.matches() || TIMED_STARTEND_1DATE.matches() || TIMED_STARTEND_1DAY.matches() || TIMED_START_DATETIME.matches()
+				|| TIMED_START_DAYTIME.matches() || TIMED_START_DATE.matches() || TIMED_START_DAY.matches()) {
+			isChecked = true;
+		}
+		
 		return isChecked;
 	}
 	
