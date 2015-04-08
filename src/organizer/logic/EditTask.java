@@ -242,6 +242,9 @@ public class EditTask {
 							} else if(tempTask.getTaskType().equals(TYPE_FLOATING)) {
 								tempTask.setTaskStartDate(startDate);
 								isEdit = true;
+							} else if(tempTask.getTaskType().equals(TYPE_TIMED)) {
+								tempTask.setTaskStartDate(startDate);
+								isEdit = true;
 							} else {
 								isEdit = false;
 							}

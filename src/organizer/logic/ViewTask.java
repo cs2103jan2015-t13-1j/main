@@ -7,14 +7,17 @@ import java.util.ArrayList;
 
 public class ViewTask {
 	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
-	private static final String MESSAGE_SUCCESS = "View %1$s task(s) operation is successful!";
+	private static final String MESSAGE_SUCCESS = "View Tasks Filter: %1$s";
 	private static final String MESSAGE_UNSUCCESS = "Invalid view filter!";
 	private static final String STATUS_INCOMPLETE = "INCOMPLETE";
-	
+
 	private enum ViewType {
 		TODAY,
 		DEADLINE,
 		FLOATING,
+		HIGH,
+		MEDIUM,
+		LOW,
 		TIMED,
 		COMPLETE,
 		INCOMPLETE,
@@ -28,6 +31,9 @@ public class ViewTask {
 			case INCOMPLETE: return "INCOMPLETE";
 			case DEADLINE: return "DEADLINE";
 			case FLOATING: return "FLOATING";
+			case HIGH: return "HIGH";
+			case MEDIUM: return "MEDIUM";
+			case LOW: return "LOW";
 			case TIMED: return "TIMED";
 			case OVERDUE: return "OVERDUE";
 			case ALL: return "all";
@@ -40,7 +46,7 @@ public class ViewTask {
 		ArrayList<Task> tempList = new ArrayList<Task>();
 		allLists.setViewList(tempList);
 		ResultSet returnResult = new ResultSet();
-		
+
 		switch (viewTypeString.trim().toLowerCase()) {
 		case "today":
 			allLists.setViewList(viewToday(allLists.getTaskList()));
@@ -65,6 +71,18 @@ public class ViewTask {
 			break;
 		case "overdue":
 			allLists.setViewList(viewOverDue(allLists.getTaskList()));
+			break;
+		case "high":
+			viewTypeString = viewTypeString.concat(" ranked");
+			allLists.setViewList(viewRank(allLists.getTaskList(),(ViewType.HIGH).toString()));
+			break;
+		case "medium":
+			viewTypeString = viewTypeString.concat(" ranked");
+			allLists.setViewList(viewRank(allLists.getTaskList(),(ViewType.MEDIUM).toString()));
+			break;
+		case "low":
+			viewTypeString = viewTypeString.concat(" ranked");
+			allLists.setViewList(viewRank(allLists.getTaskList(),(ViewType.LOW).toString()));
 			break;
 		default:
 			returnResult.setReturnList(allLists.getViewList());
@@ -97,6 +115,19 @@ public class ViewTask {
 			}
 		}
 		
+		return tempList;
+	}
+	
+	private ArrayList<Task> viewRank(ArrayList<Task> taskList, String rankType) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		Task tempTask = new Task();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			tempTask = taskList.get(index);
+			if(tempTask.getTaskPriority() != null && tempTask.getTaskPriority().equals(rankType)) {
+				tempList.add(taskList.get(index));
+			}
+		}
 		return tempList;
 	}
 	

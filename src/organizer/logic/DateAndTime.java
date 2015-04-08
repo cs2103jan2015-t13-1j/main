@@ -30,7 +30,7 @@ public class DateAndTime {
 				return false;
 			}
 			
-		} else if((endDate != null && endTime != null) && (endTime == null || startTime == null)) {
+		} else if((endDate != null && startDate != null) && (endTime == null || startTime == null)) {
 			if(startDate.compareTo(endDate) >= 0) {
 				return false;
 			}
