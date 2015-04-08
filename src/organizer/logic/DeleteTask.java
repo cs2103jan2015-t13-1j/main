@@ -14,10 +14,8 @@ public class DeleteTask {
 		if(validOp.isValidTask(lineNum, allLists)) {
 			int taskID = validOp.checkForTaskID(lineNum, allLists);
 			removeFromTaskList(taskID, allLists.getTaskList());
-			returnResult.setIsSuccessful(true);
 			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
 		} else {
-			returnResult.setIsSuccessful(false);
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
 		}
 		

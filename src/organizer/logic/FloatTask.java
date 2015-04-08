@@ -19,10 +19,8 @@ public class FloatTask {
 		if(validOp.isValidTask(lineNum, allLists)) {
 			int taskID = validOp.checkForTaskID(lineNum, allLists);
 			returnResult.setOpStatus(setTaskToFloat(taskID, allLists.getTaskList()));
-			returnResult.setIsSuccessful(true);
 		} else {
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
-			returnResult.setIsSuccessful(false);
 		}
 
 		returnResult.setReturnList(allLists.getTaskList());

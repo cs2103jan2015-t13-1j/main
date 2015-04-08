@@ -10,7 +10,7 @@ import java.util.Map;
 public class DateAndTime {
 	private static final int daysPerWeek = 7;
 	private static final String dayPattern = "monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun";
-	private static final String singleDigitTime = "0";
+	private static final String singleDigitTimeDate = "0";
 	
 	public boolean isValidDueDT(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
 		boolean isValid = true;
@@ -29,7 +29,8 @@ public class DateAndTime {
 			if(startTime.compareTo(endTime) >= 0) {
 				return false;
 			}
-		} else if(endDate != null && startDate != null && endTime == null) {
+			
+		} else if((endDate != null && endTime != null) && (endTime == null || startTime == null)) {
 			if(startDate.compareTo(endDate) >= 0) {
 				return false;
 			}
@@ -39,11 +40,30 @@ public class DateAndTime {
 	}
 	public LocalTime determineHour(String time) {
 		if(time.substring(0, time.indexOf(":")).length() == 1) {
-			time = singleDigitTime.concat(time);
+			time = singleDigitTimeDate.concat(time);
 		}
 		
 		return LocalTime.parse(time);
 	}
+	
+	public LocalDate toValidDate(String date) {
+		String year = date.substring(0, date.indexOf("-"));
+		String month = date.substring(date.indexOf("-")+1, date.lastIndexOf("-"));
+		String day = date.substring(date.lastIndexOf("-")+1);
+		
+		if(month.length() == 1) {
+			month = singleDigitTimeDate.concat(month);
+		} 
+		
+		if(day.length() == 1) {
+			day = singleDigitTimeDate.concat(day);
+		}
+		
+		date = year.concat("-").concat(month).concat("-").concat(day);
+		
+		return LocalDate.parse(date);
+	}
+	
 	public LocalDate determineDate(String dateInfo) {
 		dateInfo = dateInfo.trim().toLowerCase();
 		LocalDate taskDate;

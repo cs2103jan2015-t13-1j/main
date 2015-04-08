@@ -29,14 +29,11 @@ public class RankTask {
 			
 			allLists.setTaskList(tempList);
 			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
-			returnResult.setIsSuccessful(true);
 			
 		} else if(!validOp.isValidRank(taskRank)){
 			returnResult.setOpStatus(MESSAGE_INVALID_RANK);
-			returnResult.setIsSuccessful(false);
 		} else {
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
-			returnResult.setIsSuccessful(false);
 		}
 		
 		returnResult.setReturnList(allLists.getTaskList());

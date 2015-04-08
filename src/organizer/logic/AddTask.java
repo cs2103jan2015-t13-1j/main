@@ -114,7 +114,7 @@ public class AddTask {
 		DEADLINE_DAYTIME = Pattern.compile(PATTERN_DEADLINE_DAYTIME).matcher(taskDateTime);
 		
 		if(DEADLINE_DATEONLY.matches()) {
-			deadlineTask.setTaskEndDate(LocalDate.parse(taskDateTime));
+			deadlineTask.setTaskEndDate(dtCheck.toValidDate(taskDateTime));
 			deadlineTask.setTaskEndTime(LocalTime.parse(TIME_DEADLINE));
 			deadlineTask.setTaskType(TYPE_DEADLINE);
 		} else if(taskDateTime.matches(PATTERN_DEADLINE_DAYASDATE)) {
@@ -122,7 +122,7 @@ public class AddTask {
 			deadlineTask.setTaskEndTime(LocalTime.parse(TIME_DEADLINE));
 			deadlineTask.setTaskType(TYPE_DEADLINE);
 		} else if(DEADLINE_DATETIME.matches()) {
-			deadlineTask.setTaskEndDate(LocalDate.parse(DEADLINE_DATETIME.group(1)));
+			deadlineTask.setTaskEndDate(dtCheck.toValidDate(DEADLINE_DATETIME.group(1)));
 			deadlineTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_DATETIME.group(6)));
 			deadlineTask.setTaskType(TYPE_DEADLINE);
 		} else if(DEADLINE_DAYTIME.matches()) {
@@ -166,7 +166,7 @@ public class AddTask {
 		NOTIMED_STARTEND_2DATE = Pattern.compile(PATTERN_NOTIMED_STARTEND_2DATE).matcher(taskDateTime);
 		
 		if(TIMED_STARTEND_1DATE.matches()) {
-			timedTask.setTaskStartDate(LocalDate.parse(TIMED_STARTEND_1DATE.group(1)));
+			timedTask.setTaskStartDate(dtCheck.toValidDate(TIMED_STARTEND_1DATE.group(1)));
 			timedTask.setTaskEndDate(timedTask.getTaskStartDate());
 			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_1DATE.group(8));
 			LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_1DATE.group(14));
@@ -195,8 +195,8 @@ public class AddTask {
 			}
 
 		} else if(TIMED_STARTEND_2DATE.matches()) {
-			LocalDate startDate = LocalDate.parse(TIMED_STARTEND_2DATE.group(1));
-			LocalDate endDate = LocalDate.parse(TIMED_STARTEND_2DATE.group(14));
+			LocalDate startDate = dtCheck.toValidDate(TIMED_STARTEND_2DATE.group(1));
+			LocalDate endDate = dtCheck.toValidDate(TIMED_STARTEND_2DATE.group(14));
 			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_2DATE.group(8));
 		    LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_2DATE.group(19));
 		    if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
@@ -210,8 +210,8 @@ public class AddTask {
 		    }
 
 		} else if(NOTIMED_STARTEND_2DATE.matches()) {
-			LocalDate startDate = LocalDate.parse(NOTIMED_STARTEND_2DATE.group(1));
-			LocalDate endDate = LocalDate.parse(NOTIMED_STARTEND_2DATE.group(8));
+			LocalDate startDate = dtCheck.toValidDate(NOTIMED_STARTEND_2DATE.group(1));
+			LocalDate endDate = dtCheck.toValidDate(NOTIMED_STARTEND_2DATE.group(8));
 			if(dtCheck.isValidDueDT(startDate, endDate, null, null)) {
 				timedTask.setTaskStartDate(startDate);
 				timedTask.setTaskEndDate(endDate);
@@ -221,7 +221,7 @@ public class AddTask {
 			}
 			
 		} else if(TIMED_START_DATETIME.matches()) {
-			timedTask.setTaskStartDate(LocalDate.parse(TIMED_START_DATETIME.group(1)));
+			timedTask.setTaskStartDate(dtCheck.toValidDate(TIMED_START_DATETIME.group(1)));
 			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_START_DATETIME.group(6)));
 			timedTask.setTaskType(TYPE_TIMED);
 			
@@ -230,7 +230,7 @@ public class AddTask {
 			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_START_DAYTIME.group(3)));
 			timedTask.setTaskType(TYPE_TIMED);
 		} else if(TIMED_START_DATE.matches()) {
-			timedTask.setTaskStartDate(LocalDate.parse(TIMED_START_DATE.group(1)));
+			timedTask.setTaskStartDate(dtCheck.toValidDate(TIMED_START_DATE.group(1)));
 			timedTask.setTaskType(TYPE_TIMED);
 		} else if(TIMED_START_DAY.matches()) {
 			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_START_DAY.group(1)));

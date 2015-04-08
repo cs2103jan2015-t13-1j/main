@@ -51,20 +51,16 @@ public class PostponeTask {
 						tempTask.setTaskEndDate(endDate);
 						tempTask.setTaskEndTime(endTime);
 						returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
-						returnResult.setIsSuccessful(true);
 					}
 				} else {
 					returnResult.setOpStatus(MESSAGE_NODEADLINE);
-					returnResult.setIsSuccessful(false);
 				}
 					
 			} else {
 				returnResult.setOpStatus(MESSAGE_INVALID_TASK);
-				returnResult.setIsSuccessful(false);
 			}
 		} else {
 			returnResult.setOpStatus(MESSAGE_UNSUCCESS);
-			returnResult.setIsSuccessful(false);
 		}
 
 		returnResult.setReturnList(allLists.getTaskList());

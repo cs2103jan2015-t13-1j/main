@@ -12,6 +12,7 @@ public class EditTask {
 	private static final String MESSAGE_INVALID_CONTENT = "Edit task operation failed for invalid content!";
 	private static final String MESSAGE_SUCCESS = "Edit task operation is successful!";
 	private static final String MESSAGE_UNSUCCESS = "Edit task operation failed for end date/time error!";
+	private static final String MESSAGE_TYPE_CHANGED= "Edit task operation is successful! Changed to %s task.";
 
 
 	private static final String PATTERN_EDIT_STARTENDDATETIME = "(\\d)(\\s)(\\bfrom\\b)(\\s)((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))"
@@ -34,6 +35,8 @@ public class EditTask {
 
 	private boolean isValidLineNum = false;
 	private boolean isValidDT = false;
+	private boolean isTaskTypeChanged = false;
+	private String editedTaskType = "";
 	private DateAndTime dtCheck = new DateAndTime();
 
 	public ResultSet execute(String userContent, TaskListSet allLists, Validation validOp) {
@@ -43,18 +46,19 @@ public class EditTask {
 
 		if(!isValidLineNum) {
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
-			returnResult.setIsSuccessful(false);
 		} else {
 			isValidLineNum = false;
-			returnResult.setIsSuccessful(true);
 		}
 
 		if(!isValidDT) {
 			returnResult.setOpStatus(MESSAGE_UNSUCCESS);
-			returnResult.setIsSuccessful(false);
 		} else {
 			isValidDT = false;
-			returnResult.setIsSuccessful(true);
+		}
+		
+		if(isTaskTypeChanged) {
+			returnResult.setOpStatus(String.format(MESSAGE_TYPE_CHANGED, editedTaskType));
+			isTaskTypeChanged = false;
 		}
 
 		returnResult.setReturnList(allLists.getTaskList());
@@ -114,9 +118,9 @@ public class EditTask {
 		Boolean isEdit = false;
 		if(EDIT_STARTENDDATETIME.matches()) {
 			int lineNum = Integer.parseInt(EDIT_STARTENDDATETIME.group(1));
-			LocalDate startDate = LocalDate.parse(EDIT_STARTENDDATETIME.group(5));
+			LocalDate startDate = dtCheck.toValidDate(EDIT_STARTENDDATETIME.group(5));
 			LocalTime startTime = dtCheck.determineHour(EDIT_STARTENDDATETIME.group(10));
-			LocalDate endDate = LocalDate.parse(EDIT_STARTENDDATETIME.group(16));
+			LocalDate endDate = dtCheck.toValidDate(EDIT_STARTENDDATETIME.group(16));
 			LocalTime endTime = dtCheck.determineHour(EDIT_STARTENDDATETIME.group(21));
 
 
@@ -139,6 +143,8 @@ public class EditTask {
 								tempTask.setTaskEndDate(endDate);
 								tempTask.setTaskEndTime(endTime);
 								tempTask.setTaskType(TYPE_TIMED);
+								isTaskTypeChanged = true;
+								editedTaskType = TYPE_TIMED;
 								isEdit = true;
 							} else if(tempTask.getTaskType().equals(TYPE_TIMED)) {
 								tempTask.setTaskStartDate(startDate);
@@ -163,7 +169,7 @@ public class EditTask {
 		Boolean isEdit = false;
 		if(EDIT_STARTDATETIME.matches()) {
 			int lineNum = Integer.parseInt(EDIT_STARTDATETIME.group(1));
-			LocalDate startDate = LocalDate.parse(EDIT_STARTDATETIME.group(5));
+			LocalDate startDate = dtCheck.toValidDate(EDIT_STARTDATETIME.group(5));
 			LocalTime startTime = dtCheck.determineHour(EDIT_STARTDATETIME.group(10));
 
 
@@ -186,6 +192,8 @@ public class EditTask {
 								tempTask.setTaskStartDate(startDate);
 								tempTask.setTaskStartTime(startTime);
 								tempTask.setTaskType(TYPE_TIMED);
+								isTaskTypeChanged = true;
+								editedTaskType = TYPE_TIMED;
 								isEdit = true;
 							} else if(tempTask.getTaskType().equals(TYPE_TIMED)) {
 								tempTask.setTaskStartDate(startDate);
@@ -208,7 +216,7 @@ public class EditTask {
 		Boolean isEdit = false;
 		if(EDIT_STARTDATE.matches()) {
 			int lineNum = Integer.parseInt(EDIT_STARTDATE.group(1));
-			LocalDate startDate = LocalDate.parse(EDIT_STARTDATE.group(5));
+			LocalDate startDate = dtCheck.toValidDate(EDIT_STARTDATE.group(5));
 
 			if(validOp.isValidTask(lineNum, allLists)) {
 				isValidLineNum = true;
@@ -228,6 +236,8 @@ public class EditTask {
 							if((tempTask.getTaskType().equals(TYPE_FLOATING)) || (tempTask.getTaskType().equals(TYPE_DEADLINE))) {
 								tempTask.setTaskStartDate(startDate);
 								tempTask.setTaskType(TYPE_TIMED);
+								isTaskTypeChanged = true;
+								editedTaskType = TYPE_TIMED;
 								isEdit = true;
 							} else if(tempTask.getTaskType().equals(TYPE_FLOATING)) {
 								tempTask.setTaskStartDate(startDate);
@@ -286,9 +296,10 @@ public class EditTask {
 
 	private boolean editEndDate(String userContent, Validation validOp, TaskListSet allLists) {
 		Boolean isEdit = false;
+		
 		if(EDIT_ENDDATE.matches()) {
 			int lineNum = Integer.parseInt(EDIT_ENDDATE.group(1));
-			LocalDate endDate = LocalDate.parse(EDIT_ENDDATE.group(5));
+			LocalDate endDate = dtCheck.toValidDate(EDIT_ENDDATE.group(5));
 
 			if(validOp.isValidTask(lineNum, allLists)) {
 				isValidLineNum = true;
@@ -304,6 +315,9 @@ public class EditTask {
 							tempTask.setTaskEndDate(endDate);
 							tempTask.setTaskEndTime(LocalTime.parse(DEADLINE_TIME));
 							tempTask.setTaskType(TYPE_DEADLINE);
+							isTaskTypeChanged = true;
+							editedTaskType = TYPE_DEADLINE;
+							isValidDT = true;
 							isEdit = true;
 						} else if((tempTask.getTaskType().equals(TYPE_DEADLINE)) || (tempTask.getTaskType().equals(TYPE_TIMED))) {
 							LocalTime endTime = tempTask.getTaskEndTime();
@@ -374,7 +388,7 @@ public class EditTask {
 		Boolean isEdit = false;
 		if(EDIT_ENDDATETIME.matches()) {
 			int lineNum = Integer.parseInt(EDIT_ENDDATETIME.group(1));
-			LocalDate endDate = LocalDate.parse(EDIT_ENDDATETIME.group(5));
+			LocalDate endDate = dtCheck.toValidDate(EDIT_ENDDATETIME.group(5));
 			LocalTime endTime = dtCheck.determineHour(EDIT_ENDDATETIME.group(10));
 
 			if(validOp.isValidTask(lineNum, allLists)) {
@@ -395,6 +409,8 @@ public class EditTask {
 								tempTask.setTaskEndDate(endDate);
 								tempTask.setTaskEndTime(endTime);
 								tempTask.setTaskType(TYPE_DEADLINE);
+								editedTaskType = TYPE_DEADLINE;
+								isTaskTypeChanged = true;
 								isEdit = true;
 							} else if((tempTask.getTaskType().equals(TYPE_DEADLINE)) || (tempTask.getTaskType().equals(TYPE_TIMED))) {
 								tempTask.setTaskEndDate(endDate);

@@ -10,16 +10,21 @@ public class UndoCommand {
 	ResultSet returnResult = new ResultSet();
 	ViewTask refreshTask = new ViewTask();
 	
-	public ResultSet execute(TaskListSet allLists, Stack<ArrayList<Task>> undoList) {
+	public ResultSet execute(TaskListSet allLists, Stack<ArrayList<Task>> undoList, boolean isView, boolean isSearch) {
 		if(!undoList.isEmpty()) {
 			allLists.setTaskList(undoList.pop());
 			returnResult.setOpStatus(MESSAGE_UNDO_SUCCESS);
-			returnResult.setIsSuccessful(true);
 		} else {
 			returnResult.setOpStatus(MESSAGE_UNDO_FAIL);
-			returnResult.setIsSuccessful(false);
 		}
-		returnResult.setReturnList(allLists.getTaskList());
+		
+		if(isView) {
+			returnResult.setReturnList(allLists.getViewList());
+		} else if(isSearch) {
+			returnResult.setReturnList(allLists.getResultList());
+		} else {
+			returnResult.setReturnList(allLists.getTaskList());
+		}
 		return returnResult;
 	}
 	

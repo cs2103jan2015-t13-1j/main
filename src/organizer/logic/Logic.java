@@ -10,7 +10,11 @@ import java.util.Stack;
 import organizer.storage.Storage;
 
 public class Logic {
-	private final static String MODE_INIT_VIEW = "all";
+	private static final String MODE_INIT_VIEW = "all";
+	private static final String opView = "View Tasks Filter: %1$s \nStatus: ";
+	
+	String MODE_VIEW = "all";
+	String TERM_SEARCH = "";
 	Storage tempStorage = new Storage();
 	ResultSet returnResult = new ResultSet();
 	TaskListSet allLists = new TaskListSet();
@@ -22,6 +26,8 @@ public class Logic {
 	
 	public ArrayList<Task> loadStorage(InputStream in) throws IOException {
 		allLists.setTaskList(tempStorage.readFromStream(in));
+		validOp.setIsSearch(false);
+		validOp.setIsView(false);
 		return viewDefault();
 	}
 
@@ -39,8 +45,10 @@ public class Logic {
 	public ArrayList<Task> viewDefault() {
 		ViewTask command = new ViewTask();
 		if(validOp.getIsView()) {
+			allLists.setViewList(viewCommand(MODE_VIEW).getReturnList());
 			allLists.setInitList(allLists.getViewList());
 		} else if(validOp.getIsSearch()) {
+			allLists.setResultList(searchCommand(TERM_SEARCH).getReturnList());
 			allLists.setInitList(allLists.getResultList());
 		} else {
 			ResultSet returnResult = command.execute(MODE_INIT_VIEW, allLists);
@@ -61,21 +69,25 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		DeleteTask command = new DeleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
-		setViewMode(returnResult.getIsSuccessful());
+		setViewMode();
 		return returnResult;
 	}
 	
 	public ResultSet searchCommand(String searchTerm) {
-		validOp.setIsSearch(true);
 		SearchTask command = new SearchTask();
 		returnResult = command.execute(searchTerm, allLists);
+		validOp.setIsSearch(true);
+		TERM_SEARCH = searchTerm;
 		return returnResult;
 	}
 	
 	public ResultSet viewCommand(String viewType) {
-		validOp.setIsView(true);
 		ViewTask command = new ViewTask();
 		returnResult = command.execute(viewType, allLists);
+		validOp.setIsView(true);
+		if(!viewType.equals(MODE_INIT_VIEW)) {
+			MODE_VIEW = viewType;
+		}
 		return returnResult;
 	}
 	
@@ -83,7 +95,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		PostponeTask command = new PostponeTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
-		setViewMode(returnResult.getIsSuccessful());
+		setViewMode();
 		return returnResult;
 	}
 	
@@ -98,7 +110,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		RankTask command = new RankTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
-		setViewMode(returnResult.getIsSuccessful());
+		setViewMode();
 		return returnResult;
 	}
 	
@@ -106,7 +118,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		CompleteTask command = new CompleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
-		setViewMode(returnResult.getIsSuccessful());
+		setViewMode();
 		return returnResult;	
 	}
 	
@@ -114,7 +126,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		IncompleteTask command = new IncompleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
-		setViewMode(returnResult.getIsSuccessful());
+		setViewMode();
 		return returnResult;	
 	}
 	
@@ -122,14 +134,14 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		EditTask command = new EditTask();
 		returnResult = command.execute(userContent, allLists, validOp);
-		setViewMode(returnResult.getIsSuccessful());
+		setViewMode();
 		return returnResult;
 	}
 	
 	public ResultSet undoCommand() {
 		UndoCommand command = new UndoCommand();
-		returnResult = command.execute(allLists, undoList);
-		setViewMode(returnResult.getIsSuccessful());
+		returnResult = command.execute(allLists, undoList, validOp.getIsView(), validOp.getIsSearch());
+		setViewMode();
 		return returnResult;
 	}
 	
@@ -137,7 +149,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		FloatTask command = new FloatTask();
 		returnResult = command.execute(userContent, allLists, validOp);
-		setViewMode(returnResult.getIsSuccessful());
+		setViewMode();
 		return returnResult;
 	}
 
@@ -167,31 +179,31 @@ public class Logic {
 		} else {
 			returnResult = command.executeSaveAs(allLists.getTaskList(), userFile);
 		}
-		setViewMode(returnResult.getIsSuccessful());
+		setViewMode();
 		return returnResult;
 	}
 	
 	public ResultSet saveAsCommand(String fileName) throws IOException {
 		SaveTask command = new SaveTask();
 		returnResult = command.executeSaveAs(allLists.getTaskList(), fileName);
-		setViewMode(returnResult.getIsSuccessful());
+		setViewMode();
 		isDefaultFile = false;
 		userFile = fileName;
 		return returnResult;
 	}
 
-	private void setViewMode(Boolean isSuccessful) {
+	private void setViewMode() {
+		String operationMessage = returnResult.getOpStatus();
 		returnResult.setReturnList(viewDefault());
-		if(isSuccessful) {
-			validOp.setIsView(false);
-			validOp.setIsSearch(false);
-		}
+		returnResult.setOpStatus(String.format(opView, MODE_VIEW).concat(operationMessage));
 	}
 	
 	public ResultSet loadFileCommand(String fileName) throws IOException {
 		LoadTask command = new LoadTask();
 		returnResult = command.execute(allLists, fileName);
 		returnResult.setReturnList(viewDefault());
+		validOp.setIsSearch(false);
+		validOp.setIsView(false);
 		isDefaultFile = false;
 		userFile = fileName;
 		return returnResult;
@@ -201,6 +213,8 @@ public class Logic {
 		LoadTask command = new LoadTask();
 		returnResult = command.recoverTempList(allLists);
 		returnResult.setReturnList(viewDefault());
+		validOp.setIsSearch(false);
+		validOp.setIsView(false);
 		return returnResult;
 	}
 }

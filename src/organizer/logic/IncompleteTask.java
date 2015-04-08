@@ -17,10 +17,8 @@ public class IncompleteTask {
             int taskID = validOp.checkForTaskID(lineNum, allLists);
             tempList.get(taskID).setTaskStatus(STATUS_TASK);
             returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
-            returnResult.setIsSuccessful(true);
         } else {
             returnResult.setOpStatus(MESSAGE_INVALID_TASK);
-            returnResult.setIsSuccessful(false);
         }
         
         allLists.setTaskList(tempList);
