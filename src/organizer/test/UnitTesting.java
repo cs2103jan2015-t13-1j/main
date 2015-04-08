@@ -1,4 +1,4 @@
-//package organizer.test;
+package organizer.test;
 //
 //import static org.junit.Assert.*;
 //
@@ -16,7 +16,7 @@
 //import organizer.storage.Storage;
 //
 //@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-//public class UnitTesting {
+public class UnitTesting {
 //
 //	CommandParser commandParse = new CommandParser();
 //	Storage storage = new Storage();
@@ -262,4 +262,4 @@
 //					toString(taskList.get(index)));
 //		}
 //	}
-//}
+}

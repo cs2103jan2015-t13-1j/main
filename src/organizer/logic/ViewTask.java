@@ -13,6 +13,7 @@ public class ViewTask {
 
 	private enum ViewType {
 		TODAY,
+		TOMORROW,
 		DEADLINE,
 		FLOATING,
 		HIGH,
@@ -27,6 +28,7 @@ public class ViewTask {
 		public String toString() {
 			switch (this) {
 			case TODAY: return "today";
+			case TOMORROW: return "tomorrow";
 			case COMPLETE: return "COMPLETE";
 			case INCOMPLETE: return "INCOMPLETE";
 			case DEADLINE: return "DEADLINE";
@@ -50,6 +52,9 @@ public class ViewTask {
 		switch (viewTypeString.trim().toLowerCase()) {
 		case "today":
 			allLists.setViewList(viewToday(allLists.getTaskList()));
+			break;
+		case "tomorrow":
+			allLists.setViewList(viewTomorrow(allLists.getTaskList()));
 			break;
 		case "complete":
 			allLists.setViewList(viewComplete(allLists.getTaskList()));
@@ -111,6 +116,19 @@ public class ViewTask {
 		for(int index = 0; index < taskList.size(); index++) {
 			if((taskList.get(index).getTaskEndDate() != null && taskList.get(index).getTaskEndDate().equals(LocalDate.now())) 
 					|| (taskList.get(index).getTaskStartDate() != null && taskList.get(index).getTaskStartDate().equals(LocalDate.now()))) {
+				tempList.add(taskList.get(index));
+			}
+		}
+		
+		return tempList;
+	}
+	
+	private ArrayList<Task> viewTomorrow(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			if((taskList.get(index).getTaskEndDate() != null && taskList.get(index).getTaskEndDate().equals(LocalDate.now().plusDays(1))) 
+					|| (taskList.get(index).getTaskStartDate() != null && taskList.get(index).getTaskStartDate().equals(LocalDate.now().plusDays(1)))) {
 				tempList.add(taskList.get(index));
 			}
 		}

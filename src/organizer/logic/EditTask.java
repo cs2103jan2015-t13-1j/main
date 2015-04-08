@@ -158,6 +158,7 @@ public class EditTask {
 						} else {
 							isEdit = true;
 						}
+						break;
 					}
 				}
 			}
@@ -251,6 +252,8 @@ public class EditTask {
 						} else {
 							isEdit = true;
 						}
+						
+						break;
 					}
 				}
 			}
@@ -336,6 +339,8 @@ public class EditTask {
 						} else {
 							isEdit = false;
 						}
+						
+						break;
 					}
 				}
 			}

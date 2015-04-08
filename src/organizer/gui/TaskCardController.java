@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 
 public class TaskCardController extends Region {
+	@SuppressWarnings("unused")
 	private TaskItem task;
 	@FXML
 	private Label nameLabel;

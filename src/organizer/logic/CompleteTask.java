@@ -14,9 +14,15 @@ public class CompleteTask {
 		ArrayList<Task> tempList = allLists.getTaskList();
 		
 		if(validOp.isValidTask(lineNum, allLists)) {
+			Task tempTask = new Task();
 			int taskID = validOp.checkForTaskID(lineNum, allLists);
-			tempList.get(taskID).setTaskStatus(STATUS_COMPLETE);
-			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
+			for(int i = 0; i < tempList.size(); i++) {
+				tempTask = tempList.get(i);
+				if(taskID == tempTask.getTaskID()) {
+					tempTask.setTaskStatus(STATUS_COMPLETE);
+					returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
+				}
+			}	
 		} else {
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
 		}

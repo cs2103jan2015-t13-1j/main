@@ -14,12 +14,18 @@ public class IncompleteTask {
         ArrayList<Task> tempList = allLists.getTaskList();
         
         if(validOp.isValidTask(lineNum, allLists)) {
-            int taskID = validOp.checkForTaskID(lineNum, allLists);
-            tempList.get(taskID).setTaskStatus(STATUS_TASK);
-            returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
-        } else {
-            returnResult.setOpStatus(MESSAGE_INVALID_TASK);
-        }
+			Task tempTask = new Task();
+			int taskID = validOp.checkForTaskID(lineNum, allLists);
+			for(int i = 0; i < tempList.size(); i++) {
+				tempTask = tempList.get(i);
+				if(taskID == tempTask.getTaskID()) {
+					tempTask.setTaskStatus(STATUS_TASK);
+					returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
+				}
+			}	
+		} else {
+			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+		}
         
         allLists.setTaskList(tempList);
         returnResult.setReturnList(allLists.getTaskList());

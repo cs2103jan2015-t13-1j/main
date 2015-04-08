@@ -13,7 +13,7 @@ public class Logic {
 	private static final String MODE_INIT_VIEW = "all";
 	private static final String opView = "View Tasks Filter: %1$s \nStatus: ";
 	
-	String MODE_VIEW = "all";
+	public static String MODE_VIEW = "all";
 	String TERM_SEARCH = "";
 	Storage tempStorage = new Storage();
 	ResultSet returnResult = new ResultSet();
@@ -62,6 +62,9 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		AddTask command = new AddTask();
 		returnResult = command.execute(taskInfo, allLists);
+		validOp.setIsSearch(false);
+		validOp.setIsView(false);
+		MODE_VIEW = "all";
 		setViewMode();
 		return returnResult;
 	}
@@ -70,6 +73,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		DeleteTask command = new DeleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
+		System.out.println(MODE_VIEW);
 		setViewMode();
 		return returnResult;
 	}
@@ -86,9 +90,8 @@ public class Logic {
 		ViewTask command = new ViewTask();
 		returnResult = command.execute(viewType, allLists);
 		validOp.setIsView(true);
-		if(!viewType.equals(MODE_INIT_VIEW)) {
-			MODE_VIEW = viewType;
-		}
+		MODE_VIEW = viewType;
+		
 		return returnResult;
 	}
 	
@@ -192,30 +195,41 @@ public class Logic {
 		userFile = fileName;
 		return returnResult;
 	}
-
+	
 	private void setViewMode() {
 		String operationMessage = returnResult.getOpStatus();
 		returnResult.setReturnList(viewDefault());
 		returnResult.setOpStatus(String.format(opView, MODE_VIEW).concat(operationMessage));
 	}
+
+	public ResultSet setViewMode(ResultSet returnResult) {
+		String operationMessage = returnResult.getOpStatus();
+		returnResult.setReturnList(viewDefault());
+		returnResult.setOpStatus(String.format(opView, MODE_VIEW).concat(operationMessage));
+		return returnResult;
+	}
 	
 	public ResultSet loadFileCommand(String fileName) throws IOException {
 		LoadTask command = new LoadTask();
 		returnResult = command.execute(allLists, fileName);
-		returnResult.setReturnList(viewDefault());
 		validOp.setIsSearch(false);
 		validOp.setIsView(false);
+		returnResult.setReturnList(viewDefault());
+		MODE_VIEW = "all";
 		isDefaultFile = false;
 		userFile = fileName;
+		setViewMode();
 		return returnResult;
 	}
 	
 	public ResultSet recoverFileCommand() throws IOException {
 		LoadTask command = new LoadTask();
 		returnResult = command.recoverTempList(allLists);
-		returnResult.setReturnList(viewDefault());
 		validOp.setIsSearch(false);
 		validOp.setIsView(false);
+		returnResult.setReturnList(viewDefault());
+		MODE_VIEW = "all";
+		setViewMode();
 		return returnResult;
 	}
 }

@@ -76,6 +76,7 @@ public class StorageTesting {
 		InputStream is = createInputStreamFromString(input);
 		Storage storage = new Storage();
 		exception.expect(NumberFormatException.class);
+		@SuppressWarnings("unused")
 		ArrayList<Task> taskList = storage.readFromStream(is);
 	}
 

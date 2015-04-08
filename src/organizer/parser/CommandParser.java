@@ -12,8 +12,6 @@ public class CommandParser {
 	private static final String noContentCommandPattern = "clear|undo|save";
 	private static final String withContentCommandPattern = "add|delete|search|view|edit|rank|postpone|incomplete|complete|save as|float|load";
 	
-	private static final String MODE_VIEW = "incomplete";
-
 	ArrayList<Task> taskList = new ArrayList<Task>();
 	ArrayList<Task> resultList = new ArrayList<Task>(); // for search
 	ArrayList<Task> viewList = new ArrayList<Task>();
@@ -152,7 +150,7 @@ public class CommandParser {
 	private ResultSet showNoChanges() {
 		ResultSet returnResult = new ResultSet();
 		returnResult.setOpStatus(MESSAGE_INVALID_COMMAND);
-		returnResult.setReturnList(logic.viewCommand(MODE_VIEW).getReturnList());
-		return returnResult;
+		returnResult.setReturnList(logic.viewCommand(Logic.MODE_VIEW).getReturnList());
+		return logic.setViewMode(returnResult);
 	}
 }
