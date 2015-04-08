@@ -1,3 +1,4 @@
+//@author A0098824N
 package organizer.logic;
 
 public class Validation {
@@ -44,10 +45,8 @@ public class Validation {
         int taskID = -1;
         if(isSearch) {
             taskID = allList.getResultList().get(lineNum-1).getTaskID();
-            isSearch = false;
         } else if(isView) {
-            taskID = allList.getViewList().get(lineNum-1).getTaskID();
-            isView = false;            
+            taskID = allList.getViewList().get(lineNum-1).getTaskID();         
         } else {
             taskID = allList.getTaskList().get(lineNum-1).getTaskID();
         }

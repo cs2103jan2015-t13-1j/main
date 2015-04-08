@@ -86,6 +86,7 @@ public class EditTask {
 
 			if(validOp.isValidTask(lineNum, allLists)) {
 				isValidLineNum = true;
+				isValidDT = true;
 				int taskID = validOp.checkForTaskID(lineNum, allLists);
 				ArrayList<Task> taskList = allLists.getTaskList();
 
@@ -343,13 +344,17 @@ public class EditTask {
 						LocalTime startTime = tempTask.getTaskStartTime();
 
 						if((tempTask.getTaskType().equals(TYPE_TIMED)) || (tempTask.getTaskType().equals(TYPE_DEADLINE)))  {
+							isEdit = true;
 							if(tempTask.getTaskType().equals(TYPE_TIMED) && tempTask.getTaskEndDate() == null) {
-								isEdit = true;
+								
 								if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
 									tempTask.setTaskEndDate(tempTask.getTaskStartDate());
 									tempTask.setTaskEndTime(endTime);
 									isValidDT = true;
 								}
+							} else if(tempTask.getTaskType().equals(TYPE_DEADLINE)) {
+								tempTask.setTaskEndTime(endTime);
+								isValidDT = true;
 							}
 						} else {
 							isEdit = false;

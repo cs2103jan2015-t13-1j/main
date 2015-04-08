@@ -2,51 +2,66 @@ package organizer.logic;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PostponeTask {
-	private static final String MESSAGE_SUCCESS = "Postpone task(s) operation is successful!";
-	private static final String MESSAGE_UNSUCCESS = "Postpone task(s) operation failed for invalid content!";
+	private static final String MESSAGE_SUCCESS = "Postpone task operation is successful!";
+	private static final String MESSAGE_UNSUCCESS = "Postpone task operation failed for invalid content!";
+	private static final String MESSAGE_NODEADLINE = "No deadline found!";
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
-	private final static String PATTERN_POSTPONE = "(\\d)(\\s)(\\d)(\\s)(hours|hour|days|day)";
+	private final static String PATTERN_POSTPONE = "(\\d)(\\s)(\\bby\\b)(\\s)(\\d)(\\s)(hours|hour|days|day|hr|hrs)";
+	private final static String PATTERN_HOUR = "hour|hours|hr|hrs";
+	private final static String PATTERN_DAY = "day|days";
 
 	public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {
 		Matcher POSTPONE = Pattern.compile(PATTERN_POSTPONE).matcher(taskInfo);
 		ResultSet returnResult = new ResultSet();
+		DateAndTime dtCheck = new DateAndTime();
 		
 		if(POSTPONE.matches()) {
-			int lineNum = Integer.parseInt(taskInfo.substring(0, taskInfo.indexOf(" ")));
-			int NumofDaysOrhours = Integer.parseInt(taskInfo.substring(taskInfo.indexOf(" ") + 1, taskInfo.indexOf(" ", taskInfo.indexOf(" ") + 1)));
-			String timeIdentifier = taskInfo.substring(taskInfo.lastIndexOf(" ")).trim();
+			int lineNum = Integer.parseInt(POSTPONE.group(1));
+			int NumofDaysOrhours = Integer.parseInt(POSTPONE.group(5));
+			String timeIdentifier = POSTPONE.group(7);
 					
-			ArrayList<Task> tempList = new ArrayList<Task>();
+			Task tempTask = new Task();
 			
 			if(validOp.isValidTask(lineNum, allLists)) {
-				tempList = allLists.getTaskList();
-				timeIdentifier = timeIdentifier.toLowerCase();
-				System.out.println(timeIdentifier);
-				if (timeIdentifier.equals("hour")|| timeIdentifier.equals("hours")){
-					LocalTime newDueTime = tempList.get(lineNum - 1).getTaskEndTime().plusHours(NumofDaysOrhours);	
-					System.out.println(timeIdentifier);
-					tempList.get(lineNum - 1).setTaskEndTime(newDueTime);
-				} else if (timeIdentifier.equals( "day") || timeIdentifier.equals("days")){
-					LocalDate newDueDate = tempList.get(lineNum - 1).getTaskEndDate().plusDays(NumofDaysOrhours);
-					tempList.get(lineNum - 1).setTaskEndDate(newDueDate);
-				} else {
-					LocalDate newDueDate = tempList.get(lineNum - 1).getTaskEndDate().plusDays(NumofDaysOrhours);
-					tempList.get(lineNum - 1).setTaskEndDate(newDueDate);
+				int taskID = validOp.checkForTaskID(lineNum, allLists);
+				
+				for(int index = 0; index < allLists.getTaskList().size(); index++) {
+					if(taskID == index) {
+						tempTask = allLists.getTaskList().get(index);
+					}
 				}
-				allLists.setTaskList(tempList);
-				returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
+				
+				LocalDate startDate = tempTask.getTaskStartDate();
+				LocalDate endDate = tempTask.getTaskEndDate();
+				LocalTime startTime = tempTask.getTaskStartTime();
+				LocalTime endTime = tempTask.getTaskEndTime();
+				
+				if(endDate != null || endTime != null) {
+					if(endTime != null && timeIdentifier.matches(PATTERN_HOUR)) {
+						endTime = endTime.plusHours(NumofDaysOrhours);
+					} else if(endDate != null && timeIdentifier.matches(PATTERN_DAY)) {
+						endDate = endDate.plusDays(NumofDaysOrhours);
+					}
+					
+					if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+						tempTask.setTaskEndDate(endDate);
+						tempTask.setTaskEndTime(endTime);
+						returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
+					}
+				} else {
+					returnResult.setOpStatus(MESSAGE_NODEADLINE);
+				}
+					
 			} else {
 				returnResult.setOpStatus(MESSAGE_INVALID_TASK);
 			}
 		} else {
 			returnResult.setOpStatus(MESSAGE_UNSUCCESS);
 		}
-		
 
 		returnResult.setReturnList(allLists.getTaskList());
 		return returnResult;
