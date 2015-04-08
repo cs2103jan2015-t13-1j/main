@@ -1,7 +1,6 @@
-//@author A0098824N
 package organizer.logic;
 
-
+//@author A0098824N
 import java.io.IOException;
 import java.util.ArrayList;
 

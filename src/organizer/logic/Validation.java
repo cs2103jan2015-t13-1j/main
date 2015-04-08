@@ -1,6 +1,6 @@
-//@author A0098824N
 package organizer.logic;
 
+//@author A0098824N
 public class Validation {
     private static final String rankPattern = "high|medium|low|remove";
     

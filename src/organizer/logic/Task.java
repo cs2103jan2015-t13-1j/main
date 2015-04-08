@@ -1,10 +1,10 @@
-//@author A0098824N
+
 package organizer.logic;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-
+//@author A0098824N
 public class Task {
 
 	private final static String STATUS_DEFAULT = "INCOMPLETE";

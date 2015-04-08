@@ -1,9 +1,9 @@
-//@author A0098824N
 package organizer.logic;
 
 import java.util.ArrayList;
 import java.util.Stack;
 
+//@author A0098824N
 public class UndoCommand {
 	private final static String MESSAGE_UNDO_SUCCESS = "Undo successfully!";
 	private final static String MESSAGE_UNDO_FAIL = "No actions to undo!";

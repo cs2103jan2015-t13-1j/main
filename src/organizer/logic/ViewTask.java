@@ -1,10 +1,10 @@
-//@author A0098824N
 package organizer.logic;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+//@author A0098824N
 public class ViewTask {
 	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
 	private static final String MESSAGE_SUCCESS = "View Tasks Filter: %1$s";

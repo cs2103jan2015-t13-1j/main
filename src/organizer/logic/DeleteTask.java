@@ -1,8 +1,8 @@
-//@author A0098824N
 package organizer.logic;
 
 import java.util.ArrayList;
 
+//@author A0098824N
 public class DeleteTask {
 	private static final String MESSAGE_SUCCESS = "Delete task operation is successful!";
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";

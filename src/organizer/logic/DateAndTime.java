@@ -1,4 +1,3 @@
-//@author A0098824N
 package organizer.logic;
 
 import java.time.LocalDate;
@@ -7,6 +6,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
+//@author A0098824N
 public class DateAndTime {
 	private static final int daysPerWeek = 7;
 	private static final String dayPattern = "monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun";

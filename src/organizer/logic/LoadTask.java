@@ -1,4 +1,3 @@
-//@author A0098824N
 package organizer.logic;
 
 import java.io.File;
@@ -7,6 +6,7 @@ import java.io.PrintWriter;
 
 import organizer.storage.Storage;
 
+//@author A0098824N
 public class LoadTask {
 	private final static String MESSAGE_LOAD_SUCCESS= "Loaded %1$s successfully!";
 	private final static String MESSAGE_NEWFILE_SUCCESS= "File not found. %1$s has been created successfully!";

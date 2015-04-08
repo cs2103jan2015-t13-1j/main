@@ -1,8 +1,8 @@
-//@author A0098824N
 package organizer.logic;
 
 import java.util.ArrayList;
 
+//@author A0098824N
 public class ResultSet {
 	String opStatus;
 	ArrayList<Task> returnList;
