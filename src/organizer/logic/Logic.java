@@ -62,6 +62,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		AddTask command = new AddTask();
 		returnResult = command.execute(taskInfo, allLists);
+		setViewMode();
 		return returnResult;
 	}
 	

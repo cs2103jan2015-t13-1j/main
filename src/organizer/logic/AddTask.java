@@ -4,6 +4,7 @@ package organizer.logic;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,6 +27,9 @@ public class AddTask {
 	private static final String KEYWORD_TIMED_TODAY = "today";
 	private static final String KEYWORD_TIMED_TMRW = "tomorrow";
 	private static final String KEYWORD_NOTIMED_DATE = " from ";
+	
+	private static final int MAX = 50000;
+	private static final int MIN = 0;
 	
 	//add {taskname} {on} {date}
 	private static final String PATTERN_TIMED_START_DATE = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
@@ -62,8 +66,25 @@ public class AddTask {
 		returnResult = new ResultSet();
 		String taskName = null;
 		String taskDateTime = null;
+		int taskID = -1;
+		int randomID = -1;
+		boolean isUnique = false;
 		ArrayList<Task> taskList = allLists.getTaskList();
-		int taskID = allLists.getTaskList().size();
+		while(!isUnique) {
+			isUnique = true;
+			Random randomNumberGen = new Random();
+			randomID = randomNumberGen.nextInt((MAX - MIN) + 1) + MIN;
+			
+			for(int i = 0; i < allLists.getTaskList().size(); i++) {
+				if(randomID == allLists.getTaskList().get(i).getTaskID()) {
+					isUnique = false;
+					break;
+				}
+			}
+		}
+		
+		taskID = randomID;
+
 		Task tempItem = new Task();
 		
 		if(taskInfo.contains(KEYWORD_DEADLINE)) {
