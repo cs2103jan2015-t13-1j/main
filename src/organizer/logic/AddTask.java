@@ -60,7 +60,7 @@ public class AddTask {
 	private DateAndTime dtCheck = new DateAndTime();
 	
 	ResultSet returnResult = new ResultSet();
-
+	boolean isVisited = false;
 	
 	public ResultSet execute(String taskInfo, TaskListSet allLists) {
 		returnResult = new ResultSet();
@@ -95,15 +95,15 @@ public class AddTask {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_TIMED_DATE)).trim();
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_TIMED_DATE)+KEYWORD_TIMED_DATE.length()).trim();
 			tempItem = addTimedTask_DATEDAY(taskName, taskDateTime, tempItem);
-		} else if(taskInfo.contains(KEYWORD_TIMED_TODAY)) {
+		} else if(taskInfo.contains(KEYWORD_TIMED_TODAY) && keywordTodayChecker(taskInfo)) {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_TIMED_TODAY)).trim();
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_TIMED_TODAY)).trim();
 			tempItem =  addTimedTask_TODAYTMRW(taskName, taskDateTime, tempItem);
-		} else if(taskInfo.contains(KEYWORD_TIMED_TMRW)) {
+		} else if(taskInfo.contains(KEYWORD_TIMED_TMRW) && keywordTmrwChecker(taskInfo) && !isVisited) {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_TIMED_TMRW)).trim();
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_TIMED_TMRW)).trim();
 			tempItem =  addTimedTask_TODAYTMRW(taskName, taskDateTime, tempItem);
-		} else if(taskInfo.contains(KEYWORD_NOTIMED_DATE)) {
+		} else if(taskInfo.contains(KEYWORD_NOTIMED_DATE) && keywordFromChecker(taskInfo)) {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_NOTIMED_DATE)).trim();
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_NOTIMED_DATE)+KEYWORD_NOTIMED_DATE.length()).trim();
 			tempItem = addTimedTask_DATEDAY(taskName, taskDateTime, tempItem);
@@ -169,6 +169,59 @@ public class AddTask {
 
 		if(TIMED_STARTEND_2DATE.matches() || TIMED_STARTEND_1DATE.matches() || TIMED_STARTEND_1DAY.matches() || TIMED_START_DATETIME.matches()
 				|| TIMED_START_DAYTIME.matches() || TIMED_START_DATE.matches() || TIMED_START_DAY.matches()) {
+			isChecked = true;
+		}
+		
+		return isChecked;
+	}
+	
+	private boolean keywordTodayChecker(String taskDateTime) {
+		boolean isChecked = false;
+		
+		Matcher TIMED_STARTEND_TODAYTMRWTIMERANGE;
+		Matcher TIMED_START_TODAYTMRWTIME;
+		Matcher TIMED_START_TODAYTMRW;
+		
+		taskDateTime = taskDateTime.substring(taskDateTime.lastIndexOf(KEYWORD_TIMED_TODAY));
+		TIMED_STARTEND_TODAYTMRWTIMERANGE = Pattern.compile(PATTERN_TIMED_STARTEND_TODAYTMRWTIMERANGE).matcher(taskDateTime);
+		TIMED_START_TODAYTMRWTIME = Pattern.compile(PATTERN_TIMED_START_TODAYTMRWTIME).matcher(taskDateTime);
+		TIMED_START_TODAYTMRW = Pattern.compile(PATTERN_TIMED_START_TODAYTMRW).matcher(taskDateTime);
+		
+		if(TIMED_STARTEND_TODAYTMRWTIMERANGE.matches() || TIMED_START_TODAYTMRWTIME.matches() || TIMED_START_TODAYTMRW.matches()) {
+			isChecked = true;
+			isVisited = true;
+		}
+		
+		return isChecked;
+	}
+	
+	private boolean keywordTmrwChecker(String taskDateTime) {
+		boolean isChecked = false;
+		
+		Matcher TIMED_STARTEND_TODAYTMRWTIMERANGE;
+		Matcher TIMED_START_TODAYTMRWTIME;
+		Matcher TIMED_START_TODAYTMRW;
+		
+		taskDateTime = taskDateTime.substring(taskDateTime.lastIndexOf(KEYWORD_TIMED_TMRW));
+		
+		TIMED_STARTEND_TODAYTMRWTIMERANGE = Pattern.compile(PATTERN_TIMED_STARTEND_TODAYTMRWTIMERANGE).matcher(taskDateTime);
+		TIMED_START_TODAYTMRWTIME = Pattern.compile(PATTERN_TIMED_START_TODAYTMRWTIME).matcher(taskDateTime);
+		TIMED_START_TODAYTMRW = Pattern.compile(PATTERN_TIMED_START_TODAYTMRW).matcher(taskDateTime);
+		
+		if(TIMED_STARTEND_TODAYTMRWTIMERANGE.matches() || TIMED_START_TODAYTMRWTIME.matches() || TIMED_START_TODAYTMRW.matches()) {
+			isChecked = true;
+		}
+		
+		return isChecked;
+	}
+	
+	private boolean keywordFromChecker(String taskDateTime) {
+		boolean isChecked = false;
+		Matcher NOTIMED_STARTEND_2DATE;
+		taskDateTime = taskDateTime.substring(taskDateTime.lastIndexOf(KEYWORD_NOTIMED_DATE)+KEYWORD_NOTIMED_DATE.length()).trim();
+		NOTIMED_STARTEND_2DATE = Pattern.compile(PATTERN_NOTIMED_STARTEND_2DATE).matcher(taskDateTime);
+		
+		if(NOTIMED_STARTEND_2DATE.matches()) {
 			isChecked = true;
 		}
 		
@@ -319,14 +372,14 @@ public class AddTask {
 		return timedTask;
 	}
 	
-	public Task addTimedTask_TODAYTMRW(String taskName, String taskDatetime, Task timedTask) {
+	public Task addTimedTask_TODAYTMRW(String taskName, String taskDateTime, Task timedTask) {
 		Matcher TIMED_STARTEND_TODAYTMRWTIMERANGE;
 		Matcher TIMED_START_TODAYTMRWTIME;
 		Matcher TIMED_START_TODAYTMRW;
 		
-		TIMED_STARTEND_TODAYTMRWTIMERANGE = Pattern.compile(PATTERN_TIMED_STARTEND_TODAYTMRWTIMERANGE).matcher(taskDatetime);
-		TIMED_START_TODAYTMRWTIME = Pattern.compile(PATTERN_TIMED_START_TODAYTMRWTIME).matcher(taskDatetime);
-		TIMED_START_TODAYTMRW = Pattern.compile(PATTERN_TIMED_START_TODAYTMRW).matcher(taskDatetime);
+		TIMED_STARTEND_TODAYTMRWTIMERANGE = Pattern.compile(PATTERN_TIMED_STARTEND_TODAYTMRWTIMERANGE).matcher(taskDateTime);
+		TIMED_START_TODAYTMRWTIME = Pattern.compile(PATTERN_TIMED_START_TODAYTMRWTIME).matcher(taskDateTime);
+		TIMED_START_TODAYTMRW = Pattern.compile(PATTERN_TIMED_START_TODAYTMRW).matcher(taskDateTime);
 		
 		if(TIMED_STARTEND_TODAYTMRWTIMERANGE.matches()) {
 			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_STARTEND_TODAYTMRWTIMERANGE.group(1)));
@@ -351,7 +404,7 @@ public class AddTask {
 			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_START_TODAYTMRW.group(1)));
 			timedTask.setTaskType(TYPE_TIMED);
 		} else {
-			taskName = taskName.concat(" "+ taskDatetime);
+			taskName = taskName.concat(" "+ taskDateTime);
 			timedTask.setTaskType(TYPE_FLOATING);
 		}
 		
