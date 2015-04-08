@@ -11,10 +11,10 @@ import java.util.regex.Pattern;
 //@author A0098824N
 public class AddTask {
 	private static final String PATTERN_DEADLINE_DATEONLY = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
-	private static final String PATTERN_DEADLINE_DAYASDATE = "monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow";
+	private static final String PATTERN_DEADLINE_DAYASDATE = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)";
 
 	private static final String PATTERN_DEADLINE_DATETIME = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
-	private static final String PATTERN_DEADLINE_DAYTIME = "(\\w+)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_DEADLINE_DAYTIME = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	
 	private static final String KEYWORD_DEADLINE = " by ";
 	private static final String TYPE_DEADLINE = "DEADLINE";
@@ -34,13 +34,13 @@ public class AddTask {
 	//add {taskname} {on} {date}
 	private static final String PATTERN_TIMED_START_DATE = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
 	//add {taskname} {on} {day}
-	private static final String PATTERN_TIMED_START_DAY = "(\\w+)";
+	private static final String PATTERN_TIMED_START_DAY = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)";
 	//add {taskname} {today|tomorrow}
 	private static final String PATTERN_TIMED_START_TODAYTMRW = "(today|tomorrow)";
 	//add {taskname} {on} {date} {from} {time} {to} {time}
 	private static final String PATTERN_TIMED_STARTEND_1DATE = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	//add {taskname} {on} {mon-sun} {from} {time} {to} {time}
-	private static final String PATTERN_TIMED_STARTEND_1DAY = "(\\w+)(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";	
+	private static final String PATTERN_TIMED_STARTEND_1DAY = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";	
 	//add {taskname} {today|tomorrow} {from} {time} {to} {time}
 	private static final String PATTERN_TIMED_STARTEND_TODAYTMRWTIMERANGE = "(today|tomorrow)(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	//add {taskname} {on} {date} {from} {time} {to} {date} {time}
@@ -50,7 +50,7 @@ public class AddTask {
 	//add {taskname} {on} {date} {time}
 	private static final String PATTERN_TIMED_START_DATETIME = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	//add {taskname} {on} {mon-sun} {time}
-	private static final String PATTERN_TIMED_START_DAYTIME = "(\\w+)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_TIMED_START_DAYTIME = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	//add {taskname} {today|tomorrow} {time}
 	private static final String PATTERN_TIMED_START_TODAYTMRWTIME = "(today|tomorrow)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 
@@ -87,7 +87,7 @@ public class AddTask {
 
 		Task tempItem = new Task();
 		
-		if(taskInfo.contains(KEYWORD_DEADLINE)) {
+		if(taskInfo.contains(KEYWORD_DEADLINE) && keywordByChecker(taskInfo)) {
 			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_DEADLINE)).trim();
 			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_DEADLINE)+KEYWORD_DEADLINE.length()).trim();
 			tempItem = addDeadlineTask(taskName, taskDateTime, tempItem);
@@ -126,21 +126,46 @@ public class AddTask {
 		return returnResult;
 	}
 	
+	private boolean keywordByChecker(String taskInfo){
+		boolean isChecked = false;
+		
+		Matcher DEADLINE_DATEONLY;
+		Matcher DEADLINE_DATETIME;
+		Matcher DEADLINE_DAYTIME;
+		Matcher DEADLINE_DAYASDATE; 
+		
+		taskInfo = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_DEADLINE)+KEYWORD_DEADLINE.length()).trim();
+		
+		DEADLINE_DATEONLY = Pattern.compile(PATTERN_DEADLINE_DATEONLY).matcher(taskInfo);
+		DEADLINE_DATETIME = Pattern.compile(PATTERN_DEADLINE_DATETIME).matcher(taskInfo);
+		DEADLINE_DAYTIME = Pattern.compile(PATTERN_DEADLINE_DAYTIME).matcher(taskInfo);
+		DEADLINE_DAYASDATE = Pattern.compile(PATTERN_DEADLINE_DAYASDATE).matcher(taskInfo);
+		
+		if(DEADLINE_DATEONLY.matches() || DEADLINE_DATETIME.matches() || DEADLINE_DAYTIME.matches() || DEADLINE_DAYASDATE.matches()){
+			isChecked = true;
+		}
+		return isChecked;
+	}
+	
+
+	
 	public Task addDeadlineTask(String taskName, String taskDateTime, Task deadlineTask) {
 		Matcher DEADLINE_DATEONLY;
 		Matcher DEADLINE_DATETIME;
 		Matcher DEADLINE_DAYTIME;
+		Matcher DEADLINE_DAYASDATE;
 		
 		DEADLINE_DATEONLY = Pattern.compile(PATTERN_DEADLINE_DATEONLY).matcher(taskDateTime);
 		DEADLINE_DATETIME = Pattern.compile(PATTERN_DEADLINE_DATETIME).matcher(taskDateTime);
 		DEADLINE_DAYTIME = Pattern.compile(PATTERN_DEADLINE_DAYTIME).matcher(taskDateTime);
+		DEADLINE_DAYASDATE = Pattern.compile(PATTERN_DEADLINE_DAYASDATE).matcher(taskDateTime);
 		
 		if(DEADLINE_DATEONLY.matches()) {
 			deadlineTask.setTaskEndDate(dtCheck.toValidDate(taskDateTime));
 			deadlineTask.setTaskEndTime(LocalTime.parse(TIME_DEADLINE));
 			deadlineTask.setTaskType(TYPE_DEADLINE);
-		} else if(taskDateTime.matches(PATTERN_DEADLINE_DAYASDATE)) {
-			deadlineTask.setTaskEndDate(dtCheck.determineDate(taskDateTime));
+		} else if(DEADLINE_DAYASDATE.matches()) {
+			deadlineTask.setTaskEndDate(dtCheck.determineDate(DEADLINE_DAYASDATE.group(1)));
 			deadlineTask.setTaskEndTime(LocalTime.parse(TIME_DEADLINE));
 			deadlineTask.setTaskType(TYPE_DEADLINE);
 		} else if(DEADLINE_DATETIME.matches()) {
