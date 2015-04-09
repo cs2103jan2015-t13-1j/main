@@ -78,7 +78,7 @@ public class MainAppController {
 		mainApp.performCommand(commandString);
 		updateTaskList();
 		
-		if(taskData.size() > lastTaskDataSize) {
+		if((taskData.size() - lastTaskDataSize) == 1) {
 			pageStart = pageCount-1;
 		} else {
 			pageStart = lastVisitedPage;
