@@ -70,8 +70,21 @@ public class MainAppController {
 		System.out.print("Command: ");
 		System.out.println(commandString);
 		commandText.clear();
+		
+		//grab the user view info before each command
+		int lastTaskDataSize = taskData.size();
+		int lastVisitedPage = pageStart;
+		
 		mainApp.performCommand(commandString);
 		updateTaskList();
+		
+		if(taskData.size() > lastTaskDataSize) {
+			pageStart = pageCount-1;
+		} else {
+			pageStart = lastVisitedPage;
+		}
+		
+		updatePage();
 		setCommandStatus();
 		restoreSidePane();
 	}
