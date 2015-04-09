@@ -1,20 +1,9 @@
 id: 0
-name: buy milk
+name: asdfasdfasdfasdlkfjasldkfjalsdkjf
+start date: 2015-04-06
+start time: 16:00
+end date: 2015-04-06
+end time: 18:00
 status: INCOMPLETE
-priority: LOW
-----
-id: 1
-name: buy ice cream
-status: INCOMPLETE
-priority: MEDIUM
-----
-id: 2
-name: buy detergent
-status: INCOMPLETE
-priority: HIGH
-----
-id: 3
-name: buy milk
-status: INCOMPLETE
-priority: LOW
+type: TIMED
 ----

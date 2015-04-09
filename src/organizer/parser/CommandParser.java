@@ -1,6 +1,7 @@
 package organizer.parser;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import organizer.logic.*;
@@ -25,6 +26,10 @@ public class CommandParser {
 
 	public void writeStorage() throws IOException {
 		logic.writeStorage();
+	}
+	
+	public void writeStorageToStream(OutputStream out) throws IOException {
+		logic.writeStorage(out);
 	}
 
 	enum COMMAND_TYPE {
