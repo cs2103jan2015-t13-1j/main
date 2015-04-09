@@ -1,0 +1,98 @@
+id: 7274
+name: do CS2103 help manual
+end date: 2015-04-09
+end time: 23:59
+status: INCOMPLETE
+type: DEADLINE
+priority: HIGH
+----
+id: 5840
+name: print mom's flight details
+end date: 2015-04-11
+end time: 23:59
+status: INCOMPLETE
+type: DEADLINE
+----
+id: 11578
+name: submit CS2102 final project report
+end date: 2015-04-08
+end time: 22:00
+status: COMPLETE
+type: DEADLINE
+priority: HIGH
+----
+id: 1705
+name: complete CS2102 assignment
+end date: 2015-04-11
+end time: 16:00
+status: INCOMPLETE
+type: DEADLINE
+----
+id: 4338
+name: draft FYP interim report
+status: INCOMPLETE
+type: FLOATING
+----
+id: 839
+name: CS2103 tutorial
+start date: 2015-04-09
+start time: 13:00
+end date: 2015-04-09
+end time: 14:00
+status: INCOMPLETE
+type: TIMED
+----
+id: 7540
+name: CS2102 Demo
+start date: 2015-04-13
+start time: 17:40
+end date: 2015-04-13
+end time: 18:00
+status: INCOMPLETE
+type: TIMED
+----
+id: 48034
+name: CS2103 Final Presentation
+start date: 2015-04-16
+start time: 13:30
+end date: 2015-04-16
+end time: 14:00
+status: INCOMPLETE
+type: TIMED
+----
+id: 48019
+name: holiday trip to Dalian
+start date: 2015-04-28
+end date: 2015-05-10
+status: INCOMPLETE
+type: TIMED
+----
+id: 40034
+name: wash up bathroom
+start date: 2015-04-11
+start time: 09:00
+status: INCOMPLETE
+type: TIMED
+----
+id: 12318
+name: do some groceries shopping
+start date: 2015-04-12
+start time: 10:30
+status: INCOMPLETE
+type: TIMED
+----
+id: 24653
+name: visit optician
+start date: 2015-04-11
+status: INCOMPLETE
+type: TIMED
+----
+id: 18998
+name: go on vegetarian diet
+start date: 2015-04-11
+start time: 08:00
+end date: 2015-04-13
+end time: 16:00
+status: INCOMPLETE
+type: TIMED
+----

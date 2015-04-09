@@ -4,6 +4,7 @@ package organizer.logic;
 //@author A0098824N
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -40,6 +41,10 @@ public class Logic {
 
 	public void writeStorage() throws IOException {
 		tempStorage.writeFile(allLists.getTaskList());
+	}
+	
+	public void writeStorage(OutputStream out) throws IOException {
+		tempStorage.writeFileToStream(allLists.getTaskList(), out);
 	}
 	
 	public ArrayList<Task> viewDefault() {

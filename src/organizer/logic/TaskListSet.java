@@ -10,10 +10,6 @@ public class TaskListSet {
 	ArrayList<Task> initList = new ArrayList<Task>();
 	
 	public TaskListSet() {
-		taskList = null;
-		resultList = null;
-		viewList = null;
-		initList = null;
 	}
 	
 	public TaskListSet(ArrayList<Task> taskList, ArrayList<Task> resultList, ArrayList<Task> viewList, ArrayList<Task> initList) {

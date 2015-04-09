@@ -1,46 +1,87 @@
 package organizer.test;
 
-//import static org.junit.Assert.*;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-//import java.util.List;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
+import java.util.Queue;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
+import org.junit.Before;
 import org.junit.Test;
 
-import organizer.mainApp;
-import organizer.logic.Logic;
 import organizer.logic.ResultSet;
-//import organizer.logic.Task;
 import organizer.parser.CommandParser;
+import organizer.storage.Storage;
 
+//@author A0113627L
 public class IntegrationTesting {
+	CommandParser commandParser = new CommandParser();
+	final Storage storage = new Storage();
+	private static final Pattern MATCH_TO_END = Pattern.compile("\\Z");
+	private static final Pattern MATCH_TO_EOL = Pattern.compile("<<<EOL");
 
-	
-	@SuppressWarnings({ "unused", "resource" })
-	private static String readFile(InputStream in) {
-		final Scanner sc = new Scanner(in).useDelimiter("\\A");
-		final String result = sc.next();
-		sc.close();
-		return result;
+	private static String readStream(InputStream in) {
+		try(Scanner sc = new Scanner(in)) {
+			final String result = sc.useDelimiter(MATCH_TO_END).next();
+			sc.close();
+			return result;
+		}catch(NoSuchElementException e){
+			return "";
+		}
 	}
 	
-	@SuppressWarnings("unused")
+	@Before
+	public void initialise() {
+	}
+	
+	private InputStream getResourceInputStream(String resourceName) {
+		return getClass().getResourceAsStream(resourceName);
+	}
+	
+	private Scanner getResourceScanner(String resourceName) {
+		return new Scanner(getResourceInputStream(resourceName));
+	}
+	
 	@Test
-	// TO TEST: 
-	public void testUserCommandExecutedProperly() {
-		mainApp main = new mainApp();
-		final Logic logic = new Logic();
-		CommandParser commandParser = new CommandParser();
-		try (Scanner sc = new Scanner(getClass().getResource("commands.txt").openStream())) {
-			while (sc.hasNext()) {
-				final ResultSet resultList = commandParser.executeCommand(sc.nextLine());
+	public void testUserCommandExecutedProperly() throws IOException {
+		commandParser.executeCommand("clear");
+		final Queue<Integer> queueLine = new LinkedList<>();
+		final Queue<Pattern> queueExpected = new LinkedList<>();
+		try (Scanner sc = getResourceScanner("resources/compare_view.txt")) {
+			while(sc.hasNextInt()) {
+				queueLine.add(sc.nextInt());
+				queueExpected.add(Pattern.compile(sc.useDelimiter(MATCH_TO_EOL).next().trim()));
+				sc.reset().skip(MATCH_TO_EOL);
+			}
+		}
+		try (Scanner sc = getResourceScanner("resources/commands.txt")) {
+			for (int line = 0; sc.hasNext(); ++line) {
+				final ResultSet rs = commandParser.executeCommand(sc.nextLine());
 				// compare resultList with another list
+				if (!queueLine.isEmpty() && line == queueLine.peek()) {
+					queueLine.poll();
+					final Pattern expected = queueExpected.poll();
+					final PipedInputStream in = new PipedInputStream();
+					final PipedOutputStream out = new PipedOutputStream(in);
+					storage.writeFileToStream(rs.getReturnList(), out);
+					final String result = readStream(in);
+					assertTrue(expected.matcher(result).find());
+					in.close();
+				}
 			}
 			// compare storage
-		} catch (IOException e) {
-			e.printStackTrace();
+			final Pattern expected = Pattern.compile(readStream(getResourceInputStream("resources/expected.txt")));
+			final PipedInputStream in = new PipedInputStream();
+			final PipedOutputStream out = new PipedOutputStream(in);
+			commandParser.writeStorageToStream(out);
+			final String result = readStream(in);
+			assertTrue(expected.matcher(result).find());
 		}
 	}
 

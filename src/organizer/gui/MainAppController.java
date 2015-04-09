@@ -17,6 +17,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 
+//@author A0113627L
 public class MainAppController {
 	private static final int ITEMS_PER_PAGE = 6;
 	private static final String URL_HELP_MANUAL = "src/resources/help_manual/Mnemonical User Manual.html";
