@@ -7,6 +7,7 @@ add temp task 2 on 2015-10-21 6:10
 add a
 add b
 add c
+view all
 edit 5 wait for my signal
 edit 6 to 9:10
 edit 7 to 2015-11-10
