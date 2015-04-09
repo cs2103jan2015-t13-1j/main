@@ -21,6 +21,7 @@ import javafx.scene.layout.FlowPane;
 public class MainAppController {
 	private static final int ITEMS_PER_PAGE = 6;
 	private static final String URL_HELP_MANUAL = "src/resources/help_manual/Mnemonical User Manual.html";
+
 	private MainApp mainApp;
 	
 	@FXML
@@ -72,14 +73,15 @@ public class MainAppController {
 		commandText.clear();
 		
 		//grab the user view info before each command
-		int lastTaskDataSize = taskData.size();
 		int lastVisitedPage = pageStart;
 		
-		mainApp.performCommand(commandString);
+		boolean isAddCommand = mainApp.performCommand(commandString);
 		updateTaskList();
 		
-		if((taskData.size() - lastTaskDataSize) == 1) {
+		if(isAddCommand) {
 			pageStart = pageCount-1;
+		} else if(commandString.startsWith("view ")) {
+			pageStart = 0;
 		} else {
 			pageStart = lastVisitedPage;
 		}

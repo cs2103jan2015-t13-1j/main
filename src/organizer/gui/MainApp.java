@@ -22,13 +22,15 @@ public class MainApp extends Application {
     
     private List<TaskItem> taskData = new ArrayList<>();
     private String currentCommandStatus = "";
-    
+	
+	//to check that it is a add successful operation, so page can jumped to the last one.
+	private static final String ADD_SUCCESS = "View Tasks Filter: all \nStatus: Add task operation is successful!";
     
     private CommandParser commandParser = new CommandParser();
     private List<Task> tasks;
     
     private MainAppController controller;
-    
+
     public MainApp() throws IOException {
         tasks = commandParser.loadStorage();
         fillTaskList();
@@ -90,16 +92,25 @@ public class MainApp extends Application {
     	return currentCommandStatus;
     }
     
-    public void performCommand(String commandString) {
+    public boolean performCommand(String commandString) {
+    	boolean isAdd = false;
         try {
-            ResultSet returnResult = commandParser.executeCommand(commandString);
+        	ResultSet returnResult = commandParser.executeCommand(commandString);
             tasks = returnResult.getReturnList();
             currentCommandStatus = returnResult.getOpStatus();
+            if(currentCommandStatus.equals(ADD_SUCCESS)) {
+            	isAdd = true;
+            } else {
+            	isAdd = false;
+            }
             fillTaskList();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        return isAdd;
     }
+    
     
     public void showHelpDialog() throws IOException {
 		final FXMLLoader loader = new FXMLLoader(getClass().getResource("HelpDialog.fxml"));
