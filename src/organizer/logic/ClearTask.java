@@ -2,7 +2,7 @@ package organizer.logic;
 
 import java.util.ArrayList;
 
-//@author A0098824N
+//@author A0113871J
 public class ClearTask {
 	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
 	private static final String MESSAGE_SUCCESS = "Clear task(s) operation is successful!";

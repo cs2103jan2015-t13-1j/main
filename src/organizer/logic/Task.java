@@ -4,7 +4,7 @@ package organizer.logic;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-//@author A0098824N
+//@author A0113871J
 public class Task {
 
 	private final static String STATUS_DEFAULT = "INCOMPLETE";

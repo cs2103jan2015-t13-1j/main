@@ -371,10 +371,12 @@ public class EditTask {
 
 						if((tempTask.getTaskType().equals(TYPE_TIMED)) || (tempTask.getTaskType().equals(TYPE_DEADLINE)))  {
 							isEdit = true;
-							if(tempTask.getTaskType().equals(TYPE_TIMED) && tempTask.getTaskEndDate() != null) {
+							if(tempTask.getTaskType().equals(TYPE_TIMED)) {
 								
 								if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
-									tempTask.setTaskEndDate(tempTask.getTaskStartDate());
+									if(tempTask.getTaskEndDate() == null) {
+										tempTask.setTaskEndDate(tempTask.getTaskStartDate());
+									}
 									tempTask.setTaskEndTime(endTime);
 									isValidDT = true;
 								}

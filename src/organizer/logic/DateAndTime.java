@@ -20,18 +20,19 @@ public class DateAndTime {
 			String endDT = endDate.toString().concat("T").concat(endTime.toString());
 			LocalDateTime startDateTime = LocalDateTime.parse(startDT);
 			LocalDateTime endDateTime = LocalDateTime.parse(endDT);
-			
-			if(startDateTime.compareTo(endDateTime) >= 0) {
+			System.out.println(startDateTime);
+			System.out.println(endDateTime);
+			if(startDateTime.isAfter(endDateTime)) {
 				return false;
 			}
 			
 		} else if(startTime != null && endTime != null && endDate == startDate) {
-			if(startTime.compareTo(endTime) >= 0) {
+			if(startTime.isAfter(endTime)) {
 				return false;
 			}
 			
 		} else if((endDate != null && startDate != null) && (endTime == null || startTime == null)) {
-			if(startDate.compareTo(endDate) >= 0) {
+			if(startDate.isAfter(endDate)) {
 				return false;
 			}
 		}
