@@ -2,15 +2,11 @@ package organizer.test;
 
 import static org.junit.Assert.*;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Scanner;
@@ -23,6 +19,7 @@ import organizer.logic.ResultSet;
 import organizer.parser.CommandParser;
 import organizer.storage.Storage;
 
+//@author A0113627L
 public class IntegrationTesting {
 	CommandParser commandParser = new CommandParser();
 	final Storage storage = new Storage();
@@ -43,19 +40,27 @@ public class IntegrationTesting {
 	public void initialise() {
 	}
 	
+	private InputStream getResourceInputStream(String resourceName) {
+		return getClass().getResourceAsStream(resourceName);
+	}
+	
+	private Scanner getResourceScanner(String resourceName) {
+		return new Scanner(getResourceInputStream(resourceName));
+	}
+	
 	@Test
 	public void testUserCommandExecutedProperly() throws IOException {
 		commandParser.executeCommand("clear");
 		final Queue<Integer> queueLine = new LinkedList<>();
 		final Queue<Pattern> queueExpected = new LinkedList<>();
-		try (Scanner sc = new Scanner(getClass().getResourceAsStream("resources/compare_view.txt"))) {
+		try (Scanner sc = getResourceScanner("resources/compare_view.txt")) {
 			while(sc.hasNextInt()) {
 				queueLine.add(sc.nextInt());
 				queueExpected.add(Pattern.compile(sc.useDelimiter(MATCH_TO_EOL).next().trim()));
 				sc.reset().skip(MATCH_TO_EOL);
 			}
 		}
-		try (Scanner sc = new Scanner(getClass().getResourceAsStream("resources/commands.txt"))) {
+		try (Scanner sc = getResourceScanner("resources/commands.txt")) {
 			for (int line = 0; sc.hasNext(); ++line) {
 				final ResultSet rs = commandParser.executeCommand(sc.nextLine());
 				// compare resultList with another list
@@ -71,7 +76,7 @@ public class IntegrationTesting {
 				}
 			}
 			// compare storage
-			final Pattern expected = Pattern.compile(readStream(getClass().getResourceAsStream("resources/expected.txt")));
+			final Pattern expected = Pattern.compile(readStream(getResourceInputStream("resources/expected.txt")));
 			final PipedInputStream in = new PipedInputStream();
 			final PipedOutputStream out = new PipedOutputStream(in);
 			commandParser.writeStorageToStream(out);

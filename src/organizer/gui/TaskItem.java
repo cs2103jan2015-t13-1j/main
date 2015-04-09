@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import javafx.beans.property.*;
 import organizer.logic.Task;
 
+//@author A0113627L
 public class TaskItem {
 	private final Task task;
 	private final StringProperty taskName;

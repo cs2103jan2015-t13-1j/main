@@ -14,7 +14,7 @@ import javafx.stage.StageStyle;
 import organizer.logic.*;
 import organizer.parser.*;
 
-
+//@author A0113627L
 public class MainApp extends Application {
 
     private Stage primaryStage;

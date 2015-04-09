@@ -1,7 +1,5 @@
 package organizer.gui;
 
-/*@author */
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,6 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 
+//@author A0113627L
 public class TaskCardController extends Region {
 	@SuppressWarnings("unused")
 	private TaskItem task;

@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
+//@author A0113627L
 public class HelpDialogController {
 	
 	@FXML
