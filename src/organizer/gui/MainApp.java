@@ -24,13 +24,13 @@ public class MainApp extends Application {
     private String currentCommandStatus = "";
     
     
-    private CommandParser CommandParser = new CommandParser();
+    private CommandParser commandParser = new CommandParser();
     private List<Task> tasks;
     
     private MainAppController controller;
     
     public MainApp() throws IOException {
-        tasks = CommandParser.loadStorage();
+        tasks = commandParser.loadStorage();
         fillTaskList();
     }
     
@@ -92,7 +92,7 @@ public class MainApp extends Application {
     
     public void performCommand(String commandString) {
         try {
-            ResultSet returnResult = CommandParser.executeCommand(commandString);
+            ResultSet returnResult = commandParser.executeCommand(commandString);
             tasks = returnResult.getReturnList();
             currentCommandStatus = returnResult.getOpStatus();
             fillTaskList();
