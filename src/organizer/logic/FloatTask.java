@@ -2,7 +2,7 @@ package organizer.logic;
 
 import java.util.ArrayList;
 
-//@author A0113871J
+//@author A0098824N
 public class FloatTask {
 	private static final String MESSAGE_SUCCESS = "Set float task operation is successful!";
 	private static final String MESSAGE_INVALID_TYPE = "Selected task is already a floating task!";
