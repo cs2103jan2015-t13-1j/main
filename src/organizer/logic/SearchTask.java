@@ -2,7 +2,7 @@ package organizer.logic;
 
 import java.util.ArrayList;
 
-//@author A0098824N
+//@author A0113871J
 public class SearchTask {
 	private static final String MESSAGE_SEARCH_FOUND = "Search results found: \"%1$s\"";
 	private static final String MESSAGE_NO_RESULT = "No results found!";
