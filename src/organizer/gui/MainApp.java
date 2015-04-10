@@ -98,11 +98,7 @@ public class MainApp extends Application {
         	ResultSet returnResult = commandParser.executeCommand(commandString);
             tasks = returnResult.getReturnList();
             currentCommandStatus = returnResult.getOpStatus();
-            if(currentCommandStatus.equals(ADD_SUCCESS)) {
-            	isAdd = true;
-            } else {
-            	isAdd = false;
-            }
+            isAdd = currentCommandStatus.equals(ADD_SUCCESS);
             fillTaskList();
         } catch (IOException e) {
             e.printStackTrace();

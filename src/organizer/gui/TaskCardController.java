@@ -80,6 +80,7 @@ public class TaskCardController extends Region {
 			LocalTime time) {
 		StringBuilder strb = new StringBuilder();
 		if (date != null) {
+			// String has date field
 			strb.append(date.getDayOfMonth())
 				.append(' ')
 				.append(date.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()))
@@ -87,12 +88,15 @@ public class TaskCardController extends Region {
 				.append(date.getYear());
 		}
 		if (date != null && time != null) {
+			// String has both date and time field
+			// We need separator
 			strb.append(' ');
 		}
 		if (time != null) {
+			// String has time field
 			final int hour = time.getHour(), minute = time.getMinute();
 			if (hour < 10)
-				strb.append('0');
+				strb.append('0');	// Fill missing 0
 			strb
 				.append(time.getHour())
 				.append(':');
