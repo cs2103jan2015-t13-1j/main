@@ -3,10 +3,10 @@ package organizer.gui;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.stream.Collectors;
 import java.util.List;
 
+import resources.ResourceUtil;
 import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
@@ -23,7 +23,8 @@ import javafx.util.Duration;
 //@author A0113627L
 public class MainAppController {
 	private static final int ITEMS_PER_PAGE = 6;
-	private static final String URL_HELP_MANUAL = "src/resources/help_manual/Mnemonical User Manual.html";
+	private static final String URL_HELP_MANUAL = "/resources/help_manual";
+	private static final String URL_MANUAL_MAIN = "/Mnemonical User Manual.html";
 	private static final double FADE_TRANSLATION_IN_TASKCARD_MILLIS = 300;
 	private static final double FADE_TRANSLATION_IN_TASKCARD_START_ALPHA = 0.1;
 	private static final double FADE_TRANSLATION_IN_TASKCARD_END_ALPHA = 1;
@@ -131,7 +132,7 @@ public class MainAppController {
 		pageStatus.setText(String.format("%d of %d", pageStart + 1, pageCount));
 		animateMainTaskCards(controllers);
 	}
-	
+
 	private void animateMainTaskCards(List<TaskCardController> controllers) {
 		double delay = 0;
 		for(TaskCardController controller : controllers) {
@@ -205,9 +206,12 @@ public class MainAppController {
 			hideControlKeyHint();
 			processQuickAction(e.getCode());
 		} else if (e.getCode() == KeyCode.F1) {
-			if (Desktop.isDesktopSupported()) {
-				URI helpManual = new File(URL_HELP_MANUAL).toURI();
-				Desktop.getDesktop().browse(helpManual);
+			if(Desktop.isDesktopSupported()) {
+				File tempDir = ResourceUtil.makeTemporaryFromResourceFolder(URL_HELP_MANUAL);
+				String url = tempDir.getAbsolutePath().concat(URL_MANUAL_MAIN);
+				File tempPage = new File(url);
+				Desktop.getDesktop().open(tempPage);
+				
 			}
 		}
 	}
