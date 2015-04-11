@@ -49,8 +49,8 @@
             <Label fx:id="sidePaneHintLabel" alignment="CENTER" prefHeight="64.0" prefWidth="64.0" styleClass="hintbox" text="~&#10;Reset" textAlignment="CENTER" visible="false" />
          </children>
       </StackPane>
-      <TextField fx:id="commandText" layoutX="27.0" layoutY="47.0" onAction="#performCommand" onKeyPressed="#keyPressHandler" onKeyReleased="#keyReleaseHandler" prefHeight="31.0" prefWidth="1015.0" styleClass="command-input" />
-      <Label fx:id="commandStatus" layoutX="500.0" layoutY="571.0" styleClass="hintbox" text="Command result">
+      <TextField fx:id="commandText" layoutX="27.0" layoutY="47.0" onAction="#performCommand" onKeyPressed="#keyPressHandler" onKeyReleased="#keyReleaseHandler" prefHeight="31.0" prefWidth="1015.0" promptText="command..." styleClass="command-input" />
+      <Label fx:id="commandStatus" layoutX="600.0" layoutY="571.0" styleClass="hintbox" text="Command result">
          <padding>
             <Insets bottom="5.0" left="20.0" right="20.0" top="5.0" />
          </padding></Label>
