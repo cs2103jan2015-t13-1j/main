@@ -29,7 +29,6 @@ public class EditTask {
 	private static final String TYPE_DEADLINE = "DEADLINE";
 	private static final String TYPE_FLOATING = "FLOATING";
 	private static final String TYPE_TIMED = "TIMED";
-	private static final String DEADLINE_TIME = "23:59";
 
 	private Matcher EDIT_STARTENDDATETIME, EDIT_STARTDATETIME, EDIT_STARTDATE, EDIT_STARTTIME,
 	EDIT_ENDDATETIME, EDIT_ENDDATE, EDIT_ENDTIME, EDIT_TITLE;
@@ -234,14 +233,10 @@ public class EditTask {
 		LocalDate startDate = tempTask.getTaskStartDate();
 
 		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
-			if(tempTask.getTaskType().equals(TYPE_FLOATING)) {
-				tempTask.setTaskEndTime(LocalTime.parse(DEADLINE_TIME));
-				tempTask.setTaskType(TYPE_DEADLINE);
-				isTaskTypeChanged = true;
-				editedTaskType = TYPE_DEADLINE;
+			if(!tempTask.getTaskType().equals(TYPE_FLOATING)) {
+				isEdited = true;
+				tempTask.setTaskEndDate(endDate);
 			}
-			isEdited = true;
-			tempTask.setTaskEndDate(endDate);
 		}
 	}
 
@@ -264,6 +259,7 @@ public class EditTask {
 		}
 	}
 
+	//only for timed tasks, else use deadline function
 	private void editEndDateTime(String userContent, Task tempTask) {
 		LocalDate endDate = dtCheck.toValidDate(EDIT_ENDDATETIME.group(5));
 		LocalTime endTime = dtCheck.determineHour(EDIT_ENDDATETIME.group(11));
@@ -271,15 +267,12 @@ public class EditTask {
 		LocalTime startTime = tempTask.getTaskStartTime();
 
 		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
-			if(tempTask.getTaskType().equals(TYPE_FLOATING)) {
-				tempTask.setTaskType(TYPE_DEADLINE);
-				editedTaskType = TYPE_DEADLINE;
-				isTaskTypeChanged = true;
+			if(tempTask.getTaskType().equals(TYPE_TIMED)) {
+				tempTask.setTaskEndDate(endDate);
+				tempTask.setTaskEndTime(endTime);
+				isEdited = true;
 			}
 
-			tempTask.setTaskEndDate(endDate);
-			tempTask.setTaskEndTime(endTime);
-			isEdited = true;
 		}
 	}
 
