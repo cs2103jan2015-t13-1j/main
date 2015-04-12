@@ -12,10 +12,10 @@ import organizer.parser.CommandParser;
 
 //@author A0098824N
 public class AddTask {
-	private static final String PATTERN_DEADLINE_DATEONLY = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	private static final String PATTERN_DEADLINE_DATEONLY = "(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
 	private static final String PATTERN_DEADLINE_DAYASDATE = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)";
 
-	private static final String PATTERN_DEADLINE_DATETIME = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_DEADLINE_DATETIME = "(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	private static final String PATTERN_DEADLINE_DAYTIME = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	
 	private static final String KEYWORD_DEADLINE = " by ";
@@ -34,23 +34,23 @@ public class AddTask {
 	private static final int MIN = 0;
 	
 	//add {taskname} {on} {date}
-	private static final String PATTERN_TIMED_START_DATE = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	private static final String PATTERN_TIMED_START_DATE = "(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
 	//add {taskname} {on} {day}
 	private static final String PATTERN_TIMED_START_DAY = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)";
 	//add {taskname} {today|tomorrow}
 	private static final String PATTERN_TIMED_START_TODAYTMRW = "(today|tomorrow)";
 	//add {taskname} {on} {date} {from} {time} {to} {time}
-	private static final String PATTERN_TIMED_STARTEND_1DATE = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_TIMED_STARTEND_1DATE = "(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	//add {taskname} {on} {mon-sun} {from} {time} {to} {time}
 	private static final String PATTERN_TIMED_STARTEND_1DAY = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";	
 	//add {taskname} {today|tomorrow} {from} {time} {to} {time}
 	private static final String PATTERN_TIMED_STARTEND_TODAYTMRWTIMERANGE = "(today|tomorrow)(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	//add {taskname} {on} {date} {from} {time} {to} {date} {time}
-	private static final String PATTERN_TIMED_STARTEND_2DATE = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_TIMED_STARTEND_2DATE = "(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	//add {taskname} {from} {date} {to} {date}
-	private static final String PATTERN_NOTIMED_STARTEND_2DATE = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(\\bto\\b)(\\s)((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	private static final String PATTERN_NOTIMED_STARTEND_2DATE = "(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
 	//add {taskname} {on} {date} {time}
-	private static final String PATTERN_TIMED_START_DATETIME = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_TIMED_START_DATETIME = "(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	//add {taskname} {on} {mon-sun} {time}
 	private static final String PATTERN_TIMED_START_DAYTIME = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	//add {taskname} {today|tomorrow} {time}
@@ -254,11 +254,11 @@ public class AddTask {
 			deadlineTask.setTaskType(TYPE_DEADLINE);
 		} else if(DEADLINE_DATETIME.matches()) {
 			deadlineTask.setTaskEndDate(dtCheck.toValidDate(DEADLINE_DATETIME.group(1)));
-			deadlineTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_DATETIME.group(6)));
+			deadlineTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_DATETIME.group(7)));
 			deadlineTask.setTaskType(TYPE_DEADLINE);
 		} else if(DEADLINE_DAYTIME.matches()) {
 			deadlineTask.setTaskEndDate(dtCheck.determineDate(DEADLINE_DAYTIME.group(1)));
-			deadlineTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_DAYTIME.group(3)));
+			deadlineTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_DAYTIME.group(4)));
 			deadlineTask.setTaskType(TYPE_DEADLINE);
 		} else {
 			taskName = taskName.concat(" "+taskDateTime);
@@ -299,8 +299,8 @@ public class AddTask {
 		if(TIMED_STARTEND_1DATE.matches()) {
 			timedTask.setTaskStartDate(dtCheck.toValidDate(TIMED_STARTEND_1DATE.group(1)));
 			timedTask.setTaskEndDate(timedTask.getTaskStartDate());
-			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_1DATE.group(8));
-			LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_1DATE.group(14));
+			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_1DATE.group(9));
+			LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_1DATE.group(15));
 			
 			if(dtCheck.isValidDueDT(null, null, startTime, endTime)) {
 				timedTask.setTaskStartTime(startTime);
@@ -314,7 +314,7 @@ public class AddTask {
 		} else if(TIMED_STARTEND_1DAY.matches()) {
 			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_STARTEND_1DAY.group(1)));
 			timedTask.setTaskEndDate(timedTask.getTaskStartDate());
-			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_1DAY.group(5));
+			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_1DAY.group(6));
 			LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_1DAY.group(11));
 			
 			if(dtCheck.isValidDueDT(null, null, startTime, endTime)) {
@@ -327,9 +327,9 @@ public class AddTask {
 
 		} else if(TIMED_STARTEND_2DATE.matches()) {
 			LocalDate startDate = dtCheck.toValidDate(TIMED_STARTEND_2DATE.group(1));
-			LocalDate endDate = dtCheck.toValidDate(TIMED_STARTEND_2DATE.group(14));
-			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_2DATE.group(8));
-		    LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_2DATE.group(19));
+			LocalDate endDate = dtCheck.toValidDate(TIMED_STARTEND_2DATE.group(15));
+			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_2DATE.group(9));
+		    LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_2DATE.group(21));
 		    if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
 		    	timedTask.setTaskStartDate(startDate);
 				timedTask.setTaskEndDate(endDate);
@@ -342,7 +342,7 @@ public class AddTask {
 
 		} else if(NOTIMED_STARTEND_2DATE.matches()) {
 			LocalDate startDate = dtCheck.toValidDate(NOTIMED_STARTEND_2DATE.group(1));
-			LocalDate endDate = dtCheck.toValidDate(NOTIMED_STARTEND_2DATE.group(8));
+			LocalDate endDate = dtCheck.toValidDate(NOTIMED_STARTEND_2DATE.group(9));
 			if(dtCheck.isValidDueDT(startDate, endDate, null, null)) {
 				timedTask.setTaskStartDate(startDate);
 				timedTask.setTaskEndDate(endDate);
@@ -353,7 +353,7 @@ public class AddTask {
 			
 		} else if(TIMED_START_DATETIME.matches()) {
 			timedTask.setTaskStartDate(dtCheck.toValidDate(TIMED_START_DATETIME.group(1)));
-			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_START_DATETIME.group(6)));
+			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_START_DATETIME.group(7)));
 			timedTask.setTaskType(TYPE_TIMED);
 			
 		} else if(TIMED_START_DAYTIME.matches()) {

@@ -68,7 +68,7 @@ public class ResourceUtil {
 		writeNonDirFiles(destDir, jarFile, resEntries);
 		jarFile.close();
 		
-		destFile = new File(destDir+java.io.File.separator+"resources/help_manual/");
+		destFile = new File(destDir+java.io.File.separator+FOLDER_TO_COPY);
 
 		return destFile;
 	}
