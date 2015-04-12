@@ -96,38 +96,82 @@ public class ViewCommandUnitTesting {
 					"high"
 				},
 				{
-					new ArrayList<>(Arrays.asList(new Task[]{})),
-					new ArrayList<>(Arrays.asList(new Task[]{})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(1, "buy milk", startDate, startTime, endDate.plusDays(1), endTime, "TIMED", "MEDIUM", "INCOMPLETE")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", startDate, startTime, endDate.plusDays(1), endTime, "TIMED", "MEDIUM", "INCOMPLETE"),
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), endTime, "TIMED", "HIGH")
+					})),
 					"medium"
 				},
 				{
-					new ArrayList<>(Arrays.asList(new Task[]{})),
-					new ArrayList<>(Arrays.asList(new Task[]{})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED", "LOW", "COMPLETE")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", startDate, startTime, endDate.plusDays(1), endTime, "TIMED", "MEDIUM", "INCOMPLETE"),
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), endTime, "TIMED", "HIGH")
+					})),
 					"low"
 				},
 				{
-					new ArrayList<>(Arrays.asList(new Task[]{})),
-					new ArrayList<>(Arrays.asList(new Task[]{})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", null, null, endDate, endTime, "DEADLINE", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", null, null, endDate.plusDays(1), null, "DEADLINE", "MEDIUM", "INCOMPLETE")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", null, null, endDate, endTime, "DEADLINE", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", null, null, endDate.plusDays(1), null, "DEADLINE", "MEDIUM", "INCOMPLETE"),
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), null, "TIMED", "HIGH")
+					})),
 					"deadline"
 				},
 				{
-					new ArrayList<>(Arrays.asList(new Task[]{})),
-					new ArrayList<>(Arrays.asList(new Task[]{})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), null, "TIMED", "HIGH")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", null, null, endDate, endTime, "DEADLINE", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", null, null, endDate.plusDays(1), null, "DEADLINE", "MEDIUM", "INCOMPLETE"),
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), null, "TIMED", "HIGH")
+					})),
 					"timed"
 				},
 				{
-					new ArrayList<>(Arrays.asList(new Task[]{})),
-					new ArrayList<>(Arrays.asList(new Task[]{})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(3, "buy milk", null, null, null, null, "FLOATING")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", null, null, endDate, endTime, "DEADLINE", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", null, null, endDate.plusDays(1), null, "DEADLINE", "MEDIUM", "INCOMPLETE"),
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), null, "TIMED", "HIGH"),
+							new Task(3, "buy milk", null, null, null, null, "FLOATING")
+					})),
 					"floating"
 				},
 				{
-					new ArrayList<>(Arrays.asList(new Task[]{})),
-					new ArrayList<>(Arrays.asList(new Task[]{})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(3, "buy milk", null, null, endDate.plusDays(-100), null, "OVERDUE")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", null, null, endDate, endTime, "DEADLINE", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", null, null, endDate.plusDays(1), null, "DEADLINE", "MEDIUM", "INCOMPLETE"),
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), null, "TIMED", "HIGH"),
+							new Task(3, "buy milk", null, null, endDate.plusDays(-100), null, "OVERDUE")
+					})),
 					"overdue"
 				},
 				{
 					new ArrayList<>(Arrays.asList(new Task[]{})),
-					new ArrayList<>(Arrays.asList(new Task[]{})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", null, null, endDate, endTime, "DEADLINE", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", null, null, endDate.plusDays(1), null, "DEADLINE", "MEDIUM", "INCOMPLETE"),
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), null, "TIMED", "HIGH"),
+							new Task(3, "buy milk", null, null, endDate.plusDays(-100), null, "OVERDUE")
+					})),
 					"abc"
 				}
 		});
