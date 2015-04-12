@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import organizer.parser.CommandParser;
 import organizer.storage.Storage;
 
 //@author A0098824N
@@ -63,6 +64,7 @@ public class LoadTask {
 		}
 		
 		returnResult.setReturnList(allLists.getTaskList());
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.LOAD);
 		return returnResult;
 	}
 	

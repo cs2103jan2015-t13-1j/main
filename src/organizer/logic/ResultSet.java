@@ -2,19 +2,33 @@ package organizer.logic;
 
 import java.util.ArrayList;
 
+import organizer.parser.CommandParser;
+
 //@author A0098824N
 public class ResultSet {
 	String opStatus;
 	ArrayList<Task> returnList;
+	CommandParser.COMMAND_TYPE commandType;
 	
-	public ResultSet(String opStatus, ArrayList<Task> returnList) {
+	public ResultSet(String opStatus, ArrayList<Task> returnList, CommandParser.COMMAND_TYPE commandType) {
 		this.opStatus = opStatus;
 		this.returnList = returnList;
+		this.commandType = commandType;
 	}
 
 	public ResultSet() {
 		opStatus = null;
 		returnList = null;
+		commandType = null;
+		
+	}
+	
+	public CommandParser.COMMAND_TYPE getCommandType() {
+		return commandType;
+	}
+	
+	public void setCommandType(CommandParser.COMMAND_TYPE commandType) {
+		this.commandType = commandType;
 	}
 
 	public String getOpStatus() {

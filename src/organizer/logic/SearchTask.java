@@ -2,6 +2,8 @@ package organizer.logic;
 
 import java.util.ArrayList;
 
+import organizer.parser.CommandParser;
+
 //@author A0113871J
 public class SearchTask {
 	private static final String MESSAGE_SEARCH_FOUND = "Search results found: \"%1$s\"";
@@ -28,6 +30,7 @@ public class SearchTask {
 		}
 
 		returnResult.setReturnList(allLists.getResultList());
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.SEARCH_TASK);
 		return returnResult;
 	}
 }

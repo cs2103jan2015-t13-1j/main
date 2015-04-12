@@ -2,6 +2,8 @@ package organizer.logic;
 
 import java.util.ArrayList;
 
+import organizer.parser.CommandParser;
+
 //@author A0098824N
 public class FloatTask {
 	private static final String MESSAGE_SUCCESS = "Set float task operation is successful!";
@@ -24,6 +26,7 @@ public class FloatTask {
 		}
 
 		returnResult.setReturnList(allLists.getTaskList());
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.FLOAT_TASK);
 		return returnResult;
 	}
 	

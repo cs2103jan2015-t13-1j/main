@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import organizer.parser.CommandParser;
+
 //@author A0113871J
 public class PostponeTask {
 	private static final String MESSAGE_SUCCESS = "Postpone task operation is successful!";
@@ -65,6 +67,7 @@ public class PostponeTask {
 		}
 
 		returnResult.setReturnList(allLists.getTaskList());
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.POSTPONE_TASK);
 		return returnResult;
 	}
 }

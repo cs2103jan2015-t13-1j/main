@@ -2,6 +2,8 @@ package organizer.logic;
 
 import java.util.ArrayList;
 
+import organizer.parser.CommandParser;
+
 //@author A0113871J
 public class ClearTask {
 	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
@@ -18,6 +20,7 @@ public class ClearTask {
 		}
 		
 		returnResult.setReturnList(taskList);
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.CLEAR_TASK);
 		return returnResult;
 	}
 }

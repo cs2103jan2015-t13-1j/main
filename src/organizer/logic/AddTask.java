@@ -8,6 +8,8 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import organizer.parser.CommandParser;
+
 //@author A0098824N
 public class AddTask {
 	private static final String PATTERN_DEADLINE_DATEONLY = "((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
@@ -122,6 +124,7 @@ public class AddTask {
 		
 		allLists.setTaskList(taskList);
 		returnResult.setReturnList(taskList);
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.ADD_TASK);
 		
 		return returnResult;
 	}

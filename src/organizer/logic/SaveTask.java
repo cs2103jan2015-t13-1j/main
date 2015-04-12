@@ -4,6 +4,7 @@ package organizer.logic;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import organizer.parser.CommandParser;
 import organizer.storage.Storage;
 
 public class SaveTask {
@@ -17,6 +18,7 @@ public class SaveTask {
 		tempStorage.writeFile(taskList);
 		returnResult.setOpStatus(MESSAGE_SAVE_SUCCESS);
 		returnResult.setReturnList(taskList);
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.SAVE);
 		return returnResult;
 	}
 	
@@ -24,6 +26,7 @@ public class SaveTask {
 		tempStorage.writeFile(taskList, fileName);
 		returnResult.setOpStatus(String.format(MESSAGE_SAVEAS_SUCCESS, fileName));
 		returnResult.setReturnList(taskList);
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.SAVEAS);
 		return returnResult;
 	}
 	

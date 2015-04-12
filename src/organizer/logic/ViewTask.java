@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+import organizer.parser.CommandParser;
+
 //@author A0098824N
 public class ViewTask {
 	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
@@ -97,7 +99,7 @@ public class ViewTask {
 		
 		returnResult.setReturnList(allLists.getViewList());
 		returnResult.setOpStatus(isEmptyView(allLists.getViewList(), viewTypeString));
-		
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.VIEW_TASK);
 		return returnResult;
 
 	}

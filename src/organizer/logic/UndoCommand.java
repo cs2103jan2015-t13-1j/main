@@ -3,6 +3,8 @@ package organizer.logic;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import organizer.parser.CommandParser;
+
 //@author A0098824N
 public class UndoCommand {
 	private final static String MESSAGE_UNDO_SUCCESS = "Undo successfully!";
@@ -25,6 +27,8 @@ public class UndoCommand {
 		} else {
 			returnResult.setReturnList(allLists.getTaskList());
 		}
+		
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.UNDO);
 		return returnResult;
 	}
 	

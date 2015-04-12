@@ -2,6 +2,8 @@ package organizer.logic;
 
 import java.util.ArrayList;
 
+import organizer.parser.CommandParser;
+
 //@author A0098824N
 public class DeleteTask {
 	private static final String MESSAGE_SUCCESS = "Delete task operation is successful!";
@@ -20,7 +22,7 @@ public class DeleteTask {
 		}
 		
 		returnResult.setReturnList(allLists.getTaskList());
-
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.DELETE_TASK);
 		return returnResult;
 	}
 	

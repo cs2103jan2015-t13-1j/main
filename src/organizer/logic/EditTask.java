@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import organizer.parser.CommandParser;
+
 //@author A0098824N
 public class EditTask {
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
@@ -55,13 +57,14 @@ public class EditTask {
 		} else {
 			isValidDT = false;
 		}
-		
+
 		if(isTaskTypeChanged) {
 			returnResult.setOpStatus(String.format(MESSAGE_TYPE_CHANGED, editedTaskType));
 			isTaskTypeChanged = false;
 		}
 
 		returnResult.setReturnList(allLists.getTaskList());
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.EDIT_TASK);
 		return returnResult;
 	}
 
@@ -252,7 +255,7 @@ public class EditTask {
 						} else {
 							isEdit = true;
 						}
-						
+
 						break;
 					}
 				}
@@ -302,7 +305,7 @@ public class EditTask {
 
 	private boolean editEndDate(String userContent, Validation validOp, TaskListSet allLists) {
 		Boolean isEdit = false;
-		
+
 		if(EDIT_ENDDATE.matches()) {
 			int lineNum = Integer.parseInt(EDIT_ENDDATE.group(1));
 			LocalDate endDate = dtCheck.toValidDate(EDIT_ENDDATE.group(5));
@@ -339,7 +342,7 @@ public class EditTask {
 						} else {
 							isEdit = false;
 						}
-						
+
 						break;
 					}
 				}
@@ -372,7 +375,7 @@ public class EditTask {
 						if((tempTask.getTaskType().equals(TYPE_TIMED)) || (tempTask.getTaskType().equals(TYPE_DEADLINE)))  {
 							isEdit = true;
 							if(tempTask.getTaskType().equals(TYPE_TIMED)) {
-								
+
 								if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
 									if(tempTask.getTaskEndDate() == null) {
 										tempTask.setTaskEndDate(tempTask.getTaskStartDate());
