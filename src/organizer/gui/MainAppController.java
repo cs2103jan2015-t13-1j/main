@@ -3,6 +3,7 @@ package organizer.gui;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.stream.Collectors;
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class MainAppController {
 	private static final double FADE_TRANSLATION_IN_TASKCARD_SEPARATION_MILLIS = 15;
 
 	private MainApp mainApp;
+	private File tempDir;
 
 	@FXML
 	private TextField commandText;
@@ -57,10 +59,11 @@ public class MainAppController {
 	}
 
 	@FXML
-	private void initialize() {
+	private void initialize() throws IOException, URISyntaxException {
 		commandStatus.setText("");
 		commandText.requestFocus();
-
+		tempDir = ResourceUtil.makeTemporaryFromResourceFolder(URL_HELP_MANUAL);
+		tempDir.deleteOnExit();
 	}
 
 	public void setMainApp(MainApp mainApp) {
@@ -207,7 +210,6 @@ public class MainAppController {
 			processQuickAction(e.getCode());
 		} else if (e.getCode() == KeyCode.F1) {
 			if(Desktop.isDesktopSupported()) {
-				File tempDir = ResourceUtil.makeTemporaryFromResourceFolder(URL_HELP_MANUAL);
 				String url = tempDir.getAbsolutePath().concat(URL_MANUAL_MAIN);
 				File tempPage = new File(url);
 				Desktop.getDesktop().open(tempPage);
