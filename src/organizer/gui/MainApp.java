@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -16,15 +17,15 @@ import organizer.parser.*;
 
 //@author A0113627L
 public class MainApp extends Application {
+	private static final Logger LOGGER = Logger.getLogger(MainApp.class.getName());
+	private static final String RESOURCE_MAINAPP_FXML = "MainApp.fxml";
+	private static final String RESOURCE_APP_TITLE = "MnemoniCal";
 
     private Stage primaryStage;
     private AnchorPane rootLayout;
     
     private List<TaskItem> taskData = new ArrayList<>();
     private String currentCommandStatus = "";
-	
-	//to check that it is a add successful operation, so page can jumped to the last one.
-	private static final String ADD_SUCCESS = "View Tasks Filter: all \nStatus: Add task operation is successful!";
     
     private CommandParser commandParser = new CommandParser();
     private List<Task> tasks;
@@ -33,6 +34,7 @@ public class MainApp extends Application {
 
     public MainApp() throws IOException {
         tasks = commandParser.loadStorage();
+        LOGGER.info(String.format("INIT: load %d tasks", tasks.size()));
         fillTaskList();
     }
     
@@ -45,10 +47,11 @@ public class MainApp extends Application {
     }
     
     @Override
-    public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("MnemoniCal");
-        this.primaryStage.setResizable(false);
+    public void start(Stage stage) {
+        primaryStage = stage;
+        primaryStage.initStyle(StageStyle.TRANSPARENT);
+        primaryStage.setTitle(RESOURCE_APP_TITLE);
+        primaryStage.setResizable(false);
         
         initRootLayout();
         
@@ -62,7 +65,7 @@ public class MainApp extends Application {
     private void initRootLayout() {
         try {
             final FXMLLoader loader = new FXMLLoader();
-            final URL url = MainApp.class.getResource("MainApp.fxml");
+            final URL url = MainApp.class.getResource(RESOURCE_MAINAPP_FXML);
             loader.setLocation(url);
             rootLayout = (AnchorPane) loader.load();
             
@@ -73,7 +76,7 @@ public class MainApp extends Application {
             controller = loader.getController();
             controller.setMainApp(this);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.throwing(FXMLLoader.class.getName(), "load", e);
         }
     }
     
@@ -92,29 +95,16 @@ public class MainApp extends Application {
     	return currentCommandStatus;
     }
     
-    public boolean performCommand(String commandString) {
-    	boolean isAdd = false;
+    public ResultSet performCommand(String commandString) throws IOException {
         try {
-        	ResultSet returnResult = commandParser.executeCommand(commandString);
+        	final ResultSet returnResult = commandParser.executeCommand(commandString);
             tasks = returnResult.getReturnList();
             currentCommandStatus = returnResult.getOpStatus();
-            isAdd = currentCommandStatus.equals(ADD_SUCCESS);
             fillTaskList();
+            return returnResult;
         } catch (IOException e) {
-            e.printStackTrace();
+        	LOGGER.throwing(CommandParser.class.getName(), "executeCommand", e);
+        	throw e;
         }
-        
-        return isAdd;
-    }
-    
-    
-    public void showHelpDialog() throws IOException {
-		final FXMLLoader loader = new FXMLLoader(getClass().getResource("HelpDialog.fxml"));
-		final AnchorPane root = loader.load();
-		final Scene scene = new Scene(root);
-		final Stage dialog = new Stage();
-		dialog.initStyle(StageStyle.UTILITY);
-		dialog.setScene(scene);
-		dialog.show();
     }
 }

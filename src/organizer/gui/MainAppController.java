@@ -4,9 +4,11 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.List;
 
+import organizer.logic.ResultSet;
 import resources.ResourceUtil;
 import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
@@ -23,6 +25,7 @@ import javafx.util.Duration;
 
 //@author A0113627L
 public class MainAppController {
+	private static final Logger LOGGER = Logger.getLogger(MainAppController.class.getName());
 	private static final int ITEMS_PER_PAGE = 6;
 	private static final String URL_HELP_MANUAL = "/resources/help_manual";
 	private static final String URL_MANUAL_MAIN = "/Mnemonical User Manual.html";
@@ -72,7 +75,7 @@ public class MainAppController {
 	}
 
 	@FXML
-	public void performCommand() {
+	public void performCommand() throws IOException {
 		final String commandString = commandText.textProperty().get();
 		System.out.print("Command: ");
 		System.out.println(commandString);
@@ -81,14 +84,17 @@ public class MainAppController {
 		// grab the user view info before each command
 		int lastVisitedPage = pageStart;
 
-		boolean isAddCommand = mainApp.performCommand(commandString);
+		final ResultSet rs = mainApp.performCommand(commandString);
 		updateTaskList();
-
-		if (isAddCommand) {
+		switch (rs.getCommandType()) {
+		case ADD_TASK:
 			pageStart = pageCount - 1;
-		} else if (commandString.startsWith("view ")) {
+			break;
+		case VIEW_TASK:
+		case CLEAR_TASK:
 			pageStart = 0;
-		} else {
+			break;
+		default:
 			pageStart = lastVisitedPage;
 		}
 
@@ -159,23 +165,20 @@ public class MainAppController {
 		}
 	}
 
-	@FXML
-	public void openDialogHelp() throws IOException {
-		mainApp.showHelpDialog();
-	}
-
 	private void flipNextPage() {
-		System.out.println("NEXT");
+		assert pageStart < pageCount;
 		if (pageStart + 1 < pageCount) {
 			++pageStart;
+			LOGGER.info(String.format("NEXT => %d", pageStart));
 			updatePage();
 		}
 	}
 
 	private void flipPrevPage() {
-		System.out.println("PREV");
+		assert pageStart >= 0;
 		if (pageStart > 0) {
 			--pageStart;
+			LOGGER.info(String.format("PREV => %d", pageStart));
 			updatePage();
 		}
 	}
@@ -209,12 +212,7 @@ public class MainAppController {
 			hideControlKeyHint();
 			processQuickAction(e.getCode());
 		} else if (e.getCode() == KeyCode.F1) {
-			if(Desktop.isDesktopSupported()) {
-				String url = tempDir.getAbsolutePath().concat(URL_MANUAL_MAIN);
-				File tempPage = new File(url);
-				Desktop.getDesktop().open(tempPage);
-				
-			}
+			showHelpManual();
 		}
 	}
 
@@ -224,8 +222,17 @@ public class MainAppController {
 			hideControlKeyHint();
 		}
 	}
+	
+	private void showHelpManual() throws IOException {
+		if(Desktop.isDesktopSupported()) {
+			String url = tempDir.getAbsolutePath().concat(URL_MANUAL_MAIN);
+			File tempPage = new File(url);
+			Desktop.getDesktop().open(tempPage);
+		}
+	}
 
 	private void displayTaskDetailSidePane(int index) throws IOException {
+		LOGGER.info(String.format("MAINCONTROLLER: view detail for card %d", index));
 		sidePane.getChildren().clear();
 		final TaskCardController controller = new TaskCardController(
 				TaskCardController.CardSize.XLARGE);
@@ -237,6 +244,7 @@ public class MainAppController {
 	}
 
 	private void restoreSidePane() {
+		LOGGER.info("MAINCONTROLLER: clear detail view");
 		sidePane.getChildren().clear();
 	}
 

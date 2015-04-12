@@ -32,7 +32,7 @@ public class UnitTesting {
 	static ArrayList<Task> testList = new ArrayList<Task>();
 	static ArrayList<Task> taskList = new ArrayList<Task>();
 	static String operationStatus = null;
-	static ResultSet resultObj = new ResultSet(null, taskList);
+	static ResultSet resultObj = new ResultSet(null, taskList, null);
 
 	@Parameters
 	private void addToTestList() {

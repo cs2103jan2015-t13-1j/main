@@ -11,11 +11,15 @@
 <?import javafx.scene.text.*?>
 <?import java.net.* ?>
 <?import javafx.scene.layout.StackPane?>
+<?import java.lang.String?>
 
-<AnchorPane minWidth="-Infinity" prefHeight="617.0" prefWidth="1078.0" styleClass="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="organizer.gui.MainAppController">
+<AnchorPane minWidth="-Infinity" prefHeight="617.0" prefWidth="1078.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="organizer.gui.MainAppController">
    <stylesheets>
       <URL value="@mainstyle.css" />
    </stylesheets>
+   <styleClass>
+      <String fx:value="root" />
+   </styleClass>
    <children>
       <StackPane layoutX="27.0" layoutY="85.0" prefHeight="479.0" prefWidth="682.0">
          <children>

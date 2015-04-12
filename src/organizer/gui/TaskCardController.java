@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.logging.Logger;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,8 +14,7 @@ import javafx.scene.layout.Region;
 
 //@author A0113627L
 public class TaskCardController extends Region {
-	@SuppressWarnings("unused")
-	private TaskItem task;
+	private final static Logger LOGGER = Logger.getLogger(TaskCardController.class.getName());
 	@FXML
 	private Label nameLabel;
 	@FXML
@@ -49,9 +49,14 @@ public class TaskCardController extends Region {
 	}
 
 	public TaskCardController(CardSize size) throws IOException {
-        final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(size.getResourceName()));
-        fxmlLoader.setController(this);
-        this.getChildren().add(fxmlLoader.load());
+		try {
+	        final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(size.getResourceName()));
+	        fxmlLoader.setController(this);
+	        this.getChildren().add(fxmlLoader.load());
+		} catch (IOException e) {
+			LOGGER.throwing(FXMLLoader.class.getName(), "load", e);
+			throw e;
+		}
 	}
 	
 	@FXML
@@ -59,7 +64,6 @@ public class TaskCardController extends Region {
 	}
 	
 	public void loadTask(TaskItem task) {
-		this.task = task;
 		nameLabel.textProperty().bind(task.taskNameProperty());
 		idLabel.setText(Integer.toString(task.getTaskIndex()));
 		statusLabel.textProperty().bind(task.taskStatusProperty());
