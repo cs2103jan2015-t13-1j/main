@@ -30,6 +30,15 @@ public class SearchCommandUnitTesting {
 							new Task(1, "deff", null, null, null, null, "FLOATING")
 					})),
 					"abc"
+				},
+				{
+					new ArrayList<>(Arrays.asList(new Task[]{
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "abcc", null, null, null, null, "FLOATING"),
+							new Task(1, "deff", null, null, null, null, "FLOATING")
+					})),
+					"g"
 				}
 		});
 	}
