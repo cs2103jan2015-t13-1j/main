@@ -5,7 +5,6 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	CommandParserTest.class,
 	CompleteCommandUnitTesting.class,
 	IncompleteCommandUnitTesting.class,
 	DeleteCommandUnitTesting.class,
