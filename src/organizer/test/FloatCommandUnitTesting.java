@@ -20,12 +20,10 @@ import static organizer.test.TestUtil.*;
 public class FloatCommandUnitTesting {
 	private final Task expected;
 	private final Task input;
-	private String command;
 
 	public FloatCommandUnitTesting(Task expected, Task input) {
 		this.expected = expected;
 		this.input = input;
-		this.command = command;
 	}
 
 	@Parameterized.Parameters
