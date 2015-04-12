@@ -124,7 +124,6 @@ public class Logic {
 		returnResult = command.execute(viewType, allLists);
 		validOp.setIsView(true);
 		MODE_VIEW = viewType;
-
 		return returnResult;
 	}
 

@@ -2,7 +2,6 @@ package organizer.logic;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,14 +16,14 @@ public class EditTask {
 	private static final String MESSAGE_TYPE_CHANGED= "Edit task operation is successful! Changed to %s task.";
 
 
-	private static final String PATTERN_EDIT_STARTENDDATETIME = "(\\d)(\\s)(\\bfrom\\b)(\\s)((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))"
-			+ "(\\s)(\\bto\\b)(\\s)((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
-	private static final String PATTERN_EDIT_STARTDATETIME = "(\\d)(\\s)(\\bfrom\\b)(\\s)((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
-	private static final String PATTERN_EDIT_STARTDATE = "(\\d)(\\s)(\\bfrom\\b)(\\s)((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	private static final String PATTERN_EDIT_STARTENDDATETIME = "(\\d)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))"
+			+ "(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_STARTDATETIME = "(\\d)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_STARTDATE = "(\\d)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
 	private static final String PATTERN_EDIT_STARTTIME = "(\\d)(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
 	private static final String PATTERN_EDIT_ENDTIME = "(\\d)(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
-	private static final String PATTERN_EDIT_ENDDATETIME = "(\\d)(\\s)(\\bto\\b)(\\s)((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
-	private static final String PATTERN_EDIT_ENDDATE = "(\\d)(\\s)(\\bto\\b)(\\s)((19|20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	private static final String PATTERN_EDIT_ENDDATETIME = "(\\d)(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_ENDDATE = "(\\d)(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
 	private static final String PATTERN_EDIT_TITLE = "(\\d)(\\s)(.*)";
 
 	private static final String TYPE_DEADLINE = "DEADLINE";
@@ -36,36 +35,55 @@ public class EditTask {
 	EDIT_ENDDATETIME, EDIT_ENDDATE, EDIT_ENDTIME, EDIT_TITLE;
 
 	private boolean isValidLineNum = false;
-	private boolean isValidDT = false;
+	private boolean isEdited= false;
+	private boolean isReadyToEdit = false;
 	private boolean isTaskTypeChanged = false;
 	private String editedTaskType = "";
 	private DateAndTime dtCheck = new DateAndTime();
+	private int taskID = -1;
 
 	public ResultSet execute(String userContent, TaskListSet allLists, Validation validOp) {
 		ResultSet returnResult = new ResultSet();
 		loadMatchers(userContent);
-		returnResult.setOpStatus(callMethods(userContent, validOp, allLists));
+		checkForMatch(userContent);
 
-		if(!isValidLineNum) {
-			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+		runEditProcess(userContent, allLists, returnResult, validOp);
+
+		returnResult.setReturnList(allLists.getTaskList());
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.EDIT_TASK);
+		return returnResult;
+	}
+
+	private void runEditProcess(String userContent, TaskListSet allLists, ResultSet returnResult, Validation validOp) {
+		if(isReadyToEdit) {
+			int lineNum = Integer.parseInt(userContent.substring(0, userContent.indexOf(" ")));
+			checkValidTaskID(lineNum, allLists, validOp);
 		} else {
-			isValidLineNum = false;
+			returnResult.setOpStatus(MESSAGE_INVALID_CONTENT);
 		}
 
-		if(!isValidDT) {
+		if(isReadyToEdit && isValidLineNum) {
+			matchEditProcess(userContent, getToEditTask(taskID, allLists));
+		}
+
+		if(isReadyToEdit && isValidLineNum && isEdited) {
+			returnResult.setOpStatus(MESSAGE_SUCCESS);
+			isReadyToEdit = false;
+			isValidLineNum = false;
+			isEdited = false;
+
+		} else if(isReadyToEdit && !isValidLineNum) {
+			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+
+		} else if(isReadyToEdit && isValidLineNum && !isEdited) {
 			returnResult.setOpStatus(MESSAGE_UNSUCCESS);
-		} else {
-			isValidDT = false;
+
 		}
 
 		if(isTaskTypeChanged) {
 			returnResult.setOpStatus(String.format(MESSAGE_TYPE_CHANGED, editedTaskType));
 			isTaskTypeChanged = false;
 		}
-
-		returnResult.setReturnList(allLists.getTaskList());
-		returnResult.setCommandType(CommandParser.COMMAND_TYPE.EDIT_TASK);
-		return returnResult;
 	}
 
 	private void loadMatchers(String userContent) {
@@ -79,366 +97,193 @@ public class EditTask {
 		EDIT_TITLE = Pattern.compile(PATTERN_EDIT_TITLE).matcher(userContent);
 	}
 
-	private String callMethods(String userContent, Validation validOp, TaskListSet allLists) {
-		if((editStartEndDateTime(userContent, validOp, allLists)) || (editStartDateTime(userContent, validOp, allLists))
-				|| (editStartDate(userContent, validOp, allLists)) || (editStartTime(userContent, validOp, allLists))
-				|| (editEndDate(userContent, validOp, allLists)) || (editEndTime(userContent, validOp, allLists))
-				|| (editEndDateTime(userContent, validOp, allLists)) || (editTitle(userContent, validOp, allLists))) {
-			return MESSAGE_SUCCESS;
+	private void checkForMatch(String userContent) {
+		if(EDIT_STARTENDDATETIME.matches() || EDIT_STARTDATETIME.matches() || EDIT_STARTDATE.matches()
+				|| EDIT_STARTTIME.matches() || EDIT_ENDDATETIME.matches() || EDIT_ENDDATE.matches()
+				|| EDIT_ENDTIME.matches() || EDIT_TITLE.matches()) {
+			isReadyToEdit = true;
 		} else {
-			return MESSAGE_INVALID_CONTENT;
+			isReadyToEdit = false;
 		}
 	}
-	private boolean editTitle(String userContent, Validation validOp, TaskListSet allLists) {
-		Boolean isEdit = false;
-		if(EDIT_TITLE.matches()) {
-			int lineNum = Integer.parseInt(EDIT_TITLE.group(1));
-			String taskTitle = EDIT_TITLE.group(3);
 
-			if(validOp.isValidTask(lineNum, allLists)) {
-				isValidLineNum = true;
-				isValidDT = true;
-				int taskID = validOp.checkForTaskID(lineNum, allLists);
-				ArrayList<Task> taskList = allLists.getTaskList();
-
-				for(int id = 0; id < taskList.size(); id++) {
-					Task tempTask = new Task();
-					tempTask = taskList.get(id);
-
-					if((taskID == tempTask.getTaskID())) {
-						tempTask.setTaskName(taskTitle);
-						isEdit = true;
-					}
-				}
-
-			}
+	private void checkValidTaskID(int lineNum, TaskListSet allLists, Validation validOp) {
+		if(validOp.isValidTask(lineNum, allLists)) {
+			isValidLineNum =  true;
+			taskID = validOp.checkForTaskID(lineNum, allLists);
+		} else {
+			isValidLineNum = false;
 		}
 
-		return isEdit;
 	}
 
-	private boolean editStartEndDateTime(String userContent, Validation validOp, TaskListSet allLists) {
-		Boolean isEdit = false;
+	private Task getToEditTask(int taskID, TaskListSet allLists) {
+		Task tempTask = null;
+		for(int index = 0; index < allLists.getTaskList().size(); index++) {
+			tempTask = allLists.getTaskList().get(index);
+			if(taskID == tempTask.getTaskID()) {
+				break;
+			} 
+		}
+
+		return tempTask;
+	}
+
+	private void matchEditProcess(String editInfo, Task tempTask) {
+		System.out.println(editInfo);
 		if(EDIT_STARTENDDATETIME.matches()) {
-			int lineNum = Integer.parseInt(EDIT_STARTENDDATETIME.group(1));
-			LocalDate startDate = dtCheck.toValidDate(EDIT_STARTENDDATETIME.group(5));
-			LocalTime startTime = dtCheck.determineHour(EDIT_STARTENDDATETIME.group(10));
-			LocalDate endDate = dtCheck.toValidDate(EDIT_STARTENDDATETIME.group(16));
-			LocalTime endTime = dtCheck.determineHour(EDIT_STARTENDDATETIME.group(21));
-
-
-			if(validOp.isValidTask(lineNum, allLists)) {
-				isValidLineNum = true;
-
-				int taskID = validOp.checkForTaskID(lineNum, allLists);
-				ArrayList<Task> taskList = allLists.getTaskList();
-
-				for(int id = 0; id < taskList.size(); id++) {
-					Task tempTask = new Task();
-					tempTask = taskList.get(id);
-
-					if((taskID == tempTask.getTaskID())) {
-						if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
-							isValidDT = true;
-							if((tempTask.getTaskType().equals(TYPE_FLOATING)) || (tempTask.getTaskType().equals(TYPE_DEADLINE))) {
-								tempTask.setTaskStartDate(startDate);
-								tempTask.setTaskStartTime(startTime);
-								tempTask.setTaskEndDate(endDate);
-								tempTask.setTaskEndTime(endTime);
-								tempTask.setTaskType(TYPE_TIMED);
-								isTaskTypeChanged = true;
-								editedTaskType = TYPE_TIMED;
-								isEdit = true;
-							} else if(tempTask.getTaskType().equals(TYPE_TIMED)) {
-								tempTask.setTaskStartDate(startDate);
-								tempTask.setTaskStartTime(startTime);
-								tempTask.setTaskEndDate(endDate);
-								tempTask.setTaskEndTime(endTime);
-								isEdit = true;
-							} else {
-								isEdit = false;
-							}
-						} else {
-							isEdit = true;
-						}
-						break;
-					}
-				}
-			}
-		} 
-		return isEdit;
+			editStartEndDateTime(editInfo, tempTask);
+		} else if(EDIT_STARTDATETIME.matches()) {
+			editStartDateTime(editInfo, tempTask);
+		} else if(EDIT_STARTDATE.matches()) {
+			editStartDate(editInfo, tempTask);
+		} else if(EDIT_STARTTIME.matches()) {
+			editStartTime(editInfo, tempTask);
+		} else if(EDIT_ENDDATE.matches()) {
+			editEndDate(editInfo, tempTask);
+		} else if(EDIT_ENDTIME.matches()) {
+			editEndTime(editInfo, tempTask);
+		} else if(EDIT_ENDDATETIME.matches()) {
+			editEndDateTime(editInfo, tempTask);
+		} else if(EDIT_TITLE.matches()) {
+			editTitle(editInfo, tempTask);
+		}
 	}
 
-	private boolean editStartDateTime(String userContent, Validation validOp, TaskListSet allLists) {
-		Boolean isEdit = false;
-		if(EDIT_STARTDATETIME.matches()) {
-			int lineNum = Integer.parseInt(EDIT_STARTDATETIME.group(1));
-			LocalDate startDate = dtCheck.toValidDate(EDIT_STARTDATETIME.group(5));
-			LocalTime startTime = dtCheck.determineHour(EDIT_STARTDATETIME.group(10));
-
-
-			if(validOp.isValidTask(lineNum, allLists)) {
-				isValidLineNum = true;
-				int taskID = validOp.checkForTaskID(lineNum, allLists);
-				ArrayList<Task> taskList = allLists.getTaskList();
-
-				for(int id = 0; id < taskList.size(); id++) {
-					Task tempTask = new Task();
-					tempTask = taskList.get(id);
-
-					if((taskID == tempTask.getTaskID())) {
-						LocalDate endDate = tempTask.getTaskEndDate();
-						LocalTime endTime = tempTask.getTaskEndTime();
-
-						if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
-							isValidDT= true;
-							if((tempTask.getTaskType().equals(TYPE_FLOATING)) || (tempTask.getTaskType().equals(TYPE_DEADLINE))) {
-								tempTask.setTaskStartDate(startDate);
-								tempTask.setTaskStartTime(startTime);
-								tempTask.setTaskType(TYPE_TIMED);
-								isTaskTypeChanged = true;
-								editedTaskType = TYPE_TIMED;
-								isEdit = true;
-							} else if(tempTask.getTaskType().equals(TYPE_TIMED)) {
-								tempTask.setTaskStartDate(startDate);
-								tempTask.setTaskStartTime(startTime);
-								isEdit = true;
-							} else {
-								isEdit = false;
-							}
-						} else {
-							isEdit = true;
-						}
-					}
-				}
-			}
-		} 
-		return isEdit;
+	private void editTitle(String userContent, Task tempTask) {
+		String taskTitle = EDIT_TITLE.group(3);
+		tempTask.setTaskName(taskTitle);
+		isEdited = true;
 	}
 
-	private boolean editStartDate(String userContent, Validation validOp, TaskListSet allLists) {
-		Boolean isEdit = false;
-		if(EDIT_STARTDATE.matches()) {
-			int lineNum = Integer.parseInt(EDIT_STARTDATE.group(1));
-			LocalDate startDate = dtCheck.toValidDate(EDIT_STARTDATE.group(5));
-
-			if(validOp.isValidTask(lineNum, allLists)) {
-				isValidLineNum = true;
-				int taskID = validOp.checkForTaskID(lineNum, allLists);
-				ArrayList<Task> taskList = allLists.getTaskList();
-
-				for(int id = 0; id < taskList.size(); id++) {
-					Task tempTask = new Task();
-					tempTask = taskList.get(id);
-
-					if((taskID == tempTask.getTaskID())) {
-						LocalDate endDate = tempTask.getTaskEndDate();
-						LocalTime endTime = tempTask.getTaskEndTime();
-						LocalTime startTime = tempTask.getTaskStartTime();
-						if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
-							isValidDT = true;
-							if((tempTask.getTaskType().equals(TYPE_FLOATING)) || (tempTask.getTaskType().equals(TYPE_DEADLINE))) {
-								tempTask.setTaskStartDate(startDate);
-								tempTask.setTaskType(TYPE_TIMED);
-								isTaskTypeChanged = true;
-								editedTaskType = TYPE_TIMED;
-								isEdit = true;
-							} else if(tempTask.getTaskType().equals(TYPE_FLOATING)) {
-								tempTask.setTaskStartDate(startDate);
-								isEdit = true;
-							} else if(tempTask.getTaskType().equals(TYPE_TIMED)) {
-								tempTask.setTaskStartDate(startDate);
-								isEdit = true;
-							} else {
-								isEdit = false;
-							}
-						} else {
-							isEdit = true;
-						}
-
-						break;
-					}
-				}
-			}
-		} 
-		return isEdit;
-	}
-
-	private boolean editStartTime(String userContent, Validation validOp, TaskListSet allLists) {
-		Boolean isEdit = false;
-		if(EDIT_STARTTIME.matches()) {
-			int lineNum = Integer.parseInt(EDIT_STARTTIME.group(1));
-			LocalTime startTime = dtCheck.determineHour(EDIT_STARTTIME.group(5));
-
-			if(validOp.isValidTask(lineNum, allLists)) {
-				isValidLineNum = true;
-				int taskID = validOp.checkForTaskID(lineNum, allLists);
-				ArrayList<Task> taskList = allLists.getTaskList();
-
-				for(int id = 0; id < taskList.size(); id++) {
-					Task tempTask = new Task();
-					tempTask = taskList.get(id);
-
-					if((taskID == tempTask.getTaskID())) {
-						LocalTime endTime = tempTask.getTaskEndTime();
-						LocalDate endDate = tempTask.getTaskEndDate();
-						LocalDate startDate = tempTask.getTaskStartDate();
-
-						if(tempTask.getTaskType().equals(TYPE_TIMED)) {
-							if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
-								isValidDT = true;
-								isEdit = true;
-								tempTask.setTaskStartTime(startTime);
-							} else {
-								isEdit = true;
-							}
-						} else {
-							isEdit = false;
-						}
-					}
-				}
+	private void editStartEndDateTime(String userContent, Task tempTask) {
+		LocalDate startDate = dtCheck.toValidDate(EDIT_STARTENDDATETIME.group(5));
+		LocalTime startTime = dtCheck.determineHour(EDIT_STARTENDDATETIME.group(11));
+		LocalDate endDate = dtCheck.toValidDate(EDIT_STARTENDDATETIME.group(17));
+		LocalTime endTime = dtCheck.determineHour(EDIT_STARTENDDATETIME.group(23));
+		System.out.println(endTime);
+		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+			if((tempTask.getTaskType().equals(TYPE_FLOATING)) || (tempTask.getTaskType().equals(TYPE_DEADLINE))) {
+				tempTask.setTaskType(TYPE_TIMED);
+				isTaskTypeChanged = true;
+				editedTaskType = TYPE_TIMED;
 			}
 
-		} 
-		return isEdit;
+			isEdited = true;
+			tempTask.setTaskStartDate(startDate);
+			tempTask.setTaskStartTime(startTime);
+			tempTask.setTaskEndDate(endDate);
+			tempTask.setTaskEndTime(endTime);
+
+		}
 	}
 
-	private boolean editEndDate(String userContent, Validation validOp, TaskListSet allLists) {
-		Boolean isEdit = false;
+	private void editStartDateTime(String userContent, Task tempTask) {
+		LocalDate startDate = dtCheck.toValidDate(EDIT_STARTDATETIME.group(5));
+		LocalTime startTime = dtCheck.determineHour(EDIT_STARTDATETIME.group(11));
+		LocalDate endDate = tempTask.getTaskEndDate();
+		LocalTime endTime = tempTask.getTaskEndTime();
 
-		if(EDIT_ENDDATE.matches()) {
-			int lineNum = Integer.parseInt(EDIT_ENDDATE.group(1));
-			LocalDate endDate = dtCheck.toValidDate(EDIT_ENDDATE.group(5));
-
-			if(validOp.isValidTask(lineNum, allLists)) {
-				isValidLineNum = true;
-				int taskID = validOp.checkForTaskID(lineNum, allLists);
-				ArrayList<Task> taskList = allLists.getTaskList();
-
-				for(int id = 0; id < taskList.size(); id++) {
-					Task tempTask = new Task();
-					tempTask = taskList.get(id);
-
-					if((taskID == tempTask.getTaskID())) {
-						if(tempTask.getTaskType().equals(TYPE_FLOATING)) {
-							tempTask.setTaskEndDate(endDate);
-							tempTask.setTaskEndTime(LocalTime.parse(DEADLINE_TIME));
-							tempTask.setTaskType(TYPE_DEADLINE);
-							isTaskTypeChanged = true;
-							editedTaskType = TYPE_DEADLINE;
-							isValidDT = true;
-							isEdit = true;
-						} else if((tempTask.getTaskType().equals(TYPE_DEADLINE)) || (tempTask.getTaskType().equals(TYPE_TIMED))) {
-							LocalTime endTime = tempTask.getTaskEndTime();
-							LocalTime startTime = tempTask.getTaskStartTime();
-							LocalDate startDate = tempTask.getTaskStartDate();
-							if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
-								tempTask.setTaskEndDate(endDate);
-								isValidDT = true;
-								isEdit = true;
-							} else {
-								isEdit = true;
-							}
-						} else {
-							isEdit = false;
-						}
-
-						break;
-					}
-				}
+		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+			if((tempTask.getTaskType().equals(TYPE_FLOATING)) || (tempTask.getTaskType().equals(TYPE_DEADLINE))) {
+				tempTask.setTaskType(TYPE_TIMED);
+				isTaskTypeChanged = true;
+				editedTaskType = TYPE_TIMED;
 			}
-
-		} 
-		return isEdit;
+			isEdited = true;
+			tempTask.setTaskStartDate(startDate);
+			tempTask.setTaskStartTime(startTime);
+		}
 	}
 
-	private boolean editEndTime(String userContent, Validation validOp, TaskListSet allLists) {
-		Boolean isEdit = false;
-		if(EDIT_ENDTIME.matches()) {
-			int lineNum = Integer.parseInt(EDIT_ENDTIME.group(1));
-			LocalTime endTime = dtCheck.determineHour(EDIT_ENDTIME.group(5));
+	private void editStartDate(String userContent, Task tempTask) {
+		LocalDate startDate = dtCheck.toValidDate(EDIT_STARTDATE.group(5));
+		LocalDate endDate = tempTask.getTaskEndDate();
+		LocalTime endTime = tempTask.getTaskEndTime();
+		LocalTime startTime = tempTask.getTaskStartTime();
 
-			if(validOp.isValidTask(lineNum, allLists)) {
-				isValidLineNum = true;
-				int taskID = validOp.checkForTaskID(lineNum, allLists);
-				ArrayList<Task> taskList = allLists.getTaskList();
+		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+			if((tempTask.getTaskType().equals(TYPE_FLOATING)) || (tempTask.getTaskType().equals(TYPE_DEADLINE))) {
+				tempTask.setTaskType(TYPE_TIMED);
+				isTaskTypeChanged = true;
+				editedTaskType = TYPE_TIMED;
+			} 
+			isEdited = true;
+			tempTask.setTaskStartDate(startDate);
 
-				for(int id = 0; id < taskList.size(); id++) {
-					Task tempTask = new Task();
-					tempTask = taskList.get(id);
+		}
+	}
 
-					if((taskID == tempTask.getTaskID())) {
-						LocalDate endDate = tempTask.getTaskStartDate();
-						LocalDate startDate = tempTask.getTaskStartDate();
-						LocalTime startTime = tempTask.getTaskStartTime();
-
-						if((tempTask.getTaskType().equals(TYPE_TIMED)) || (tempTask.getTaskType().equals(TYPE_DEADLINE)))  {
-							isEdit = true;
-							if(tempTask.getTaskType().equals(TYPE_TIMED)) {
-
-								if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
-									if(tempTask.getTaskEndDate() == null) {
-										tempTask.setTaskEndDate(tempTask.getTaskStartDate());
-									}
-									tempTask.setTaskEndTime(endTime);
-									isValidDT = true;
-								}
-							} else if(tempTask.getTaskType().equals(TYPE_DEADLINE)) {
-								tempTask.setTaskEndTime(endTime);
-								isValidDT = true;
-							}
-						} else {
-							isEdit = false;
-						}
-					}
-				}
+	private void editStartTime(String userContent, Task tempTask) {
+		LocalTime startTime = dtCheck.determineHour(EDIT_STARTTIME.group(5));
+		LocalTime endTime = tempTask.getTaskEndTime();
+		LocalDate endDate = tempTask.getTaskEndDate();
+		LocalDate startDate = tempTask.getTaskStartDate();
+		if(tempTask.getTaskType().equals(TYPE_TIMED)) {
+			if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+				isEdited = true;
+				tempTask.setTaskStartTime(startTime);
 			}
 		} 
-		return isEdit;
 	}
 
-	private boolean editEndDateTime(String userContent, Validation validOp, TaskListSet allLists) {
-		Boolean isEdit = false;
-		if(EDIT_ENDDATETIME.matches()) {
-			int lineNum = Integer.parseInt(EDIT_ENDDATETIME.group(1));
-			LocalDate endDate = dtCheck.toValidDate(EDIT_ENDDATETIME.group(5));
-			LocalTime endTime = dtCheck.determineHour(EDIT_ENDDATETIME.group(10));
+	private void editEndDate(String userContent, Task tempTask) {
+		LocalDate endDate = dtCheck.toValidDate(EDIT_ENDDATE.group(5));
+		LocalTime endTime = tempTask.getTaskEndTime();
+		LocalTime startTime = tempTask.getTaskStartTime();
+		LocalDate startDate = tempTask.getTaskStartDate();
 
-			if(validOp.isValidTask(lineNum, allLists)) {
-				isValidLineNum = true;
-				int taskID = validOp.checkForTaskID(lineNum, allLists);
-				ArrayList<Task> taskList = allLists.getTaskList();
-
-				for(int id = 0; id < taskList.size(); id++) {
-					Task tempTask = new Task();
-					tempTask = taskList.get(id);
-
-					if((taskID == tempTask.getTaskID())) {
-						LocalDate startDate = tempTask.getTaskStartDate();
-						LocalTime startTime = tempTask.getTaskStartTime();
-
-						if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
-							if(tempTask.getTaskType().equals(TYPE_FLOATING)) {
-								tempTask.setTaskEndDate(endDate);
-								tempTask.setTaskEndTime(endTime);
-								tempTask.setTaskType(TYPE_DEADLINE);
-								editedTaskType = TYPE_DEADLINE;
-								isTaskTypeChanged = true;
-								isEdit = true;
-							} else if((tempTask.getTaskType().equals(TYPE_DEADLINE)) || (tempTask.getTaskType().equals(TYPE_TIMED))) {
-								tempTask.setTaskEndDate(endDate);
-								tempTask.setTaskEndTime(endTime);
-								isEdit = true;
-							} else {
-								isEdit = false;
-							}
-						} else {
-							isEdit = true;
-						}
-					}
-				}
+		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+			if(tempTask.getTaskType().equals(TYPE_FLOATING)) {
+				tempTask.setTaskEndTime(LocalTime.parse(DEADLINE_TIME));
+				tempTask.setTaskType(TYPE_DEADLINE);
+				isTaskTypeChanged = true;
+				editedTaskType = TYPE_DEADLINE;
 			}
-		} 
-		return isEdit;
+			isEdited = true;
+			tempTask.setTaskEndDate(endDate);
+		}
 	}
+
+	private void editEndTime(String userContent, Task tempTask) {
+		LocalTime endTime = dtCheck.determineHour(EDIT_ENDTIME.group(5));
+		LocalDate endDate = tempTask.getTaskStartDate();
+		LocalDate startDate = tempTask.getTaskStartDate();
+		LocalTime startTime = tempTask.getTaskStartTime();
+
+		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+			if(tempTask.getTaskEndDate() == null) {
+				tempTask.setTaskEndDate(tempTask.getTaskStartDate());
+			}
+
+			isEdited = true;
+			tempTask.setTaskEndTime(endTime);
+
+		} else {
+			isEdited = false;
+		}
+	}
+
+	private void editEndDateTime(String userContent, Task tempTask) {
+		LocalDate endDate = dtCheck.toValidDate(EDIT_ENDDATETIME.group(5));
+		LocalTime endTime = dtCheck.determineHour(EDIT_ENDDATETIME.group(11));
+		LocalDate startDate = tempTask.getTaskStartDate();
+		LocalTime startTime = tempTask.getTaskStartTime();
+
+		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+			if(tempTask.getTaskType().equals(TYPE_FLOATING)) {
+				tempTask.setTaskType(TYPE_DEADLINE);
+				editedTaskType = TYPE_DEADLINE;
+				isTaskTypeChanged = true;
+			}
+
+			tempTask.setTaskEndDate(endDate);
+			tempTask.setTaskEndTime(endTime);
+			isEdited = true;
+		}
+	}
+
+
 }
+
+

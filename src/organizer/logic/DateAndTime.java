@@ -40,6 +40,7 @@ public class DateAndTime {
 		return isValid;
 	}
 	public LocalTime determineHour(String time) {
+		System.out.println(time);
 		if(time.substring(0, time.indexOf(":")).length() == 1) {
 			time = singleDigitTimeDate.concat(time);
 		}
