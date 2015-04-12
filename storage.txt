@@ -96,3 +96,8 @@ end time: 16:00
 status: INCOMPLETE
 type: TIMED
 ----
+id: 24976
+name: something
+status: INCOMPLETE
+type: FLOATING
+----
