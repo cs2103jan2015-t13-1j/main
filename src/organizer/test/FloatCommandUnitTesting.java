@@ -22,7 +22,7 @@ public class FloatCommandUnitTesting {
 	private final Task input;
 	private String command;
 
-	public FloatCommandUnitTesting(Task expected, Task input, String command) {
+	public FloatCommandUnitTesting(Task expected, Task input) {
 		this.expected = expected;
 		this.input = input;
 		this.command = command;
@@ -32,7 +32,7 @@ public class FloatCommandUnitTesting {
 	public static List<Object[]> getParameters() {
 		return Arrays.asList(new Object[][] {
 				{ // test 1
-					new Task(0, "buy milk", null, null, null, null, "DEADLINE", "HIGH","COMPLETE"),
+					new Task(0, "buy milk", null, null, null, null, "FLOATING", "HIGH","COMPLETE"),
 					new Task(0, "buy milk", null, null, LocalDate.now(), LocalTime.of(23, 59), "DEADLINE", "HIGH","COMPLETE")
 				},
 				
@@ -43,7 +43,7 @@ public class FloatCommandUnitTesting {
 	public void testFloat() {
 		final TaskListSet set = new TaskListSet();
 		set.setTaskList(new ArrayList<>(Arrays.asList(input)));
-		final ResultSet rs = new CompleteTask().execute("1", set, new Validation());
+		final ResultSet rs = new FloatTask().execute("1", set, new Validation());
 		assertTrue(compareTask(rs.getReturnList().get(0), expected));
 	}
 }
