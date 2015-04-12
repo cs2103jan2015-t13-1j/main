@@ -42,10 +42,15 @@ public class PostponeTask {
 				LocalDate endDate = tempTask.getTaskEndDate();
 				LocalTime startTime = tempTask.getTaskStartTime();
 				LocalTime endTime = tempTask.getTaskEndTime();
-				
-				if(endDate != null || endTime != null) {
+				if (endDate == null && endTime == null) {
+					returnResult.setOpStatus(MESSAGE_NODEADLINE);
+				} else {
 					if(endTime != null && timeIdentifier.matches(PATTERN_HOUR)) {
-						endTime = endTime.plusHours(NumofDaysOrhours);
+						int offsetHour = endTime.getHour() + NumofDaysOrhours;
+						int offsetDay = offsetHour / 24;
+						offsetHour %= 24;
+						endDate = endDate.plusDays(offsetDay);
+						endTime = LocalTime.of(offsetHour, endTime.getMinute());
 					} else if(endDate != null && timeIdentifier.matches(PATTERN_DAY)) {
 						endDate = endDate.plusDays(NumofDaysOrhours);
 					}
@@ -55,10 +60,7 @@ public class PostponeTask {
 						tempTask.setTaskEndTime(endTime);
 						returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
 					}
-				} else {
-					returnResult.setOpStatus(MESSAGE_NODEADLINE);
-				}
-					
+				}		
 			} else {
 				returnResult.setOpStatus(MESSAGE_INVALID_TASK);
 			}

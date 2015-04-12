@@ -38,7 +38,7 @@ public class CompleteCommandUnitTesting {
 	}
 
 	@Test
-	public void testAdd() {
+	public void testComplete() {
 		final TaskListSet set = new TaskListSet();
 		set.setTaskList(new ArrayList<>(Arrays.asList(input)));
 		final ResultSet rs = new CompleteTask().execute("1", set, new Validation());

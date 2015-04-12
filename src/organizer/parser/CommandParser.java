@@ -33,7 +33,7 @@ public class CommandParser {
 	}
 
 	public static enum COMMAND_TYPE {
-		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INCOMPLETE_TASK, CLEAR_TASK, EDIT_TASK, POSTPONE_TASK, RANK_TASK,
+		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INCOMPLETE_TASK, CLEAR_TASK, EDIT_TASK, POSTPONE_TASK, RANK_TASK, DEADLINE_TASK,
 		UNDO, SAVE, LOAD, FLOAT_TASK, SAVEAS, INVALID, EXIT
 	};
 
@@ -71,6 +71,8 @@ public class CommandParser {
 			return COMMAND_TYPE.SAVE;
 		case "float":
 			return COMMAND_TYPE.FLOAT_TASK;
+		case "deadline":
+			return COMMAND_TYPE.DEADLINE_TASK;
 		case "saveas":
 			return COMMAND_TYPE.SAVEAS;
 		case "load":
@@ -129,6 +131,8 @@ public class CommandParser {
 			return logic.rankCommand(userContent);
 		case FLOAT_TASK:
 			return logic.floatCommand(userContent);
+		case DEADLINE_TASK:
+			return logic.deadlineCommand(userContent);
 		case UNDO:
 			return logic.undoCommand();
 		case SAVE:
