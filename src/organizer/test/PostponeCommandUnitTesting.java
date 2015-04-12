@@ -5,12 +5,17 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import organizer.logic.PostponeTask;
 import organizer.logic.ResultSet;
 import organizer.logic.Task;
+import organizer.logic.TaskListSet;
+import organizer.logic.Validation;
 import organizer.parser.CommandParser;
 /**
  * This class is used to test the PostponeTask class
@@ -18,32 +23,30 @@ import organizer.parser.CommandParser;
  */
 //@author A0113871J
 public class PostponeCommandUnitTesting {
-
-	CommandParser commandParser = new CommandParser();
-	
-	@Before
-	public void initializeTest() throws Exception {
-		commandParser  = new CommandParser();
-	}
-	
-	@Test
-	public void shouldPostponeByHoursKeyedIn () throws IOException {
-		ResultSet resultSet;
-		resultSet = commandParser.executeCommand("clear");
-		resultSet = commandParser.executeCommand("add apply gym membership by 19:00");
-		resultSet = commandParser.executeCommand("postpone 1 by 2 hours");
-		Task resultTask = resultSet.getReturnList().get(0);
-		assertEquals(LocalTime.now().plusHours(2), resultTask.getTaskEndTime());
-	}
-	
+	private final Validation validOp = new Validation();
 	
 	@Test
 	public void shouldPostponeByDaysKeyedIn () throws IOException {
-		ResultSet resultSet;
-		resultSet = commandParser.executeCommand("clear");
-		resultSet = commandParser.executeCommand("add apply gym membership by 2015-04-18");
-		resultSet = commandParser.executeCommand("postpone 1 by 2 days");
-		Task resultTask = resultSet.getReturnList().get(0);
-		assertEquals(LocalDate.now().plusDays(2), resultTask.getTaskEndDate());
+		final LocalDate date = LocalDate.now();
+		final PostponeTask postponeTask = new PostponeTask();
+		final TaskListSet set = new TaskListSet();
+		set.setTaskList(new ArrayList<>(Arrays.asList(new Task(0, "apply gym membership", null, null, date, null, "DEADLINE"))));
+		final ResultSet resultSet = postponeTask.execute("1 by 2 days", set, validOp);
+		final Task resultTask = resultSet.getReturnList().get(0);
+		assertTrue(TestUtil.compareTask(resultTask,
+				new Task(0, "apply gym membership", null, null, date.plusDays(2), null, "DEADLINE")));
+	}
+	
+	
+	@Test
+	public void shouldPostponeByHoursKeyedIn () throws IOException {
+		final PostponeTask postponeTask = new PostponeTask();
+		final TaskListSet set = new TaskListSet();
+		set.setTaskList(new ArrayList<>(Arrays.asList(
+				new Task(0, "apply gym membership", null, null, LocalDate.of(2015, 3, 31), LocalTime.of(20, 0), "DEADLINE"))));
+		final ResultSet resultSet = postponeTask.execute("1 by 4 hours", set, validOp);
+		final Task resultTask = resultSet.getReturnList().get(0);
+		assertTrue(TestUtil.compareTask(resultTask,
+				new Task(0, "apply gym membership", null, null, LocalDate.of(2015, 4, 1), LocalTime.of(0, 0), "DEADLINE")));
 	}
 }

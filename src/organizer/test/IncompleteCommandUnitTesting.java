@@ -18,7 +18,7 @@ import organizer.parser.CommandParser;
 //@author A0113871J
 public class IncompleteCommandUnitTesting {
 	CommandParser commandParser = new CommandParser();
-
+	ComepleteTask completeTask = new CompleteTask();
 	@Before
 	public void initializeTest() throws Exception {
 		commandParser  = new CommandParser();

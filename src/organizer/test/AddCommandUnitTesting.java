@@ -1,181 +1,90 @@
 package organizer.test;
 
-
-import static org.junit.Assert.*;
-
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
-import organizer.logic.ResultSet;
-import organizer.logic.Task;
-import organizer.parser.CommandParser;
-/**
- * This class is used to test the AddTask class
- * 
+import static org.junit.Assert.*;
+import organizer.logic.*;
+import static organizer.test.TestUtil.*;
+/*
+ * @author A0113871
  */
-//@author A0113871J
+@RunWith(Parameterized.class)
 public class AddCommandUnitTesting {
+	private final Task expected;
+	private final String command;
+	private final AddTask addTask = new AddTask();
 
-	CommandParser commandParser = new CommandParser();
+	public AddCommandUnitTesting(Task expected, String command) {
+		this.expected = expected;
+		this.command = command;
+	}
 
-	@Before
-	public void initializeTest() throws Exception {
-		commandParser  = new CommandParser();
+	@Parameterized.Parameters
+	public static List<Object[]> getParameters() {
+		return Arrays.asList(new Object[][] {
+				{ // test 1
+					new Task(0, "buy milk", null, null, LocalDate.now(), LocalTime.of(23, 59), "DEADLINE"),
+					"buy milk by today" 
+				},
+				{ // test 2
+					new Task(0, "buy milk", null, null, LocalDate.of(2015,04,18), LocalTime.of(23, 59), "DEADLINE"),
+					"buy milk by 2015-04-18" },
+				{ // test 3
+					new Task(0, "buy milk", null, null, LocalDate.of(2015,04,18), LocalTime.of(19, 00), "DEADLINE"),
+					"buy milk by 2015-04-18 19:00" },
+				{ // test 4
+					new Task(0, "buy milk", null, null, LocalDate.of(2015,04,17), LocalTime.of(19, 00), "DEADLINE"),
+					"buy milk by friday 19:00" },
+				{ // test 5
+					new Task(0, "buy milk", LocalDate.of(2015,04,18), LocalTime.of(19, 00), LocalDate.of(2015,04,18), LocalTime.of(20, 00), "TIMED"),
+					"buy milk on 2015-04-18 from 19:00 to 20:00" },
+				{ // test 6
+					new Task(0, "buy milk", LocalDate.of(2015,04,17), LocalTime.of(19, 00), LocalDate.of(2015,04,17), LocalTime.of(20, 00), "TIMED"),
+					"buy milk on friday from 19:00 to 20:00" },
+				{ // test 7
+					new Task(0, "buy milk", LocalDate.now(),  LocalTime.of(19, 00), LocalDate.now(), LocalTime.of(20, 00), "TIMED"),
+					"buy milk today from 19:00 to 20:00" },
+				{ // test 8
+					new Task(0, "buy milk", LocalDate.of(2015,04,18), LocalTime.of(19, 00), LocalDate.of(2015,05,01), LocalTime.of(20, 00), "TIMED"),
+					"buy milk on 2015-04-18 from 19:00 to 2015-05-01 20:00" },
+				{ // test 9
+					new Task(0, "buy milk", LocalDate.of(2015,04,18), null, LocalDate.of(2015,05,01), null, "TIMED"),
+					"buy milk from 2015-04-18 to 2015-05-01" },
+				{ // test 10
+					new Task(0, "buy milk", LocalDate.of(2015,04,18), LocalTime.of(19, 00), null, null, "TIMED"),
+					"buy milk on 2015-04-18 19:00" }, 
+				{ // test 11
+					new Task(0, "buy milk", LocalDate.of(2015,04,17), LocalTime.of(19, 00), null, null, "TIMED"),
+					"buy milk on friday 19:00" }, 
+				{ // test 12
+					new Task(0, "buy milk", LocalDate.now(), null, null, LocalTime.of(23, 59), "TIMED"),
+					"buy milk today" }, 
+				{ // test 13
+					new Task(0, "buy milk", null, null, null, null, "FLOATING"),
+					"buy milk"
+				}, 
+				{ // test 14
+					new Task(0, "buy milk", LocalDate.of(2015,04,18), null, null, null, "TIMED"),
+				 	"buy milk on 2015-04-18" }, 
+				{ // test 15
+					new Task(0, "buy milk", LocalDate.of(2015,04,17), null, null, null, "TIMED"),
+				 	"buy milk on friday" },
+
+		});
 	}
 
 	@Test
-	public void addCommandcheckTaskNumber() throws IOException {
-		ResultSet resultSet;
-		resultSet = commandParser.executeCommand("clear");
-		assertEquals(0, resultSet.getReturnList().size());
-		resultSet = commandParser.executeCommand("add buy milk by today");
-		assertEquals(1, resultSet.getReturnList().size());
-		resultSet = commandParser.executeCommand("add buy books");
-		assertEquals(2, resultSet.getReturnList().size());
-		resultSet = commandParser.executeCommand("clear");
-		assertEquals(0, resultSet.getReturnList().size());
-	}
-
-	@Test
-	public void addCommandCheckTaskName() throws IOException {
-		ResultSet resultSet;
-
-		resultSet = commandParser.executeCommand("clear");	
-		/*
-		 * Unit testing for deadling tasks	
-		 */
-		resultSet = commandParser.executeCommand("add buy milk by today");
-		Task resultTask = resultSet.getReturnList().get(0);
-		assertEquals("buy milk", resultTask.getTaskName());
-		resultSet = commandParser.executeCommand("add buy milk by 2015-04-18");
-		resultTask = resultSet.getReturnList().get(1);
-		assertEquals("buy milk", resultTask.getTaskName());
-		resultSet = commandParser.executeCommand("add buy milk by 2015-04-18 19:00");
-		resultTask = resultSet.getReturnList().get(2);
-		assertEquals("buy milk", resultTask.getTaskName());
-		resultSet = commandParser.executeCommand("add buy milk by monday 19:00");
-		resultTask = resultSet.getReturnList().get(3);
-		assertEquals("buy milk", resultTask.getTaskName());
-		/*
-		 * Unit testing for timed tasks	
-		 */	
-		resultSet = commandParser.executeCommand("add buy milk on 2015-04-18 form 19:00 to 20:00");
-		resultTask = resultSet.getReturnList().get(4);
-		assertEquals("buy milk", resultTask.getTaskName());
-		resultSet = commandParser.executeCommand("add buy milk on monday from 19:00 to 20:00");
-		resultTask = resultSet.getReturnList().get(5);
-		assertEquals("buy milk", resultTask.getTaskName());
-		resultSet = commandParser.executeCommand("add buy milk today from 19:00 to 20:00");
-		resultTask = resultSet.getReturnList().get(6);
-		assertEquals("buy milk", resultTask.getTaskName());
-		resultSet = commandParser.executeCommand("add buy milk on 2015-04-18 from 19:00 to 2015-05-01 20:00");
-		resultTask = resultSet.getReturnList().get(7);
-		assertEquals("buy milk", resultTask.getTaskName());
-		resultSet = commandParser.executeCommand("add apply gym membership from 2015-04-18 to 2015-05-01");
-		resultTask = resultSet.getReturnList().get(8);
-		assertEquals("apply gym membership", resultTask.getTaskName());
-		resultSet = commandParser.executeCommand("add apply gym membership on 2015-04-18 19:00");
-		resultTask = resultSet.getReturnList().get(9);
-		assertEquals("apply gym membership", resultTask.getTaskName());
-		resultSet = commandParser.executeCommand("add apply gym membership on monday 19:00");
-		resultTask = resultSet.getReturnList().get(10);
-		assertEquals("apply gym membership", resultTask.getTaskName());	
-		resultSet = commandParser.executeCommand("add apply gym membership today");
-		resultTask = resultSet.getReturnList().get(11);
-		assertEquals("apply gym membership", resultTask.getTaskName());	
-		resultSet = commandParser.executeCommand("add apply gym membership on 2015-04-18");
-		resultTask = resultSet.getReturnList().get(12);
-		assertEquals("apply gym membership", resultTask.getTaskName());	
-		resultSet = commandParser.executeCommand("add apply gym membership on monday");
-		resultTask = resultSet.getReturnList().get(13);
-		assertEquals("apply gym membership", resultTask.getTaskName());	
-		/*
-		 * Unit testing for floating tasks	
-		 */	
-		resultSet = commandParser.executeCommand("add buy milk");
-		resultTask = resultSet.getReturnList().get(14);
-		assertEquals("buy milk", resultTask.getTaskName());
-}
-
-	@Test
-	public void addCommandCheckTaskDateAndTime() throws IOException {
-		ResultSet resultSet;
-		resultSet = commandParser.executeCommand("clear");	
-		/*
-		 * Unit testing for deadling tasks	
-		 */
-		resultSet = commandParser.executeCommand("add buy milk by today");
-		Task resultTask = resultSet.getReturnList().get(0);
-		assertEquals(LocalDate.now(), resultTask.getTaskEndDate());
-		resultSet = commandParser.executeCommand("add buy milk by 2015-04-18");
-		resultTask = resultSet.getReturnList().get(1);
-		assertEquals(LocalDate.of(2015, 04, 18), resultTask.getTaskEndDate());
-		resultSet = commandParser.executeCommand("add buy milk by 2015-04-18 19:00");
-		resultTask = resultSet.getReturnList().get(2);
-		assertEquals(LocalDate.of(2015, 04, 18), resultTask.getTaskEndDate());
-		assertEquals(LocalTime.of(19, 00), resultTask.getTaskEndTime());
-		resultSet = commandParser.executeCommand("add buy milk by monday 19:00");
-		resultTask = resultSet.getReturnList().get(3);
-		assertEquals(LocalDate.of(2015, 04, 18), resultTask.getTaskEndDate());
-		assertEquals(LocalTime.now(), resultTask.getTaskEndTime());
-		/*
-		 * Unit testing for timed tasks	
-		 */		
-		resultSet = commandParser.executeCommand("add buy milk on 2015-04-18 form 19:00 to 20:00");
-		resultTask = resultSet.getReturnList().get(4);
-		assertEquals(LocalDate.of(2015, 04, 18), resultTask.getTaskStartDate());
-		assertEquals(LocalTime.of(19, 00), resultTask.getTaskStartTime());
-		assertEquals(LocalTime.of(20, 00), resultTask.getTaskEndTime());
-		resultSet = commandParser.executeCommand("add buy milk today from 19:00 to 20:00");
-		assertEquals(LocalDate.now(), resultTask.getTaskStartDate());
-		assertEquals(LocalTime.of(19, 00), resultTask.getTaskStartTime());
-		assertEquals(LocalTime.of(20, 00), resultTask.getTaskEndTime());
-		resultTask = resultSet.getReturnList().get(5);
-		assertEquals("buy milk", resultTask.getTaskName());
-		resultSet = commandParser.executeCommand("add buy milk on 2015-04-18 from 19:00 to 2015-05-01 20:00");
-		resultTask = resultSet.getReturnList().get(6);
-		assertEquals(LocalDate.of(2015, 04, 18), resultTask.getTaskStartDate());
-		assertEquals(LocalDate.of(2015, 05, 01), resultTask.getTaskEndDate());
-		assertEquals(LocalTime.of(19, 00), resultTask.getTaskStartTime());
-		assertEquals(LocalTime.of(20, 00), resultTask.getTaskEndTime());
-		resultSet = commandParser.executeCommand("add apply gym membership from 2015-04-18 to 2015-05-01");
-		resultTask = resultSet.getReturnList().get(7);
-		assertEquals(LocalDate.of(2015, 04, 18), resultTask.getTaskStartDate());
-		assertEquals(LocalDate.of(2015, 05, 01), resultTask.getTaskEndDate());
-		resultSet = commandParser.executeCommand("add apply gym membership on 2015-04-18 19:00");
-		resultTask = resultSet.getReturnList().get(8);
-		assertEquals(LocalDate.of(2015, 04, 18), resultTask.getTaskStartDate());
-		assertEquals(LocalTime.of(19, 00), resultTask.getTaskStartTime());
-		resultSet = commandParser.executeCommand("add apply gym membership today");
-		resultTask = resultSet.getReturnList().get(9);
-		assertEquals(LocalDate.now(), resultTask.getTaskStartDate());
-		resultSet = commandParser.executeCommand("add apply gym membership on 2015-04-18");
-		resultTask = resultSet.getReturnList().get(10);
-		assertEquals(LocalDate.of(2015, 04, 18), resultTask.getTaskStartDate());
-		/*
-		 * Unit testing for floating tasks	
-		 */	
-		resultSet = commandParser.executeCommand("add buy milk");
-		resultTask = resultSet.getReturnList().get(14);
-		assertEquals(null, resultTask.getTaskEndDate());}
-
-	@Test
-	public void addCommandCheckTaskType() throws IOException {
-		ResultSet resultSet;
-		resultSet = commandParser.executeCommand("clear");
-		resultSet = commandParser.executeCommand("add buy milk by today");
-		Task resultTask = resultSet.getReturnList().get(0);	
-		assertEquals("DEADLINE", resultTask.getTaskType());
-		resultSet = commandParser.executeCommand("add buy milk");
-		resultTask = resultSet.getReturnList().get(0);	
-		assertEquals("FLOATING", resultTask.getTaskType());
-		resultSet = commandParser.executeCommand("add buy milk on 2015-04-18 from 19:00 to 2015-05-01 20:00");
-		resultTask = resultSet.getReturnList().get(0);	
-		assertEquals("TIMED", resultTask.getTaskType());
-
+	public void testView() {
+		final TaskListSet set = new TaskListSet();
+		final ResultSet rs = addTask.execute(command, set);
+		rs.getReturnList().get(0).setTaskID(0);
+		assertTrue(compareTask(rs.getReturnList().get(0), expected));
 	}
 }
