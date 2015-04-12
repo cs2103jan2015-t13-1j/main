@@ -258,7 +258,7 @@ public class AddTask {
 			deadlineTask.setTaskType(TYPE_DEADLINE);
 		} else if(DEADLINE_DAYTIME.matches()) {
 			deadlineTask.setTaskEndDate(dtCheck.determineDate(DEADLINE_DAYTIME.group(1)));
-			deadlineTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_DAYTIME.group(4)));
+			deadlineTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_DAYTIME.group(3)));
 			deadlineTask.setTaskType(TYPE_DEADLINE);
 		} else {
 			taskName = taskName.concat(" "+taskDateTime);
@@ -314,7 +314,7 @@ public class AddTask {
 		} else if(TIMED_STARTEND_1DAY.matches()) {
 			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_STARTEND_1DAY.group(1)));
 			timedTask.setTaskEndDate(timedTask.getTaskStartDate());
-			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_1DAY.group(6));
+			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_1DAY.group(5));
 			LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_1DAY.group(11));
 			
 			if(dtCheck.isValidDueDT(null, null, startTime, endTime)) {
