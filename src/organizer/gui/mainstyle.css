@@ -2,7 +2,7 @@
 	-fx-stroke: 0;
 	-fx-border-width: 0;
 	-fx-border-radius: 0;
-	-fx-font-family: Roboto, sans-serif;
+	-fx-font-family: "Roboto", sans-serif;
 	-fx-background-image: url(res/bg.jpg);
 	-fx-background-repeat: no-repeat;
 	-fx-background-size: cover;
@@ -45,12 +45,19 @@
 	-fx-effect: dropshadow( three-pass-box , rgba(3,25,62,0.6) , 3, 0.1 , 1, 1 );
 }
 
-.taskcard.large.id, .taskcard.large.status, .taskcard.large.priority {
+.taskcard.large.id, .taskcard.large.status {
+	-fx-font-style: italic;
+	-fx-font-size: 12;
+	
+}
+
+.taskcard.large.priority {
+	-fx-font-size: 12;
 	-fx-font-style: italic;
 }
 
 .taskcard.large.type {
-	-fx-font-size: 10;
+	-fx-font-size: 12;
 }
 
 .taskcard.large.name {
@@ -64,5 +71,5 @@
 }
 
 .taskcard.large.date {
-	-fx-font-size: 10;
+	-fx-font-size: 15;
 }

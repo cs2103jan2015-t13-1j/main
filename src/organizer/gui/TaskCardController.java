@@ -70,11 +70,11 @@ public class TaskCardController extends Region {
 		priorityLabel.textProperty().bind(task.taskPriorityProperty());
 		typeLabel.setText(task.getTaskType());
 		if (task.getTaskStartDate() != null || task.getTaskStartTime() != null)
-			startTimeLabel.setText("from " + formatDateString(task.getTaskStartDate(), task.getTaskStartTime()));
+			startTimeLabel.setText("From " + formatDateString(task.getTaskStartDate(), task.getTaskStartTime()));
 		else
 			startTimeLabel.setText("");
 		if (task.getTaskEndDate() != null || task.getTaskEndTime() != null)
-			endTimeLabel.setText("to " + formatDateString(task.getTaskEndDate(), task.getTaskEndTime()));
+			endTimeLabel.setText("To " + formatDateString(task.getTaskEndDate(), task.getTaskEndTime()));
 		else
 			endTimeLabel.setText("");
 	}
@@ -88,7 +88,7 @@ public class TaskCardController extends Region {
 			strb.append(date.getDayOfMonth())
 				.append(' ')
 				.append(date.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()))
-				.append(',')
+				.append(", ")
 				.append(date.getYear());
 		}
 		if (date != null && time != null) {
