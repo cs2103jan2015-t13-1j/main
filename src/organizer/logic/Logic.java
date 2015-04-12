@@ -173,6 +173,14 @@ public class Logic {
 		setViewMode();
 		return returnResult;
 	}
+	
+	public ResultSet deadlineCommand(String userContent) {
+		addToUndoList(allLists.getTaskList());
+		DeadlineTask command = new DeadlineTask();
+		returnResult = command.execute(userContent, allLists, validOp);
+		setViewMode();
+		return returnResult;
+	}
 
 	public ResultSet undoCommand() {
 		UndoCommand command = new UndoCommand();
