@@ -1,45 +1,47 @@
 package organizer.test;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import static org.junit.Assert.*;
-
-import java.io.IOException;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import organizer.logic.ResultSet;
-import organizer.logic.Task;
-import organizer.parser.CommandParser;
-/**
- * This class is used to test the CompleteTask class
- * 
+import organizer.logic.*;
+import static organizer.test.TestUtil.*;
+/*
+ * @author A0113871
  */
-//@author A0113871J
+@RunWith(Parameterized.class)
 public class IncompleteCommandUnitTesting {
-	CommandParser commandParser = new CommandParser();
-	ComepleteTask completeTask = new CompleteTask();
-	@Before
-	public void initializeTest() throws Exception {
-		commandParser  = new CommandParser();
+	private final Task expected;
+	private final Task input;
+
+	public IncompleteCommandUnitTesting(Task expected, Task input) {
+		this.expected = expected;
+		this.input = input;
 	}
-	
-	
+
+	@Parameterized.Parameters
+	public static List<Object[]> getParameters() {
+		return Arrays.asList(new Object[][] {
+				{ // test 1
+					new Task(0, "buy milk", null, null, LocalDate.now(), LocalTime.of(23, 59), "DEADLINE", "HIGH","INCOMPLETE"),
+					new Task(0, "buy milk", null, null, LocalDate.now(), LocalTime.of(23, 59), "DEADLINE", "HIGH","COMPLETE")
+				},
+				
+		});
+	}
+
 	@Test
-	public void shouldChangeTheTaskStatusToComplete () throws IOException {
-		ResultSet resultSet;
-		resultSet = commandParser.executeCommand("clear");
-		resultSet = commandParser.executeCommand("add apply gym membership by 19:00");
-		resultSet = commandParser.executeCommand("add buy milk");
-		resultSet = commandParser.executeCommand("complete 1");
-		resultSet = commandParser.executeCommand("complete 2");
-		resultSet = commandParser.executeCommand("imcomplete 2");
-		Task resultTask = resultSet.getReturnList().get(0);
-		assertEquals("COMPLETE", resultTask.getTaskStatus());
-		resultTask = resultSet.getReturnList().get(1);
-		assertEquals("INCOMPLETE", resultTask.getTaskStatus());
-
+	public void testAdd() {
+		final TaskListSet set = new TaskListSet();
+		set.setTaskList(new ArrayList<>(Arrays.asList(input)));
+		final ResultSet rs = new IncompleteTask().execute("1", set, new Validation());
+		assertTrue(compareTask(rs.getReturnList().get(0), expected));
 	}
-
-
 }

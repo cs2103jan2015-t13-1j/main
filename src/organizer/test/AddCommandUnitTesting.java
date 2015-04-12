@@ -81,7 +81,7 @@ public class AddCommandUnitTesting {
 	}
 
 	@Test
-	public void testView() {
+	public void testAdd() {
 		final TaskListSet set = new TaskListSet();
 		final ResultSet rs = addTask.execute(command, set);
 		rs.getReturnList().get(0).setTaskID(0);
