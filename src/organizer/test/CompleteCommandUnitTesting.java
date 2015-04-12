@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
+import organizer.logic.CompleteTask;
 import organizer.logic.ResultSet;
 import organizer.logic.Task;
 import organizer.parser.CommandParser;
@@ -18,7 +19,8 @@ import organizer.parser.CommandParser;
 //@author A0113871J
 public class CompleteCommandUnitTesting {
 	CommandParser commandParser = new CommandParser();
-
+	CompleteTask completeTask = new CompleteTask();
+	
 	@Before
 	public void initializeTest() throws Exception {
 		commandParser  = new CommandParser();
