@@ -34,7 +34,7 @@ public class StorageTesting {
 		final String input =
 				"id: 0\n"
 				+ "name: buy milk\n"
-				+ "duedate: 2001-01-01\n"
+				+ "end date: 2001-01-01\n"
 				+ "status: COMPLETE\n"
 				+ "priority: low\n"
 				+ "----\n"
