@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import organizer.logic.EditTask;
+import organizer.logic.DeadlineTask;
 import organizer.logic.ResultSet;
 import organizer.logic.Task;
 import organizer.logic.TaskListSet;
@@ -24,8 +24,8 @@ public class DeadlineCommandUnitTesting {
 	@Parameterized.Parameters
 	public static List<Object[]> getParameters() {
 		final LocalDate startDate = LocalDate.now(), endDate = startDate;
-		final LocalDate nearestWednesday = endDate.plusDays(3 - endDate.getDayOfWeek().getValue());
-		final LocalDate nearestMonday = endDate.plusDays(1 - endDate.getDayOfWeek().getValue());
+		final LocalDate nearestWednesday = endDate.plusDays(7+3 - endDate.getDayOfWeek().getValue());
+		final LocalDate nearestMonday = endDate.plusDays(7+1 - endDate.getDayOfWeek().getValue());
 		return Arrays.asList(new Object[][]{
 				{	// test 1
 					new Task(0, "a", null, null, LocalDate.of(2015, 1, 3), LocalTime.of(23, 59), "DEADLINE"),
@@ -67,11 +67,11 @@ public class DeadlineCommandUnitTesting {
 
 	@Test
 	public void test() {
-		final EditTask editTask = new EditTask();
+		final DeadlineTask deadlineTask = new DeadlineTask();
 		final Validation validOp = new Validation();
 		final TaskListSet set = new TaskListSet();
 		set.setTaskList(new ArrayList<>(Arrays.asList(input)));
-		final ResultSet rs = editTask.execute(command, set, validOp);
+		final ResultSet rs = deadlineTask.execute(command, set, validOp);
 		final Task resultTask = rs.getReturnList().get(0);
 		assertTrue(TestUtil.compareTask(resultTask, expected));
 	}

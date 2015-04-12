@@ -10,6 +10,7 @@ public class DeadlineTask {
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
 	private static final String MESSAGE_INVALID_CONTENT = "Deadline a task operation failed for invalid content!";
 	private static final String MESSAGE_TYPE_CHANGED= "Deadline a task operation is successful! Changed to DEADLINE task.";
+	private static final String MESSAGE_INVALID_TYPE = "Selected  task is already a deadline task!";
 	
 	private static final String TYPE_DEADLINE = "DEADLINE";
 	private static final String TIME_DEFAULT = "23:59";
@@ -25,6 +26,7 @@ public class DeadlineTask {
 	private boolean isReadyToDeadline = false;
 	private boolean isValidLineNum = false;
 	private boolean isDeadlined = false;
+	private boolean isInvalidType = true;
 	
 	private int taskID = -1;
 	
@@ -69,15 +71,18 @@ public class DeadlineTask {
 			matchEditProcess(userContent, getToDeadlineTask(taskID, allLists));
 		}
 
-		if(isReadyToDeadline && isValidLineNum && isDeadlined) {
+		if(isReadyToDeadline && isValidLineNum && isDeadlined && !isInvalidType) {
 			returnResult.setOpStatus( MESSAGE_TYPE_CHANGED);
 			isReadyToDeadline = false;
 			isValidLineNum = false;
 			isDeadlined = false;
-
+			isInvalidType = true;
+			
 		} else if(isReadyToDeadline && !isValidLineNum) {
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
 
+		} else if(isReadyToDeadline && isValidLineNum && isInvalidType) {
+			returnResult.setOpStatus(MESSAGE_INVALID_TYPE);
 		}
 
 	}
@@ -100,12 +105,16 @@ public class DeadlineTask {
 				break;
 			} 
 		}
-		
-		tempTask.setTaskEndDate(null);
-		tempTask.setTaskEndTime(null);
-		tempTask.setTaskStartTime(null);
-		tempTask.setTaskStartDate(null);
-		tempTask.setTaskType(TYPE_DEADLINE);
+		if(tempTask.getTaskType().equals(TYPE_DEADLINE)) {
+			isInvalidType = true;
+		} else {
+			tempTask.setTaskEndDate(null);
+			tempTask.setTaskEndTime(null);
+			tempTask.setTaskStartTime(null);
+			tempTask.setTaskStartDate(null);
+			tempTask.setTaskType(TYPE_DEADLINE);
+		}
+
 		return tempTask;
 	}
 	
@@ -130,18 +139,18 @@ public class DeadlineTask {
 	}
 	
 	private void setEndDate(String userContent, Task tempTask) {
-		tempTask.setTaskEndDate(dtCheck.toValidDate(DEADLINE_ENDDATETIME.group(5)));
+		tempTask.setTaskEndDate(dtCheck.toValidDate(DEADLINE_ENDDATE.group(5)));
 		tempTask.setTaskEndTime(LocalTime.parse(TIME_DEFAULT));
 	}
 	
 	private void setEndDay(String userContent, Task tempTask) {
-		tempTask.setTaskEndDate(dtCheck.determineDate(DEADLINE_ENDDATETIME.group(5)));
+		tempTask.setTaskEndDate(dtCheck.determineDate(DEADLINE_ENDDAY.group(5)));
 		tempTask.setTaskEndTime(LocalTime.parse(TIME_DEFAULT));
 	}
 	
 	private void setEndDayTime(String userContent, Task tempTask) {
-		tempTask.setTaskEndDate(dtCheck.determineDate(DEADLINE_ENDDATETIME.group(5)));
-		tempTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_ENDDATETIME.group(7)));
+		tempTask.setTaskEndDate(dtCheck.determineDate(DEADLINE_ENDDAYTIME.group(5)));
+		tempTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_ENDDAYTIME.group(7)));
 	}
 	
 	
