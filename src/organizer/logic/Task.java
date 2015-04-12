@@ -47,6 +47,11 @@ public class Task {
 		this.taskType = taskType;
 		
 	}
+	
+	public Task(int taskID, String taskName, LocalDate taskStartDate, LocalTime taskStartTime, LocalDate taskEndDate, LocalTime taskEndTime, String taskType, String taskPriority) {
+		this(taskID, taskName, taskStartDate, taskStartTime, taskEndDate, taskEndTime, taskType);
+		this.taskPriority = taskPriority;
+	}
 
 	/**
 	 * Get/Set methods for task attributes.
