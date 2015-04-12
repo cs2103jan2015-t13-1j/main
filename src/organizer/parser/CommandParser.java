@@ -37,8 +37,7 @@ public class CommandParser {
 		UNDO, SAVE, LOAD, FLOAT_TASK, SAVEAS, INVALID, EXIT
 	};
 
-	private static COMMAND_TYPE determineCommandType(String commandTypeString)
-			throws SecurityException, IOException {
+	public static COMMAND_TYPE determineCommandType(String commandTypeString) {
 		if (commandTypeString.equals(null)) {
 			throw new Error(MESSAGE_INVALID_COMMAND);
 		} else {
