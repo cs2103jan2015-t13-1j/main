@@ -34,7 +34,7 @@ public class Logic {
 	String userFile = "";
 	String defaultFileName = "storage.txt";
 
-	Stack<ArrayList<Task>> undoList = new Stack<ArrayList<Task>>();
+	public static Stack<ArrayList<Task>> undoList = new Stack<ArrayList<Task>>();
 
 	public ArrayList<Task> loadStorage(InputStream in) throws IOException {
 		allLists.setTaskList(tempStorage.readFromStream(in));

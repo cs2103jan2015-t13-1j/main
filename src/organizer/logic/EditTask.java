@@ -16,15 +16,15 @@ public class EditTask {
 	private static final String MESSAGE_TYPE_CHANGED= "Edit task operation is successful! Changed to %s task.";
 
 
-	private static final String PATTERN_EDIT_STARTENDDATETIME = "(\\d)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))"
+	private static final String PATTERN_EDIT_STARTENDDATETIME = "([0-9]+)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))"
 			+ "(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
-	private static final String PATTERN_EDIT_STARTDATETIME = "(\\d)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
-	private static final String PATTERN_EDIT_STARTDATE = "(\\d)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
-	private static final String PATTERN_EDIT_STARTTIME = "(\\d)(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
-	private static final String PATTERN_EDIT_ENDTIME = "(\\d)(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
-	private static final String PATTERN_EDIT_ENDDATETIME = "(\\d)(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
-	private static final String PATTERN_EDIT_ENDDATE = "(\\d)(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
-	private static final String PATTERN_EDIT_TITLE = "(\\d)(\\s)(.*)";
+	private static final String PATTERN_EDIT_STARTDATETIME = "([0-9]+)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_STARTDATE = "([0-9]+)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	private static final String PATTERN_EDIT_STARTTIME = "([0-9]+)(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_ENDTIME = "([0-9]+)(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_ENDDATETIME = "([0-9]+)(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_ENDDATE = "([0-9]+)(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	private static final String PATTERN_EDIT_TITLE = "([0-9]+)(\\s)(.*)";
 
 	private static final String TYPE_DEADLINE = "DEADLINE";
 	private static final String TYPE_FLOATING = "FLOATING";
@@ -180,6 +180,7 @@ public class EditTask {
 	private void editStartDateTime(String userContent, Task tempTask) {
 		LocalDate startDate = dtCheck.toValidDate(EDIT_STARTDATETIME.group(5));
 		LocalTime startTime = dtCheck.determineHour(EDIT_STARTDATETIME.group(11));
+		System.out.println(startDate);
 		LocalDate endDate = tempTask.getTaskEndDate();
 		LocalTime endTime = tempTask.getTaskEndTime();
 

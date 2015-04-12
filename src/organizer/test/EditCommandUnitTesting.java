@@ -18,6 +18,7 @@ import organizer.logic.Task;
 import organizer.logic.TaskListSet;
 import organizer.logic.Validation;
 
+//@author A0113627L
 @RunWith(Parameterized.class)
 public class EditCommandUnitTesting {
 
@@ -30,38 +31,38 @@ public class EditCommandUnitTesting {
 					new Task(0, "a", null, null, null, null, "FLOATING"),
 					"1 b"
 				},
-				{	// test 7
+				{	// test 2
 					new Task(0, "a", startDate, null, endDate, LocalTime.of(19, 0), "TIMED"),
 					new Task(0, "a", startDate, null, endDate, LocalTime.of(11, 11), "TIMED"),
 					"1 to 19:00"
 				},
-				{	// test 8
+				{	// test 3
 					new Task(0, "a", startDate, LocalTime.of(19, 0), endDate, LocalTime.of(11, 11), "TIMED"),
 					new Task(0, "a", startDate, null, endDate, LocalTime.of(20, 11), "TIMED"),
 					"1 from 19:00"
 				},
-				{	// test 9
+				{	// test 4
 					new Task(0, "a", startDate, null, endDate, LocalTime.of(11, 11), "TIMED"),
 					new Task(0, "a", startDate, null, endDate, LocalTime.of(11, 11), "TIMED"),
 					"1 from 19:00"
 				},
-				{	// test 10
+				{	// test 5
 					new Task(0, "a", LocalDate.of(1993, 1, 1), null, LocalDate.of(2015, 4, 18), LocalTime.of(19, 0), "TIMED"),
 					new Task(0, "a", LocalDate.of(1993, 1, 1), null, endDate, LocalTime.of(11, 11), "TIMED"),
 					"1 to 2015-04-18 19:00"
 				},
-				{	// test 11
+				{	// test 6
 					new Task(0, "a", LocalDate.of(1993, 1, 1), null, LocalDate.of(2015, 4, 18), LocalTime.of(11, 11), "TIMED"),
 					new Task(0, "a", LocalDate.of(1993, 1, 1), null, endDate, LocalTime.of(11, 11), "TIMED"),
 					"1 to 2015-04-18"
 				},
-				{	// test 12
-					new Task(0, "a", LocalDate.of(1993, 1, 1), LocalTime.of(0, 0), LocalDate.of(2015, 4, 18), LocalTime.of(19, 0), "TIMED"),
+				{	// test 7
+					new Task(0, "a", LocalDate.of(1993, 1, 1), LocalTime.of(0, 0), endDate, LocalTime.of(19, 0), "TIMED"),
 					new Task(0, "a", endDate, LocalTime.of(0, 0), endDate, LocalTime.of(11, 11), "TIMED"),
 					"1 from 1993-1-1 00:00"
 				},
-				{	// test 13
-					new Task(0, "a", LocalDate.of(2014, 1, 1), LocalTime.of(0, 0), endDate, LocalTime.of(11, 11), "TIMED"),
+				{	// test 8
+					new Task(0, "a", LocalDate.of(2014, 1, 1), LocalTime.of(0, 0), LocalDate.of(2015, 11, 12), LocalTime.of(10, 0), "TIMED"),
 					new Task(0, "a", endDate, LocalTime.of(0, 0), endDate, LocalTime.of(11, 11), "TIMED"),
 					"1 from 2014-1-1 00:00 to 2015-11-12 10:00"
 				}

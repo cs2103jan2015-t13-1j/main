@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.List;
@@ -66,7 +67,6 @@ public class MainAppController {
 		commandStatus.setText("");
 		commandText.requestFocus();
 		tempDir = ResourceUtil.makeTemporaryFromResourceFolder(URL_HELP_MANUAL);
-		tempDir.deleteOnExit();
 	}
 
 	public void setMainApp(MainApp mainApp) {
@@ -77,8 +77,7 @@ public class MainAppController {
 	@FXML
 	public void performCommand() throws IOException {
 		final String commandString = commandText.textProperty().get();
-		System.out.print("Command: ");
-		System.out.println(commandString);
+		LOGGER.log(Level.INFO, "Command: ".concat(commandString));
 		commandText.clear();
 
 		// grab the user view info before each command

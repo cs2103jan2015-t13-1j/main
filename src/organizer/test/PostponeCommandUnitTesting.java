@@ -14,10 +14,6 @@ import organizer.logic.Task;
 import organizer.logic.TaskListSet;
 import organizer.logic.Validation;
 
-/**
- * This class is used to test the PostponeTask class
- * 
- */
 //@author A0113871J
 public class PostponeCommandUnitTesting {
 	private final Validation validOp = new Validation();

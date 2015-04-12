@@ -15,9 +15,8 @@ import org.junit.runners.Parameterized;
 import static org.junit.Assert.*;
 import organizer.logic.*;
 import static organizer.test.TestUtil.*;
-/*
- * @author A0113871J
- */
+
+//@author A0113871J
 @RunWith(Parameterized.class)
 public class DeleteCommandUnitTesting {
 	private final ArrayList<Task> expected;

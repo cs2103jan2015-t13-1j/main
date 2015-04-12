@@ -12,9 +12,8 @@ import org.junit.runners.Parameterized;
 import static org.junit.Assert.*;
 import organizer.logic.*;
 import static organizer.test.TestUtil.*;
-/*
- * @author A0113871
- */
+
+//@author A0113871J
 @RunWith(Parameterized.class)
 public class AddCommandUnitTesting {
 	private final Task expected;

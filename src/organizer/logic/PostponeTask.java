@@ -13,7 +13,7 @@ public class PostponeTask {
 	private static final String MESSAGE_UNSUCCESS = "Postpone task operation failed for invalid content!";
 	private static final String MESSAGE_NODEADLINE = "No deadline found!";
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
-	private final static String PATTERN_POSTPONE = "(\\d)(\\s)(\\bby\\b)(\\s)(\\d)(\\s)(hours|hour|days|day|hr|hrs)";
+	private final static String PATTERN_POSTPONE = "([0-9]+)(\\s)(\\bby\\b)(\\s)(\\d)(\\s)(hours|hour|days|day|hr|hrs)";
 	private final static String PATTERN_HOUR = "hour|hours|hr|hrs";
 	private final static String PATTERN_DAY = "day|days";
 

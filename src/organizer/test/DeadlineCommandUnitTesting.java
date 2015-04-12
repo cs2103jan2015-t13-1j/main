@@ -18,14 +18,25 @@ import organizer.logic.Task;
 import organizer.logic.TaskListSet;
 import organizer.logic.Validation;
 
+//@author A0113627L
 @RunWith(Parameterized.class)
 public class DeadlineCommandUnitTesting {
 
 	@Parameterized.Parameters
 	public static List<Object[]> getParameters() {
 		final LocalDate startDate = LocalDate.now(), endDate = startDate;
-		final LocalDate nearestWednesday = endDate.plusDays(7+3 - endDate.getDayOfWeek().getValue());
-		final LocalDate nearestMonday = endDate.plusDays(7+1 - endDate.getDayOfWeek().getValue());
+		final LocalDate nearestWednesday, nearestMonday;
+		if(3 - endDate.getDayOfWeek().getValue() < 0) {
+			nearestWednesday = endDate.plusDays(7+3 - endDate.getDayOfWeek().getValue());
+		} else {
+			nearestWednesday = endDate.plusDays(3 - endDate.getDayOfWeek().getValue());
+		}
+		if(1 - endDate.getDayOfWeek().getValue() < 0) {
+			nearestMonday = endDate.plusDays(7+1 - endDate.getDayOfWeek().getValue());
+		} else {
+			nearestMonday = endDate.plusDays(1 - endDate.getDayOfWeek().getValue());
+
+		}
 		return Arrays.asList(new Object[][]{
 				{	// test 1
 					new Task(0, "a", null, null, LocalDate.of(2015, 1, 3), LocalTime.of(23, 59), "DEADLINE"),
@@ -34,17 +45,17 @@ public class DeadlineCommandUnitTesting {
 				},
 				{	// test 2
 					new Task(0, "a", null, null, nearestWednesday, LocalTime.of(23, 59), "DEADLINE"),
-					new Task(0, "a", nearestMonday, null, endDate, LocalTime.of(23, 59), "TIMED"),
+					new Task(0, "a", nearestMonday, null, nearestMonday.plusDays(1), LocalTime.of(23, 59), "TIMED"),
 					"1 by wednesday"
 				},
 				{	// test 3
 					new Task(0, "a", null, null, LocalDate.of(2015, 4, 18), LocalTime.of(19, 0), "DEADLINE"),
-					new Task(0, "a", nearestMonday, null, endDate, LocalTime.of(23, 59), "TIMED"),
+					new Task(0, "a", nearestMonday, null, nearestMonday.plusDays(1), LocalTime.of(23, 59), "TIMED"),
 					"1 by 2015-04-18 19:00"
 				},
 				{	// test 4
 					new Task(0, "a", null, null, nearestWednesday, LocalTime.of(23, 59), "DEADLINE"),
-					new Task(0, "a", nearestMonday, null, endDate, LocalTime.of(7, 0), "TIMED"),
+					new Task(0, "a", nearestMonday, null, nearestMonday.plusDays(1), LocalTime.of(7, 0), "TIMED"),
 					"1 by wednesday 07:00"
 				},
 				{	// test 5
@@ -58,7 +69,7 @@ public class DeadlineCommandUnitTesting {
 	private final Task expected;
 	private final Task input;
 	private final String command;
-	
+
 	public DeadlineCommandUnitTesting(Task expected, Task input, String command) {
 		this.expected = expected;
 		this.input = input;
