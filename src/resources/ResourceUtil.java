@@ -18,12 +18,12 @@ import java.util.jar.JarFile;
 
 import organizer.gui.MainApp;
 
+//@author A0098824N
 public class ResourceUtil {
 
 	private final static String TEMP_FOLDER_NAME =  "c:/temp/";
 	private final static String FOLDER_TO_COPY = "resources/help_manual/";
 
-	//@author A0098824N
 	public static File makeTemporaryFromResourceFolder(String resourcePath) throws IOException, URISyntaxException {
 		String sourcePath = MainApp.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		sourcePath = URLDecoder.decode(sourcePath, "UTF-8");

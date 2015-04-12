@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import organizer.parser.CommandParser;
 
+//@author A0098824N
 public class DeadlineTask {
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
 	private static final String MESSAGE_INVALID_CONTENT = "Deadline a task operation failed for invalid content!";
