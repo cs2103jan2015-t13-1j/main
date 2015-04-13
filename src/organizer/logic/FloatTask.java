@@ -15,7 +15,7 @@ public class FloatTask {
 	private static final String MESSAGE_INVALID_TYPE = "Selected task is already a floating task!";
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
 	private static final String MESSAGE_INVALID_CONTENT = "Set float task operation failed for invalid content!";
-	private static final String PATTERN_FLOAT = "(float)(\\s)([0-9]+)";
+	private static final String PATTERN_FLOAT = "([0-9]+)";
 
 	private static final String TYPE_DEADLINE = "DEADLINE";
 	private static final String TYPE_FLOATING = "FLOATING";
