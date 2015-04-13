@@ -47,6 +47,8 @@ public class FloatTask {
 				} else {
 					opStatus = MESSAGE_INVALID_TYPE;
 				}
+				
+				break;
 			}
 		}
 		

@@ -33,8 +33,9 @@ public class PostponeTask {
 				int taskID = validOp.checkForTaskID(lineNum, allLists);
 				
 				for(int index = 0; index < allLists.getTaskList().size(); index++) {
-					if(taskID == index) {
+					if(taskID == allLists.getTaskList().get(index).getTaskID()) {
 						tempTask = allLists.getTaskList().get(index);
+						break;
 					}
 				}
 				

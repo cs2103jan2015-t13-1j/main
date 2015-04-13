@@ -23,6 +23,7 @@ public class IncompleteTask {
 				if(taskID == tempTask.getTaskID()) {
 					tempTask.setTaskStatus(STATUS_TASK);
 					returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
+					break;
 				}
 			}	
 		} else {

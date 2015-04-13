@@ -26,6 +26,8 @@ public class RankTask {
 					} else {
 						tempList.get(i).setTaskPriority(taskRank.toUpperCase());
 					}
+					
+					break;
 				}
 			}
 			
