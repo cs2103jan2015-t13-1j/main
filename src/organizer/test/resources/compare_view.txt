@@ -1,4 +1,3 @@
-9
 ^id: \d+
 name: buy milk
 end date: 2015-10-20
@@ -49,6 +48,362 @@ type: FLOATING
 ----
 id: \d+
 name: b
+status: INCOMPLETE
+type: FLOATING
+----
+id: \d+
+name: c
+status: INCOMPLETE
+type: FLOATING
+----$
+<<<EOL
+
+^id: \d+
+name: buy milk
+end date: 2015-10-20
+end time: 18:30
+status: INCOMPLETE
+type: DEADLINE
+----
+id: \d+
+name: do homework
+start date: 2015-04-18
+start time: 19:00
+end date: 2015-05-01
+end time: 20:00
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: clean
+start date: 2015-04-18
+end date: 2015-05-01
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: push back
+start date: 2015-04-18
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: wait for my signal
+end date: 2015-10-20
+end time: 05:50
+status: INCOMPLETE
+type: DEADLINE
+----
+id: \d+
+name: temp task 2
+start date: 2015-10-21
+start time: 06:10
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: a
+status: INCOMPLETE
+type: FLOATING
+----
+id: \d+
+name: b
+status: INCOMPLETE
+type: FLOATING
+----
+id: \d+
+name: c
+status: INCOMPLETE
+type: FLOATING
+----$
+<<<EOL
+
+^id: \d+
+name: buy milk
+end date: 2015-10-20
+end time: 18:30
+status: INCOMPLETE
+type: DEADLINE
+----
+id: \d+
+name: do homework
+start date: 2015-04-18
+start time: 19:00
+end date: 2015-05-01
+end time: 20:00
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: clean
+start date: 2015-04-18
+end date: 2015-05-01
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: push back
+start date: 2015-04-18
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: wait for my signal
+end date: 2015-10-20
+end time: 05:50
+status: INCOMPLETE
+type: DEADLINE
+----
+id: \d+
+name: temp task 2
+start date: 2015-10-21
+start time: 06:10
+end date: 2015-10-21
+end time: 09:10
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: a
+status: INCOMPLETE
+type: FLOATING
+----
+id: \d+
+name: b
+status: INCOMPLETE
+type: FLOATING
+----
+id: \d+
+name: c
+status: INCOMPLETE
+type: FLOATING
+----$
+<<<EOL
+
+^id: \d+
+name: buy milk
+end date: 2015-10-20
+end time: 18:30
+status: INCOMPLETE
+type: DEADLINE
+----
+id: \d+
+name: do homework
+start date: 2015-04-18
+start time: 19:00
+end date: 2015-05-01
+end time: 20:00
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: clean
+start date: 2015-04-18
+end date: 2015-05-01
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: push back
+start date: 2015-04-18
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: wait for my signal
+end date: 2015-10-20
+end time: 05:50
+status: INCOMPLETE
+type: DEADLINE
+----
+id: \d+
+name: temp task 2
+start date: 2015-10-21
+start time: 06:10
+end date: 2015-10-21
+end time: 09:10
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: a
+status: INCOMPLETE
+type: FLOATING
+----
+id: \d+
+name: b
+status: INCOMPLETE
+type: FLOATING
+----
+id: \d+
+name: c
+status: INCOMPLETE
+type: FLOATING
+----$
+<<<EOL
+
+^id: \d+
+name: buy milk
+end date: 2015-10-20
+end time: 18:30
+status: INCOMPLETE
+type: DEADLINE
+----
+id: \d+
+name: do homework
+start date: 2015-04-18
+start time: 19:00
+end date: 2015-05-01
+end time: 20:00
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: clean
+start date: 2015-04-18
+end date: 2015-05-01
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: push back
+start date: 2015-04-18
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: wait for my signal
+end date: 2015-10-20
+end time: 05:50
+status: INCOMPLETE
+type: DEADLINE
+----
+id: \d+
+name: temp task 2
+start date: 2015-10-21
+start time: 06:10
+end date: 2015-10-21
+end time: 09:10
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: a
+status: INCOMPLETE
+type: FLOATING
+----
+id: \d+
+name: from 2011-1-14 to 2022-9-13
+status: INCOMPLETE
+type: FLOATING
+----
+id: \d+
+name: c
+status: INCOMPLETE
+type: FLOATING
+----$
+<<<EOL
+
+^id: \d+
+name: do homework
+start date: 2015-04-18
+start time: 19:00
+end date: 2015-05-01
+end time: 20:00
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: clean
+start date: 2015-04-18
+end date: 2015-05-01
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: push back
+start date: 2015-04-18
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: wait for my signal
+end date: 2015-10-20
+end time: 05:50
+status: INCOMPLETE
+type: DEADLINE
+----
+id: \d+
+name: temp task 2
+start date: 2015-10-21
+start time: 06:10
+end date: 2015-10-21
+end time: 09:10
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: a
+status: INCOMPLETE
+type: FLOATING
+----
+id: \d+
+name: from 2011-1-14 to 2022-9-13
+status: INCOMPLETE
+type: FLOATING
+----
+id: \d+
+name: c
+status: INCOMPLETE
+type: FLOATING
+----$
+<<<EOL
+
+^id: \d+
+name: do homework
+start date: 2015-04-18
+start time: 19:00
+end date: 2015-05-03
+end time: 20:00
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: clean
+start date: 2015-04-18
+end date: 2015-05-01
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: push back
+start date: 2015-04-18
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: wait for my signal
+end date: 2015-10-20
+end time: 05:50
+status: INCOMPLETE
+type: DEADLINE
+----
+id: \d+
+name: temp task 2
+start date: 2015-10-21
+start time: 06:10
+end date: 2015-10-21
+end time: 09:10
+status: INCOMPLETE
+type: TIMED
+----
+id: \d+
+name: a
+status: INCOMPLETE
+type: FLOATING
+----
+id: \d+
+name: from 2011-1-14 to 2022-9-13
 status: INCOMPLETE
 type: FLOATING
 ----
