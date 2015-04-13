@@ -4,9 +4,10 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import organizer.logic.ResultSet;
@@ -34,9 +35,13 @@ public class MainAppController {
 	private static final double FADE_TRANSLATION_IN_TASKCARD_START_ALPHA = 0.1;
 	private static final double FADE_TRANSLATION_IN_TASKCARD_END_ALPHA = 1;
 	private static final double FADE_TRANSLATION_IN_TASKCARD_SEPARATION_MILLIS = 15;
+	private static final int MAX_COMMAND_HISTORY = 100;
 
 	private MainApp mainApp;
 	private File tempDir;
+	
+	private List<String> historyCommands = new ArrayList<>(Arrays.asList(""));
+	private int historyIndex = 0;
 
 	@FXML
 	private TextField commandText;
@@ -73,12 +78,21 @@ public class MainAppController {
 		this.mainApp = mainApp;
 		updateTaskList();
 	}
+	
+	private void addCommandHistory(String commandString) {
+		historyCommands.add(commandString);
+		if (historyCommands.size() == MAX_COMMAND_HISTORY) {
+			historyCommands.remove(0);
+		}
+		historyIndex = historyCommands.size();
+	}
 
 	@FXML
 	public void performCommand() throws IOException {
 		int lastVisitedPage = -1;
 		final String commandString = commandText.textProperty().get();
-		LOGGER.log(Level.INFO, "Command: ".concat(commandString));
+		LOGGER.info("Command: " + commandString);
+		addCommandHistory(commandString);
 		commandText.clear();
 		
 		final ResultSet rs = mainApp.performCommand(commandString);
@@ -189,35 +203,68 @@ public class MainAppController {
 	}
 
 	private void processQuickAction(KeyCode code) throws IOException {
-		if (code == KeyCode.BACK_QUOTE) {
-			restoreSidePane();
-		} else if (code == KeyCode.DIGIT1) {
-			displayTaskDetailSidePane(0);
-		} else if (code == KeyCode.DIGIT2) {
-			displayTaskDetailSidePane(1);
-		} else if (code == KeyCode.DIGIT3) {
-			displayTaskDetailSidePane(2);
-		} else if (code == KeyCode.DIGIT4) {
-			displayTaskDetailSidePane(3);
-		} else if (code == KeyCode.DIGIT5) {
-			displayTaskDetailSidePane(4);
-		} else if (code == KeyCode.DIGIT6) {
-			displayTaskDetailSidePane(5);
-		} else
-			showControlKeyHint();
+		if (code != null) {
+			switch (code) {
+			case BACK_QUOTE:
+				restoreSidePane();
+				break;
+			case DIGIT1:
+				displayTaskDetailSidePane(0);
+				break;
+			case DIGIT2:
+				displayTaskDetailSidePane(1);
+				break;
+			case DIGIT3:
+				displayTaskDetailSidePane(2);
+				break;
+			case DIGIT4:
+				displayTaskDetailSidePane(3);
+				break;
+			case DIGIT5:
+				displayTaskDetailSidePane(4);
+				break;
+			case DIGIT6:
+				displayTaskDetailSidePane(5);
+				break;
+			default:
+				showControlKeyHint();
+			}
+		}
+	}
+	
+	private void showPreviousCommand() {
+		if (historyIndex > 0) {
+			commandText.setText(historyCommands.get(--historyIndex));
+		} else {
+			commandText.setText(historyCommands.get(0));
+		}
+	}
+	
+	private void showNextCommand() {
+		if (historyIndex < historyCommands.size() - 1) {
+			commandText.setText(historyCommands.get(++historyIndex));
+		} else {
+			commandText.setText("");
+			historyIndex = historyCommands.size();
+		}
 	}
 
 	@FXML
 	public void keyPressHandler(KeyEvent e) throws Exception {
-		if (e.getCode() == KeyCode.PAGE_DOWN) {
+		final KeyCode code = e.getCode();
+		if (code == KeyCode.PAGE_DOWN) {
 			flipNextPage();
-		} else if (e.getCode() == KeyCode.PAGE_UP) {
+		} else if (code == KeyCode.PAGE_UP) {
 			flipPrevPage();
 		} else if (e.isControlDown()) {
 			hideControlKeyHint();
 			processQuickAction(e.getCode());
-		} else if (e.getCode() == KeyCode.F1) {
+		} else if (code == KeyCode.F1) {
 			showHelpManual();
+		} else if (code == KeyCode.UP) {
+			showPreviousCommand();
+		} else if (code == KeyCode.DOWN) {
+			showNextCommand();
 		}
 	}
 
