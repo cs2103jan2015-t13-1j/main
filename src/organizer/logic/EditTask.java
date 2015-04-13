@@ -16,6 +16,7 @@ public class EditTask {
 	private static final String MESSAGE_SUCCESS = "Edit task operation is successful!";
 	private static final String MESSAGE_UNSUCCESS = "Edit task operation failed for end date/time error!";
 	private static final String MESSAGE_TYPE_CHANGED= "Edit task operation is successful! Changed to %s task.";
+	private static final String MESSAGE_ALTERNATIVE = "Try converting to deadline task instead!";
 
 
 	private static final String PATTERN_EDIT_STARTENDDATETIME = "([0-9]+)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))"
@@ -39,6 +40,7 @@ public class EditTask {
 	private boolean isEdited= false;
 	private boolean isReadyToEdit = false;
 	private boolean isTaskTypeChanged = false;
+	private boolean isInvalidType = false;
 	private String editedTaskType = "";
 	private DateAndTime dtCheck = new DateAndTime();
 	private int taskID = -1;
@@ -68,12 +70,17 @@ public class EditTask {
 		if(isReadyToEdit && isValidLineNum) {
 			matchEditProcess(userContent, getToEditTask(taskID, allLists));
 		}
+		
+		if(isReadyToEdit && isValidLineNum && isInvalidType) {
+			returnResult.setOpStatus(MESSAGE_ALTERNATIVE);
+		}
 
 		if(isReadyToEdit && isValidLineNum && isEdited) {
 			returnResult.setOpStatus(MESSAGE_SUCCESS);
 			isReadyToEdit = false;
 			isValidLineNum = false;
 			isEdited = false;
+			isInvalidType = false;
 
 		} else if(isReadyToEdit && !isValidLineNum) {
 			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
@@ -262,13 +269,16 @@ public class EditTask {
 		LocalTime startTime = tempTask.getTaskStartTime();
 
 		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
-			if(tempTask.getTaskEndDate() == null) {
+			if(tempTask.getTaskEndDate() == null && tempTask.getTaskType().equals(TYPE_TIMED)) {
 				tempTask.setTaskEndDate(tempTask.getTaskStartDate());
 			}
 
 			isEdited = true;
 			tempTask.setTaskEndTime(endTime);
 
+		} else if(tempTask.getTaskType().equals(TYPE_FLOATING)) {
+			isEdited = false;
+			isInvalidType = true;
 		} else {
 			isEdited = false;
 		}
