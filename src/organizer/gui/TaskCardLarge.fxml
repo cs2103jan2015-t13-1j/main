@@ -45,14 +45,14 @@
             <String fx:value="large" />
             <String fx:value="type" />
          </styleClass></Label>
-      <Label fx:id="startTimeLabel" layoutX="27.0" layoutY="153.0" text="Start">
+      <Label fx:id="startTimeLabel" alignment="TOP_LEFT" layoutX="27.0" layoutY="145.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="31.0" prefWidth="164.0" text="Start" wrapText="true">
          <styleClass>
             <String fx:value="taskcard" />
             <String fx:value="large" />
             <String fx:value="date" />
          </styleClass>
       </Label>
-      <Label fx:id="endTimeLabel" layoutX="27.0" layoutY="183.0" text="End">
+      <Label fx:id="endTimeLabel" alignment="TOP_LEFT" layoutX="27.0" layoutY="175.0" prefHeight="31.0" prefWidth="164.0" text="End" wrapText="true">
          <styleClass>
             <String fx:value="taskcard" />
             <String fx:value="large" />
