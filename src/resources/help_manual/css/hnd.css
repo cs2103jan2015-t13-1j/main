@@ -1,4 +1,4 @@
-/* ========== Text Styles ========== */
+﻿/* ========== Text Styles ========== */
 hr { color: #000000}
 body, table, span.rvts0 /* Normal text */
 {
@@ -81,13 +81,9 @@ a.rvts14, span.rvts14 /* Font Style */
 }
 span.rvts15
 {
- font-family: 'Times New Roman', 'Times', serif;
-}
-span.rvts16
-{
  font-weight: bold;
 }
-span.rvts17
+span.rvts16
 {
  font-size: 14pt;
  font-style: italic;
