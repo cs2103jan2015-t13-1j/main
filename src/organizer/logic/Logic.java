@@ -70,11 +70,23 @@ public class Logic {
 	}
 
 	public void writeStorage() throws IOException {
-		tempStorage.writeFile(allLists.getTaskList());
+		try {
+			tempStorage.writeFile(allLists.getTaskList());
+		} catch (IOException e) {
+			LOGGER_Logic.throwing(getClass().getName(), "writeStorage", e);
+			LOGGER_Logic.warning("Attempt to write storage into file failed");
+			throw e;
+		}
 	}
 
 	public void writeStorage(OutputStream out) throws IOException {
-		tempStorage.writeFileToStream(allLists.getTaskList(), out);
+		try {
+			tempStorage.writeFileToStream(allLists.getTaskList(), out);
+		} catch (IOException e) {
+			LOGGER_Logic.throwing(getClass().getName(), "writeStorage", e);
+			LOGGER_Logic.warning("Attempt to write storage into stream failed");
+			throw e;
+		}
 	}
 
 	public ArrayList<Task> viewDefault() {

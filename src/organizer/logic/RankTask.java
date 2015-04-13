@@ -1,18 +1,27 @@
 package organizer.logic;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import organizer.parser.CommandParser;
 
 //@author A0113871J
 public class RankTask {
+	private static final Logger LOGGER = Logger.getLogger(RankTask.class.getName());
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
 	private static final String MESSAGE_INVALID_RANK = "Invalid priority rank!";
 	private static final String MESSAGE_SUCCESS = "Rank task operation is successful!";
 	private static final String TYPE_REMOVE = "remove";
 	
 	public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {
-		int lineNum = Integer.parseInt(taskInfo.substring(0, taskInfo.indexOf(" ")));
+		int lineNum;
+		try {
+			lineNum = Integer.parseInt(taskInfo.substring(0, taskInfo.indexOf(" ")));
+		} catch (NumberFormatException e) {
+			LOGGER.throwing(getClass().getName(), "execute", e);
+			LOGGER.severe("Invalid number format");
+			throw e;
+		}
 		String taskRank = taskInfo.substring(taskInfo.indexOf(" ")+1);
 		ArrayList<Task> tempList = allLists.getTaskList();
 		ResultSet returnResult = new ResultSet();

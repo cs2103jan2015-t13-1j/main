@@ -1,7 +1,9 @@
 package organizer.logic;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,6 +11,7 @@ import organizer.parser.CommandParser;
 
 //@author A0113871J
 public class PostponeTask {
+	private static final Logger LOGGER = Logger.getLogger(PostponeTask.class.getName());
 	private static final String MESSAGE_SUCCESS = "Postpone task operation is successful!";
 	private static final String MESSAGE_UNSUCCESS = "Postpone task operation failed for invalid content!";
 	private static final String MESSAGE_NODEADLINE = "No deadline found!";
@@ -23,21 +26,31 @@ public class PostponeTask {
 		DateAndTime dtCheck = new DateAndTime();
 		
 		if(POSTPONE.matches()) {
-			int lineNum = Integer.parseInt(POSTPONE.group(1));
-			int NumofDaysOrhours = Integer.parseInt(POSTPONE.group(5));
+			int lineNum, NumofDaysOrhours;
+			try {
+				lineNum = Integer.parseInt(POSTPONE.group(1));
+				NumofDaysOrhours = Integer.parseInt(POSTPONE.group(5));
+			} catch (NumberFormatException e) {
+				LOGGER.throwing(getClass().getName(), "execute", e);
+				LOGGER.severe("Invalid format of postpone command, but regex check did not detect it");
+				throw e;
+			}
 			String timeIdentifier = POSTPONE.group(7);
+			assert timeIdentifier.length() > 0;
 					
-			Task tempTask = new Task();
+			Task tempTask = null;
 			
 			if(validOp.isValidTask(lineNum, allLists)) {
 				int taskID = validOp.checkForTaskID(lineNum, allLists);
+				assert taskID >= 0;
 				
-				for(int index = 0; index < allLists.getTaskList().size(); index++) {
-					if(taskID == allLists.getTaskList().get(index).getTaskID()) {
-						tempTask = allLists.getTaskList().get(index);
+				for(Task task : allLists.getTaskList()) {
+					if(taskID == task.getTaskID()) {
+						tempTask = task;
 						break;
 					}
 				}
+				assert tempTask != null;
 				
 				LocalDate startDate = tempTask.getTaskStartDate();
 				LocalDate endDate = tempTask.getTaskEndDate();
@@ -60,6 +73,11 @@ public class PostponeTask {
 						tempTask.setTaskEndDate(endDate);
 						tempTask.setTaskEndTime(endTime);
 						returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
+						LOGGER.info(String.format("postpone %d to %s",
+								taskID,
+								endTime == null ?
+										endDate.toString() :
+										LocalDateTime.of(endDate, endTime).toString()));
 					}
 				}		
 			} else {

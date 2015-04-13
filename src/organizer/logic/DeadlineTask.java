@@ -1,6 +1,7 @@
 package organizer.logic;
 
 import java.time.LocalTime;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,6 +9,7 @@ import organizer.parser.CommandParser;
 
 //@author A0098824N
 public class DeadlineTask {
+	private static final Logger LOGGER = Logger.getLogger(DeadlineTask.class.getName());
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
 	private static final String MESSAGE_INVALID_CONTENT = "Deadline a task operation failed for invalid content!";
 	private static final String MESSAGE_TYPE_CHANGED= "Deadline a task operation is successful! Changed to DEADLINE task.";
@@ -40,6 +42,7 @@ public class DeadlineTask {
 		returnResult.setReturnList(allLists.getTaskList());
 		returnResult.setCommandType(CommandParser.COMMAND_TYPE.DEADLINE_TASK);
 
+		LOGGER.info(String.format("mark task with ID %d as a deadline task", taskID));
 		return returnResult;
 	}
 
@@ -96,6 +99,7 @@ public class DeadlineTask {
 		if(validOp.isValidTask(lineNum, allLists)) {
 			isValidLineNum =  true;
 			taskID = validOp.checkForTaskID(lineNum, allLists);
+			assert taskID >= 0;
 		} else {
 			isValidLineNum = false;
 		}
@@ -104,12 +108,13 @@ public class DeadlineTask {
 
 	private Task getToDeadlineTask(int taskID, TaskListSet allLists) {
 		Task tempTask = null;
-		for(int index = 0; index < allLists.getTaskList().size(); index++) {
-			tempTask = allLists.getTaskList().get(index);
-			if(taskID == tempTask.getTaskID()) {
+		for(Task task : allLists.getTaskList()) {
+			if(taskID == task.getTaskID()) {
+				tempTask = task;
 				break;
 			} 
 		}
+		assert tempTask != null;
 		if(tempTask.getTaskType().equals(TYPE_DEADLINE)) {
 			isValidType = false;
 		} else {
