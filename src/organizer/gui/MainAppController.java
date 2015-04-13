@@ -85,17 +85,19 @@ public class MainAppController {
 		// grab the user view info before each command
 		lastVisitedPage = pageStart;
 		updateTaskList();
-
-		switch (rs.getCommandType()) {
-		case ADD_TASK:
-			pageStart = pageCount - 1;
-			break;
-		case VIEW_TASK:
-		case CLEAR_TASK:
-			pageStart = 0;
-			break;
-		default:
-			pageStart = lastVisitedPage;
+		
+		if (rs.getCommandType() != null) {
+			switch (rs.getCommandType()) {
+			case ADD_TASK:
+				pageStart = pageCount - 1;
+				break;
+			case VIEW_TASK:
+			case CLEAR_TASK:
+				pageStart = 0;
+				break;
+			default:
+				pageStart = lastVisitedPage;
+			}
 		}
 		
 		lastVisitedPage = pageStart;
