@@ -31,6 +31,9 @@ public class MainApp extends Application {
     private List<Task> tasks;
     
     private MainAppController controller;
+    
+    private double xOffset;
+    private double yOffset;
 
     public MainApp() throws IOException {
         tasks = commandParser.loadStorage();
@@ -62,12 +65,24 @@ public class MainApp extends Application {
         launch(args);
     }
     
+    private void attachDraggableEvent() {
+    	rootLayout.setOnMousePressed(event -> {
+    		xOffset = event.getSceneX();
+    		yOffset = event.getSceneY();
+    	});
+    	rootLayout.setOnMouseDragged(event -> {
+    		primaryStage.setX(event.getScreenX() - xOffset);
+    		primaryStage.setY(event.getScreenY() - yOffset);
+    	});
+    }
+    
     private void initRootLayout() {
         try {
             final FXMLLoader loader = new FXMLLoader();
             final URL url = MainApp.class.getResource(RESOURCE_MAINAPP_FXML);
             loader.setLocation(url);
             rootLayout = (AnchorPane) loader.load();
+            attachDraggableEvent();
             
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
