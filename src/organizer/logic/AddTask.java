@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,6 +13,7 @@ import organizer.parser.CommandParser;
 
 //@author A0098824N
 public class AddTask {
+	private static final Logger LOGGER = Logger.getLogger(AddTask.class.getName());
 	private static final String PATTERN_DEADLINE_DATEONLY = "(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
 	private static final String PATTERN_DEADLINE_DAYASDATE = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)";
 
@@ -113,6 +115,10 @@ public class AddTask {
 			taskName = taskInfo;
 			tempItem = addFloatingTask(taskName, tempItem);
 		}
+
+		assert taskName.length() > 0;
+		assert taskID >= 0;
+		LOGGER.info(String.format("add task %s with id %d", taskName, taskID));
 		
 		tempItem.setTaskID(taskID);
 		if(tempItem.getTaskType().equals(TYPE_ERROR)) {
@@ -245,22 +251,27 @@ public class AddTask {
 		DEADLINE_DAYASDATE = Pattern.compile(PATTERN_DEADLINE_DAYASDATE).matcher(taskDateTime);
 		
 		if(DEADLINE_DATEONLY.matches()) {
+			LOGGER.info(String.format("%s is of type DEADLINE_DATEONLY", taskName));
 			deadlineTask.setTaskEndDate(dtCheck.toValidDate(taskDateTime));
 			deadlineTask.setTaskEndTime(LocalTime.parse(TIME_DEADLINE));
 			deadlineTask.setTaskType(TYPE_DEADLINE);
 		} else if(DEADLINE_DAYASDATE.matches()) {
+			LOGGER.info(String.format("%s is of type DEADLINE_DAYASDATE", taskName));
 			deadlineTask.setTaskEndDate(dtCheck.determineDate(DEADLINE_DAYASDATE.group(1)));
 			deadlineTask.setTaskEndTime(LocalTime.parse(TIME_DEADLINE));
 			deadlineTask.setTaskType(TYPE_DEADLINE);
 		} else if(DEADLINE_DATETIME.matches()) {
+			LOGGER.info(String.format("%s is of type DEADLINE_DATETIME", taskName));
 			deadlineTask.setTaskEndDate(dtCheck.toValidDate(DEADLINE_DATETIME.group(1)));
 			deadlineTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_DATETIME.group(7)));
 			deadlineTask.setTaskType(TYPE_DEADLINE);
 		} else if(DEADLINE_DAYTIME.matches()) {
+			LOGGER.info(String.format("%s is of type DEADLINE_DAYTIME", taskName));
 			deadlineTask.setTaskEndDate(dtCheck.determineDate(DEADLINE_DAYTIME.group(1)));
 			deadlineTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_DAYTIME.group(3)));
 			deadlineTask.setTaskType(TYPE_DEADLINE);
 		} else {
+			LOGGER.info(String.format("%s is of type FLOATING", taskName));
 			taskName = taskName.concat(" "+taskDateTime);
 			deadlineTask.setTaskType(TYPE_FLOATING);
 		}
@@ -297,6 +308,7 @@ public class AddTask {
 		NOTIMED_STARTEND_2DATE = Pattern.compile(PATTERN_NOTIMED_STARTEND_2DATE).matcher(taskDateTime);
 		
 		if(TIMED_STARTEND_1DATE.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_STARTEND_1DATE", taskName));
 			timedTask.setTaskStartDate(dtCheck.toValidDate(TIMED_STARTEND_1DATE.group(1)));
 			timedTask.setTaskEndDate(timedTask.getTaskStartDate());
 			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_1DATE.group(9));
@@ -312,6 +324,7 @@ public class AddTask {
 
 			
 		} else if(TIMED_STARTEND_1DAY.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_STARTEND_1DAY", taskName));
 			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_STARTEND_1DAY.group(1)));
 			timedTask.setTaskEndDate(timedTask.getTaskStartDate());
 			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_1DAY.group(5));
@@ -326,6 +339,7 @@ public class AddTask {
 			}
 
 		} else if(TIMED_STARTEND_2DATE.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_STARTEND_2DATE", taskName));
 			LocalDate startDate = dtCheck.toValidDate(TIMED_STARTEND_2DATE.group(1));
 			LocalDate endDate = dtCheck.toValidDate(TIMED_STARTEND_2DATE.group(15));
 			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_2DATE.group(9));
@@ -341,6 +355,7 @@ public class AddTask {
 		    }
 
 		} else if(NOTIMED_STARTEND_2DATE.matches()) {
+			LOGGER.info(String.format("%s is of type NOTIMED_STARTEND_2DATE", taskName));
 			LocalDate startDate = dtCheck.toValidDate(NOTIMED_STARTEND_2DATE.group(1));
 			LocalDate endDate = dtCheck.toValidDate(NOTIMED_STARTEND_2DATE.group(9));
 			if(dtCheck.isValidDueDT(startDate, endDate, null, null)) {
@@ -352,21 +367,26 @@ public class AddTask {
 			}
 			
 		} else if(TIMED_START_DATETIME.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_START_DATETIME", taskName));
 			timedTask.setTaskStartDate(dtCheck.toValidDate(TIMED_START_DATETIME.group(1)));
 			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_START_DATETIME.group(7)));
 			timedTask.setTaskType(TYPE_TIMED);
 			
 		} else if(TIMED_START_DAYTIME.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_START_DAYTIME", taskName));
 			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_START_DAYTIME.group(1)));
 			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_START_DAYTIME.group(3)));
 			timedTask.setTaskType(TYPE_TIMED);
 		} else if(TIMED_START_DATE.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_START_DATE", taskName));
 			timedTask.setTaskStartDate(dtCheck.toValidDate(TIMED_START_DATE.group(1)));
 			timedTask.setTaskType(TYPE_TIMED);
 		} else if(TIMED_START_DAY.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_START_DAY", taskName));
 			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_START_DAY.group(1)));
 			timedTask.setTaskType(TYPE_TIMED);
 		} else {
+			LOGGER.info(String.format("%s is of type FLOATING", taskName));
 			taskName = taskName.concat(" "+taskDateTime);
 			timedTask.setTaskType(TYPE_FLOATING);
 		}
@@ -385,6 +405,7 @@ public class AddTask {
 		TIMED_START_TODAYTMRW = Pattern.compile(PATTERN_TIMED_START_TODAYTMRW).matcher(taskDateTime);
 		
 		if(TIMED_STARTEND_TODAYTMRWTIMERANGE.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_STARTEND_TODAYTMRWTIMERANGE", taskName));
 			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_STARTEND_TODAYTMRWTIMERANGE.group(1)));
 			timedTask.setTaskEndDate(timedTask.getTaskStartDate());
 			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_TODAYTMRWTIMERANGE.group(5));
@@ -400,13 +421,16 @@ public class AddTask {
 
 			
 		} else if(TIMED_START_TODAYTMRWTIME.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_START_TODAYTMRWTIME", taskName));
 			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_START_TODAYTMRWTIME.group(1)));
 			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_START_TODAYTMRWTIME.group(3)));
 			timedTask.setTaskType(TYPE_TIMED);
 		} else if(TIMED_START_TODAYTMRW.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_START_TODAYTMRW", taskName));
 			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_START_TODAYTMRW.group(1)));
 			timedTask.setTaskType(TYPE_TIMED);
 		} else {
+			LOGGER.info(String.format("%s is of type FLOATING", taskName));
 			taskName = taskName.concat(" "+ taskDateTime);
 			timedTask.setTaskType(TYPE_FLOATING);
 		}

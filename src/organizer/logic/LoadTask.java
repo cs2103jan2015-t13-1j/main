@@ -3,12 +3,14 @@ package organizer.logic;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Logger;
 
 import organizer.parser.CommandParser;
 import organizer.storage.Storage;
 
 //@author A0098824N
 public class LoadTask {
+	private final static Logger LOGGER = Logger.getLogger(LoadTask.class.getName());
 	private final static String MESSAGE_LOAD_SUCCESS= "Loaded %1$s successfully!";
 	private final static String MESSAGE_NEWFILE_SUCCESS= "File not found. %1$s has been created successfully!";
 	private final static String FILE_TEMP_STORAGE = "tasklists.tmp";
@@ -21,7 +23,13 @@ public class LoadTask {
 	
 	public ResultSet recoverTempList(TaskListSet allLists) throws IOException {
 		File recoverFile = new File(FILE_TEMP_STORAGE);
-		recoverFile.createNewFile();
+		try {
+			recoverFile.createNewFile();
+		} catch (SecurityException e) {
+			LOGGER.throwing(getClass().getName(), "recoverTempList", e);
+			LOGGER.severe("Security settings prevent creating a new recovery file");
+			throw e;
+		}
 		if(recoverFile.exists()) {
 			allLists.setTaskList(tempStorage.readFile(FILE_TEMP_STORAGE));
 			returnResult.setOpStatus(MESSAGE_TEMPFILE_FOUND);
@@ -36,7 +44,13 @@ public class LoadTask {
 	public ResultSet execute(TaskListSet allLists, String fileName) throws IOException {
 		if(!allLists.getTaskList().isEmpty()) {
 			File tempFile = new File(FILE_TEMP_STORAGE);
-			tempFile.createNewFile();
+			try {
+				tempFile.createNewFile();
+			} catch (SecurityException e) {
+				LOGGER.throwing(getClass().getName(), "execute", e);
+				LOGGER.severe("Security settings prevent creating a new temporary file");
+				throw e;
+			}
 			
 			if(!tempFile.exists()) {
 				PrintWriter writer = new PrintWriter(FILE_TEMP_STORAGE);
@@ -50,7 +64,13 @@ public class LoadTask {
 		
 		File userFile = new File(fileName);
 		if(!fileName.equals(FILE_TEMP_STORAGE)) {
-			userFile.createNewFile();
+			try {
+				userFile.createNewFile();
+			} catch (SecurityException e) {
+				LOGGER.throwing(getClass().getName(), "recoverTempList", e);
+				LOGGER.severe("Security settings prevent creating a new user storage");
+				throw e;
+			}
 			
 			if(!userFile.exists()) {
 				returnResult.setOpStatus(String.format(MESSAGE_NEWFILE_SUCCESS, fileName));

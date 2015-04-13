@@ -11,6 +11,7 @@ import organizer.parser.CommandParser;
 
 //@author A0098824N
 public class EditTask {
+	private static final Logger LOGGER = Logger.getLogger(EditTask.class.getName());
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
 	private static final String MESSAGE_INVALID_CONTENT = "Edit task operation failed for invalid content!";
 	private static final String MESSAGE_SUCCESS = "Edit task operation is successful!";
@@ -126,19 +127,17 @@ public class EditTask {
 	}
 
 	private Task getToEditTask(int taskID, TaskListSet allLists) {
-		Task tempTask = null;
-		for(int index = 0; index < allLists.getTaskList().size(); index++) {
-			tempTask = allLists.getTaskList().get(index);
-			if(taskID == tempTask.getTaskID()) {
-				break;
+		for(Task task : allLists.getTaskList()) {
+			if(taskID == task.getTaskID()) {
+				return task;
 			} 
 		}
 
-		return tempTask;
+		return null;
 	}
 
 	private void matchEditProcess(String editInfo, Task tempTask) {
-		System.out.println(editInfo);
+		assert tempTask != null;
 		if(EDIT_STARTENDDATETIME.matches()) {
 			editStartEndDateTime(editInfo, tempTask);
 		} else if(EDIT_STARTDATETIME.matches()) {
@@ -159,17 +158,19 @@ public class EditTask {
 	}
 
 	private void editTitle(String userContent, Task tempTask) {
+		assert tempTask != null;
 		String taskTitle = EDIT_TITLE.group(3);
 		tempTask.setTaskName(taskTitle);
 		isEdited = true;
 	}
 
 	private void editStartEndDateTime(String userContent, Task tempTask) {
+		assert tempTask != null;
 		LocalDate startDate = dtCheck.toValidDate(EDIT_STARTENDDATETIME.group(5));
 		LocalTime startTime = dtCheck.determineHour(EDIT_STARTENDDATETIME.group(11));
 		LocalDate endDate = dtCheck.toValidDate(EDIT_STARTENDDATETIME.group(17));
 		LocalTime endTime = dtCheck.determineHour(EDIT_STARTENDDATETIME.group(23));
-		System.out.println(endTime);
+
 		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
 			if((tempTask.getTaskType().equals(TYPE_FLOATING)) || (tempTask.getTaskType().equals(TYPE_DEADLINE))) {
 				tempTask.setTaskType(TYPE_TIMED);
@@ -187,6 +188,7 @@ public class EditTask {
 	}
 
 	private void editStartDateTime(String userContent, Task tempTask) {
+		assert tempTask != null;
 		LocalDate startDate = dtCheck.toValidDate(EDIT_STARTDATETIME.group(5));
 		LocalTime startTime = dtCheck.determineHour(EDIT_STARTDATETIME.group(11));
 		System.out.println(startDate);
@@ -206,6 +208,7 @@ public class EditTask {
 	}
 
 	private void editStartDate(String userContent, Task tempTask) {
+		assert tempTask != null;
 		LocalDate startDate = dtCheck.toValidDate(EDIT_STARTDATE.group(5));
 		LocalDate endDate = tempTask.getTaskEndDate();
 		LocalTime endTime = tempTask.getTaskEndTime();
@@ -224,6 +227,7 @@ public class EditTask {
 	}
 
 	private void editStartTime(String userContent, Task tempTask) {
+		assert tempTask != null;
 		LocalTime startTime = dtCheck.determineHour(EDIT_STARTTIME.group(5));
 		LocalTime endTime = tempTask.getTaskEndTime();
 		LocalDate endDate = tempTask.getTaskEndDate();
@@ -237,6 +241,7 @@ public class EditTask {
 	}
 
 	private void editEndDate(String userContent, Task tempTask) {
+		assert tempTask != null;
 		LocalDate endDate = dtCheck.toValidDate(EDIT_ENDDATE.group(5));
 		LocalTime endTime = tempTask.getTaskEndTime();
 		LocalTime startTime = tempTask.getTaskStartTime();
@@ -251,6 +256,7 @@ public class EditTask {
 	}
 
 	private void editEndTime(String userContent, Task tempTask) {
+		assert tempTask != null;
 		LocalTime endTime = dtCheck.determineHour(EDIT_ENDTIME.group(5));
 		LocalDate endDate = tempTask.getTaskEndDate();
 		LocalDate startDate = tempTask.getTaskStartDate();
@@ -271,6 +277,7 @@ public class EditTask {
 
 	//only for timed tasks, else use deadline function
 	private void editEndDateTime(String userContent, Task tempTask) {
+		assert tempTask != null;
 		LocalDate endDate = dtCheck.toValidDate(EDIT_ENDDATETIME.group(5));
 		LocalTime endTime = dtCheck.determineHour(EDIT_ENDDATETIME.group(11));
 		LocalDate startDate = tempTask.getTaskStartDate();

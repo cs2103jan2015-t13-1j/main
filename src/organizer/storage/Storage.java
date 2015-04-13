@@ -13,11 +13,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 import organizer.logic.Task;
 
 //@author A0113627L
 public class Storage {
+	private static final Logger LOGGER = Logger.getLogger(Storage.class.getName());
 
 	public static final String defaultFileName = "storage.txt";
 
@@ -94,8 +96,16 @@ public class Storage {
 
 	public ArrayList<Task> readFile(String fileName) throws IOException {
 		File file = new File(fileName);
-		if (!file.exists()) {
-			file.createNewFile();
+		try {
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+		} catch (SecurityException e) {
+			LOGGER.throwing(getClass().getName(), "readFile", e);
+			LOGGER.severe(
+					String.format(
+							"Attempt to create a new storage file %s failed due to security settings",
+							fileName));
 		}
 		return readFromStream(new FileInputStream(file));
 	}

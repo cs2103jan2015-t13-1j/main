@@ -135,7 +135,8 @@ public class MainAppController {
 						controller.loadTask(task);
 						return controller;
 					} catch (Exception e) {
-						e.printStackTrace();
+						LOGGER.throwing(getClass().getName(), "apply", e);
+						LOGGER.severe("Initialising card controller failed");
 						return null;
 					}
 				}).collect(Collectors.toList());
