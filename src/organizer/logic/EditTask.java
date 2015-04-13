@@ -267,8 +267,11 @@ public class EditTask {
 		LocalDate endDate = tempTask.getTaskEndDate();
 		LocalDate startDate = tempTask.getTaskStartDate();
 		LocalTime startTime = tempTask.getTaskStartTime();
-
-		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+		
+		if(tempTask.getTaskType().equals(TYPE_FLOATING)) {
+			isEdited = false;
+			isInvalidType = true;
+		} else if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
 			if(tempTask.getTaskEndDate() == null && tempTask.getTaskType().equals(TYPE_TIMED)) {
 				tempTask.setTaskEndDate(tempTask.getTaskStartDate());
 			}
@@ -276,9 +279,6 @@ public class EditTask {
 			isEdited = true;
 			tempTask.setTaskEndTime(endTime);
 
-		} else if(tempTask.getTaskType().equals(TYPE_FLOATING)) {
-			isEdited = false;
-			isInvalidType = true;
 		} else {
 			isEdited = false;
 		}
