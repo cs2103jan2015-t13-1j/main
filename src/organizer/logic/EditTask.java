@@ -44,7 +44,7 @@ public class EditTask {
 	private String editedTaskType = "";
 	private DateAndTime dtCheck = new DateAndTime();
 	private int taskID = -1;
-	
+
 	private final static Logger LOGGER_Edit= Logger.getLogger(EditTask.class.getName()); 
 
 	public ResultSet execute(String userContent, TaskListSet allLists, Validation validOp) {
@@ -70,7 +70,7 @@ public class EditTask {
 		if(isReadyToEdit && isValidLineNum) {
 			matchEditProcess(userContent, getToEditTask(taskID, allLists));
 		}
-		
+
 		if(isReadyToEdit && isValidLineNum && isInvalidType) {
 			returnResult.setOpStatus(MESSAGE_ALTERNATIVE);
 		}
@@ -89,13 +89,13 @@ public class EditTask {
 			returnResult.setOpStatus(MESSAGE_UNSUCCESS);
 
 		}
-		
+
 		if(isTaskTypeChanged) {
 			returnResult.setOpStatus(String.format(MESSAGE_TYPE_CHANGED, editedTaskType));
 			isTaskTypeChanged = false;
 		}
-		
-		
+
+
 	}
 
 	private void loadMatchers(String userContent) {
@@ -121,7 +121,7 @@ public class EditTask {
 
 	private void checkValidTaskID(int lineNum, TaskListSet allLists, Validation validOp) {
 		assert(validOp.isValidTask(lineNum, allLists)): "Invalid line number."+lineNum;
-		
+
 		if(validOp.isValidTask(lineNum, allLists)) {
 			isValidLineNum =  true;
 			taskID = validOp.checkForTaskID(lineNum, allLists);
@@ -267,7 +267,7 @@ public class EditTask {
 		LocalDate endDate = tempTask.getTaskEndDate();
 		LocalDate startDate = tempTask.getTaskStartDate();
 		LocalTime startTime = tempTask.getTaskStartTime();
-		
+
 		if(tempTask.getTaskType().equals(TYPE_FLOATING)) {
 			isEdited = false;
 			isInvalidType = true;

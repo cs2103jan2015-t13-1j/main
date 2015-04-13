@@ -2,8 +2,11 @@ package organizer.logic;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import organizer.parser.CommandParser;
+import organizer.parser.CommandParser.COMMAND_TYPE;
 
 //@author A0098824N
 public class FloatTask {
@@ -11,32 +14,43 @@ public class FloatTask {
 	private static final String MESSAGE_SUCCESS = "Set float task operation is successful!";
 	private static final String MESSAGE_INVALID_TYPE = "Selected task is already a floating task!";
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
+	private static final String MESSAGE_INVALID_CONTENT = "Set float task operation failed for invalid content!";
+	private static final String PATTERN_FLOAT = "(float)(\\s)([0-9]+)";
 
 	private static final String TYPE_DEADLINE = "DEADLINE";
 	private static final String TYPE_FLOATING = "FLOATING";
 	private static final String TYPE_TIMED = "TIMED";
+	
+	
 
 	public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {
 		int lineNum;
-		try {
-			lineNum = Integer.parseInt(taskInfo.trim());
-		} catch (NumberFormatException e) {
-			LOGGER.throwing(getClass().getName(), "execute", e);
-			LOGGER.severe("Invalid number format");
-			throw e;
-		}
+		Matcher FLOAT_MATCHER = Pattern.compile(PATTERN_FLOAT).matcher(taskInfo);
 		ResultSet returnResult = new ResultSet();
-
-		if(validOp.isValidTask(lineNum, allLists)) {
-			int taskID = validOp.checkForTaskID(lineNum, allLists);
-			assert taskID >= 0;
-			returnResult.setOpStatus(setTaskToFloat(taskID, allLists.getTaskList()));
+		
+		if(FLOAT_MATCHER.matches()) {
+			try {
+				lineNum = Integer.parseInt(taskInfo.trim());
+			} catch (NumberFormatException e) {
+				LOGGER.throwing(getClass().getName(), "execute", e);
+				LOGGER.severe("Invalid number format");
+				throw e;
+			}
+			
+			if(validOp.isValidTask(lineNum, allLists)) {
+				int taskID = validOp.checkForTaskID(lineNum, allLists);
+				assert taskID >= 0;
+				returnResult.setOpStatus(setTaskToFloat(taskID, allLists.getTaskList()));
+				returnResult.setCommandType(CommandParser.COMMAND_TYPE.FLOAT_TASK);
+			} else {
+				returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+			}
 		} else {
-			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+			returnResult.setOpStatus(MESSAGE_INVALID_CONTENT);
 		}
-
+		
 		returnResult.setReturnList(allLists.getTaskList());
-		returnResult.setCommandType(CommandParser.COMMAND_TYPE.FLOAT_TASK);
+		returnResult.setCommandType(COMMAND_TYPE.FLOAT_TASK);
 		return returnResult;
 	}
 
