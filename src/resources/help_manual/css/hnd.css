@@ -81,9 +81,13 @@ a.rvts14, span.rvts14 /* Font Style */
 }
 span.rvts15
 {
- font-weight: bold;
+ font-family: 'Times New Roman', 'Times', serif;
 }
 span.rvts16
+{
+ font-weight: bold;
+}
+span.rvts17
 {
  font-size: 14pt;
  font-style: italic;
