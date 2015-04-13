@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import organizer.parser.CommandParser;
 
-//@author A0098824N
+//@author A0113871J
 public class ResultSet {
 	String opStatus;
 	ArrayList<Task> returnList;

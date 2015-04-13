@@ -2,7 +2,7 @@ package organizer.logic;
 
 import java.util.ArrayList;
 
-//@author A0098824N
+//@author A0113871J
 public class TaskListSet {
 	ArrayList<Task> taskList = new ArrayList<Task>(); 
 	ArrayList<Task> resultList = new ArrayList<Task>();
