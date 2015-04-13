@@ -106,7 +106,6 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		DeleteTask command = new DeleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
-		System.out.println(MODE_VIEW);
 		setViewMode();
 		return returnResult;
 	}
@@ -178,6 +177,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		DeadlineTask command = new DeadlineTask();
 		returnResult = command.execute(userContent, allLists, validOp);
+		MODE_VIEW = "deadline";
 		setViewMode();
 		return returnResult;
 	}
@@ -193,6 +193,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		FloatTask command = new FloatTask();
 		returnResult = command.execute(userContent, allLists, validOp);
+		MODE_VIEW = "floating";
 		setViewMode();
 		return returnResult;
 	}

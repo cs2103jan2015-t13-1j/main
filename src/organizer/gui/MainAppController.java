@@ -76,15 +76,16 @@ public class MainAppController {
 
 	@FXML
 	public void performCommand() throws IOException {
+		int lastVisitedPage = -1;
 		final String commandString = commandText.textProperty().get();
 		LOGGER.log(Level.INFO, "Command: ".concat(commandString));
 		commandText.clear();
-
-		// grab the user view info before each command
-		int lastVisitedPage = pageStart;
-
+		
 		final ResultSet rs = mainApp.performCommand(commandString);
+		// grab the user view info before each command
+		lastVisitedPage = pageStart;
 		updateTaskList();
+
 		switch (rs.getCommandType()) {
 		case ADD_TASK:
 			pageStart = pageCount - 1;
@@ -96,6 +97,8 @@ public class MainAppController {
 		default:
 			pageStart = lastVisitedPage;
 		}
+		
+		lastVisitedPage = pageStart;
 
 		updatePage();
 		setCommandStatus();
