@@ -26,7 +26,7 @@ public class DateAndTime {
 				return false;
 			}
 			
-		} else if(startTime != null && endTime != null && endDate == startDate) {
+		} else if(startTime != null && endTime != null && endDate == startDate && startDate == null) {
 			if(startTime.isAfter(endTime)) {
 				return false;
 			}
