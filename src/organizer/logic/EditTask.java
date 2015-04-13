@@ -11,7 +11,6 @@ import organizer.parser.CommandParser;
 
 //@author A0098824N
 public class EditTask {
-	private static final Logger LOGGER = Logger.getLogger(EditTask.class.getName());
 	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
 	private static final String MESSAGE_INVALID_CONTENT = "Edit task operation failed for invalid content!";
 	private static final String MESSAGE_SUCCESS = "Edit task operation is successful!";
