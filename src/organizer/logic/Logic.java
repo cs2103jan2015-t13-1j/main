@@ -52,6 +52,8 @@ public class Logic {
 				String lastSavedName = sc.nextLine();
 				allLists.setTaskList(tempStorage.readFile(lastSavedName));
 				LOGGER_Logic.log(Level.INFO, String.format(LOGGER_FileStatus, lastSavedName));
+				isDefaultFile = false;
+				userFile = lastSavedName;
 			}
 			
 			sc.close();
