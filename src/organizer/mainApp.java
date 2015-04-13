@@ -1,4 +1,4 @@
-//@author A0135005X
+
 package organizer;
 
 import organizer.logic.*;
@@ -7,6 +7,7 @@ import organizer.parser.CommandParser;
 import java.io.IOException;
 import java.util.*;
 
+//@author A0135005X
 public class mainApp {
 
 	public static final String COMMAND_PROMPT = "Please enter a command: ";
