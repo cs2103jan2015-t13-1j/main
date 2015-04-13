@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.LinkedList;
@@ -11,8 +12,8 @@ import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+import java.util.function.Consumer;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import organizer.logic.ResultSet;
@@ -36,10 +37,6 @@ public class IntegrationTesting {
 		}
 	}
 	
-	@Before
-	public void initialise() {
-	}
-	
 	private InputStream getResourceInputStream(String resourceName) {
 		return getClass().getResourceAsStream(resourceName);
 	}
@@ -51,38 +48,45 @@ public class IntegrationTesting {
 	@Test
 	public void testUserCommandExecutedProperly() throws IOException {
 		commandParser.executeCommand("clear");
-		final Queue<Integer> queueLine = new LinkedList<>();
 		final Queue<Pattern> queueExpected = new LinkedList<>();
 		try (Scanner sc = getResourceScanner("resources/compare_view.txt")) {
-			while(sc.hasNextInt()) {
-				queueLine.add(sc.nextInt());
-				queueExpected.add(Pattern.compile(sc.useDelimiter(MATCH_TO_EOL).next().trim()));
-				sc.reset().skip(MATCH_TO_EOL);
+			sc.useDelimiter(MATCH_TO_EOL);
+			while(sc.hasNext()) {
+				queueExpected.add(Pattern.compile(sc.next().trim()));
 			}
 		}
 		try (Scanner sc = getResourceScanner("resources/commands.txt")) {
-			for (int line = 0; sc.hasNext(); ++line) {
+			while (sc.hasNext()) {
 				final ResultSet rs = commandParser.executeCommand(sc.nextLine());
-				// compare resultList with another list
-				if (!queueLine.isEmpty() && line == queueLine.peek()) {
-					queueLine.poll();
-					final Pattern expected = queueExpected.poll();
-					final PipedInputStream in = new PipedInputStream();
-					final PipedOutputStream out = new PipedOutputStream(in);
-					storage.writeFileToStream(rs.getReturnList(), out);
-					final String result = readStream(in);
-					assertTrue(expected.matcher(result).find());
-					in.close();
-				}
+				if (rs.getCommandType() == CommandParser.COMMAND_TYPE.VIEW_TASK)
+					compareResult(queueExpected.poll(), out -> {
+						try {
+							storage.writeFileToStream(rs.getReturnList(), out);
+						} catch (Exception e) {
+							throw new RuntimeException(e);
+						}
+					});
 			}
 			// compare storage
-			final Pattern expected = Pattern.compile(readStream(getResourceInputStream("resources/expected.txt")));
-			final PipedInputStream in = new PipedInputStream();
-			final PipedOutputStream out = new PipedOutputStream(in);
-			commandParser.writeStorageToStream(out);
-			final String result = readStream(in);
-			assertTrue(expected.matcher(result).find());
+			compareResult(Pattern.compile(readStream(getResourceInputStream("resources/expected.txt"))),
+					out -> {
+						try {
+							commandParser.writeStorageToStream(out);
+						} catch (Exception e) {
+							throw new RuntimeException(e);
+						}
+					});
 		}
+	}
+
+	private void compareResult(Pattern expected, Consumer<OutputStream> operator) throws IOException {
+		// compare resultList with another list
+		final PipedInputStream in = new PipedInputStream();
+		final PipedOutputStream out = new PipedOutputStream(in);
+		operator.accept(out);
+		final String result = readStream(in);
+		assertTrue(expected.matcher(result).find());
+		in.close();
 	}
 
 }

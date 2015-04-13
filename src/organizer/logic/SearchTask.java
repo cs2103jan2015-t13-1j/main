@@ -16,7 +16,7 @@ public class SearchTask {
 		
 		for(int i = 0; i < allLists.getTaskList().size(); i++) {
 			Task task = allLists.getTaskList().get(i);
-			if(task.getTaskName().contains(searchTerm.trim())) {
+			if(task.getTaskName().toLowerCase().contains(searchTerm.trim().toLowerCase())) {
 				tempList.add(task);
 			}
 		}

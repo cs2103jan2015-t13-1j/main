@@ -34,7 +34,7 @@ public class Logic {
 	String userFile = "";
 	String defaultFileName = "storage.txt";
 
-	Stack<ArrayList<Task>> undoList = new Stack<ArrayList<Task>>();
+	public static Stack<ArrayList<Task>> undoList = new Stack<ArrayList<Task>>();
 
 	public ArrayList<Task> loadStorage(InputStream in) throws IOException {
 		allLists.setTaskList(tempStorage.readFromStream(in));
@@ -52,6 +52,8 @@ public class Logic {
 				String lastSavedName = sc.nextLine();
 				allLists.setTaskList(tempStorage.readFile(lastSavedName));
 				LOGGER_Logic.log(Level.INFO, String.format(LOGGER_FileStatus, lastSavedName));
+				isDefaultFile = false;
+				userFile = lastSavedName;
 			}
 			
 			sc.close();
@@ -106,7 +108,6 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		DeleteTask command = new DeleteTask();
 		returnResult = command.execute(taskInfo, allLists, validOp);
-		System.out.println(MODE_VIEW);
 		setViewMode();
 		return returnResult;
 	}
@@ -178,6 +179,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		DeadlineTask command = new DeadlineTask();
 		returnResult = command.execute(userContent, allLists, validOp);
+		MODE_VIEW = "deadline";
 		setViewMode();
 		return returnResult;
 	}
@@ -193,6 +195,7 @@ public class Logic {
 		addToUndoList(allLists.getTaskList());
 		FloatTask command = new FloatTask();
 		returnResult = command.execute(userContent, allLists, validOp);
+		MODE_VIEW = "floating";
 		setViewMode();
 		return returnResult;
 	}
@@ -269,8 +272,16 @@ public class Logic {
 		return returnResult;
 	}
 
-	public void createlastSaveTempFile(String lastSaveFileName) throws IOException {
-		PrintWriter writer = new PrintWriter(LAST_SAVED_FILENAME);
+	public void createlastSaveTempFile(String lastSaveFileName) {
+		PrintWriter writer = null;
+		try {
+			writer = new PrintWriter(LAST_SAVED_FILENAME);
+		} catch (FileNotFoundException e) {
+			LOGGER_Logic.log(Level.SEVERE, "I/O error");
+		}
+		
+		assert(writer != null): "Writer is not available!";
+		
 		writer.print(lastSaveFileName);
 		writer.close();
 	}

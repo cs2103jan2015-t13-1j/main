@@ -30,6 +30,7 @@ public class DeleteTask {
 		for(int i = 0; i < taskList.size(); i++) {
 			if(taskList.get(i).getTaskID() == taskID) {
 				taskList.remove(i);
+				break;
 			}
 		}
 	}

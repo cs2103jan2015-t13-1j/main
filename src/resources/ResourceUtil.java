@@ -18,12 +18,12 @@ import java.util.jar.JarFile;
 
 import organizer.gui.MainApp;
 
+//@author A0098824N
 public class ResourceUtil {
 
 	private final static String TEMP_FOLDER_NAME =  "c:/temp/";
 	private final static String FOLDER_TO_COPY = "resources/help_manual/";
 
-	//@author A0098824N
 	public static File makeTemporaryFromResourceFolder(String resourcePath) throws IOException, URISyntaxException {
 		String sourcePath = MainApp.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		sourcePath = URLDecoder.decode(sourcePath, "UTF-8");
@@ -40,7 +40,7 @@ public class ResourceUtil {
 			Path destinationFilePath = destinationFile.toPath();
 			Files.walkFileTree(sourceFilePath, new CopyDirVisitor(sourceFilePath, destinationFilePath, StandardCopyOption.REPLACE_EXISTING));
 		}
-		
+
 		deleteDirOnExit(destinationFile);
 		return destinationFile;
 	}
@@ -67,7 +67,7 @@ public class ResourceUtil {
 
 		writeNonDirFiles(destDir, jarFile, resEntries);
 		jarFile.close();
-		
+
 		destFile = new File(destDir+java.io.File.separator+FOLDER_TO_COPY);
 
 		return destFile;
@@ -77,13 +77,19 @@ public class ResourceUtil {
 		File destFile;
 		for(int i = 0; i < resEntries.size(); i++) {
 			destFile = new File(destDir + java.io.File.separator + resEntries.get(i).getName());
-			if(!destFile.exists()) {
-				InputStream is = null;
-				FileOutputStream fos = null;
-				is = jarFile.getInputStream(resEntries.get(i)); // get the input stream
-				fos = new java.io.FileOutputStream(destFile);
-				readWriteFiles(is, fos);
-			}
+			executeWriteFile(jarFile, resEntries, destFile, i);
+		}
+	}
+
+	private static void executeWriteFile(JarFile jarFile,
+			List<JarEntry> resEntries, File destFile, int i)
+					throws IOException, FileNotFoundException {
+		if(!destFile.exists()) {
+			InputStream is = null;
+			FileOutputStream fos = null;
+			is = jarFile.getInputStream(resEntries.get(i)); // get the input stream
+			fos = new java.io.FileOutputStream(destFile);
+			readWriteFiles(is, fos);
 		}
 	}
 
@@ -112,5 +118,4 @@ public class ResourceUtil {
 			}
 		}
 	}
-
 }

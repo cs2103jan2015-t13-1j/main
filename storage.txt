@@ -7,7 +7,7 @@ type: DEADLINE
 priority: HIGH
 ----
 id: 5840
-name: print mom's flight details
+name: print insurance details
 end date: 2015-04-11
 end time: 23:59
 status: INCOMPLETE
@@ -35,21 +35,17 @@ type: FLOATING
 ----
 id: 839
 name: CS2103 tutorial
-start date: 2015-04-09
-start time: 13:00
-end date: 2015-04-09
-end time: 14:00
+end date: 2015-04-01
+end time: 23:59
 status: INCOMPLETE
-type: TIMED
+type: DEADLINE
 ----
 id: 7540
 name: CS2102 Demo
-start date: 2015-04-13
-start time: 17:40
 end date: 2015-04-13
-end time: 18:00
+end time: 23:59
 status: INCOMPLETE
-type: TIMED
+type: DEADLINE
 ----
 id: 48034
 name: CS2103 Final Presentation
@@ -96,8 +92,12 @@ end time: 16:00
 status: INCOMPLETE
 type: TIMED
 ----
-id: 24976
+id: 27008
 name: something
+start date: 2015-04-13
+start time: 00:00
+end date: 2015-04-13
+end time: 11:11
 status: INCOMPLETE
-type: FLOATING
+type: TIMED
 ----

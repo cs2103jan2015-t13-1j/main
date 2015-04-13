@@ -16,15 +16,6 @@ import java.util.Scanner;
 
 import organizer.logic.Task;
 
-/**
-* File Format
-* id: ...
-* name: ...
-* date: ...
-* description: ...
-* ----
-*/
-
 //@author A0113627L
 public class Storage {
 

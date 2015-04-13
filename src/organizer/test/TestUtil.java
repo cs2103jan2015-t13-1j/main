@@ -2,6 +2,7 @@ package organizer.test;
 
 import organizer.logic.Task;
 
+//@author A0113627L
 public class TestUtil {
 	public static boolean compareObject(Object a, Object b) {
 		return a == b || a != null && b != null && a.equals(b);

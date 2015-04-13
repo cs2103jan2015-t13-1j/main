@@ -17,7 +17,7 @@ import organizer.parser.*;
 
 //@author A0113627L
 public class MainApp extends Application {
-	private static final Logger LOGGER = Logger.getLogger(MainApp.class.getName());
+	private static final Logger LOGGER_MainApp = Logger.getLogger(MainApp.class.getName());
 	private static final String RESOURCE_MAINAPP_FXML = "MainApp.fxml";
 	private static final String RESOURCE_APP_TITLE = "MnemoniCal";
 
@@ -31,10 +31,13 @@ public class MainApp extends Application {
     private List<Task> tasks;
     
     private MainAppController controller;
+    
+    private double xOffset;
+    private double yOffset;
 
     public MainApp() throws IOException {
         tasks = commandParser.loadStorage();
-        LOGGER.info(String.format("INIT: load %d tasks", tasks.size()));
+        LOGGER_MainApp.info(String.format("INIT: load %d tasks", tasks.size()));
         fillTaskList();
     }
     
@@ -62,12 +65,24 @@ public class MainApp extends Application {
         launch(args);
     }
     
+    private void attachDraggableEvent() {
+    	rootLayout.setOnMousePressed(event -> {
+    		xOffset = event.getSceneX();
+    		yOffset = event.getSceneY();
+    	});
+    	rootLayout.setOnMouseDragged(event -> {
+    		primaryStage.setX(event.getScreenX() - xOffset);
+    		primaryStage.setY(event.getScreenY() - yOffset);
+    	});
+    }
+    
     private void initRootLayout() {
         try {
             final FXMLLoader loader = new FXMLLoader();
             final URL url = MainApp.class.getResource(RESOURCE_MAINAPP_FXML);
             loader.setLocation(url);
             rootLayout = (AnchorPane) loader.load();
+            attachDraggableEvent();
             
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
@@ -76,7 +91,7 @@ public class MainApp extends Application {
             controller = loader.getController();
             controller.setMainApp(this);
         } catch (IOException e) {
-            LOGGER.throwing(FXMLLoader.class.getName(), "load", e);
+        	LOGGER_MainApp.throwing(FXMLLoader.class.getName(), "load", e);
         }
     }
     
@@ -103,7 +118,7 @@ public class MainApp extends Application {
             fillTaskList();
             return returnResult;
         } catch (IOException e) {
-        	LOGGER.throwing(CommandParser.class.getName(), "executeCommand", e);
+        	LOGGER_MainApp.throwing(CommandParser.class.getName(), "executeCommand", e);
         	throw e;
         }
     }

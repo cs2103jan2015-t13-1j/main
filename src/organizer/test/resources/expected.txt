@@ -2,7 +2,7 @@
 name: do homework
 start date: 2015-04-18
 start time: 19:00
-end date: 2015-05-01
+end date: 2015-05-03
 end time: 20:00
 status: INCOMPLETE
 type: TIMED
@@ -31,15 +31,15 @@ id: \d+
 name: temp task 2
 start date: 2015-10-21
 start time: 06:10
+end date: 2015-10-21
+end time: 09:10
 status: INCOMPLETE
 type: TIMED
 ----
 id: \d+
 name: a
-end date: 2015-11-10
-end time: 23:59
 status: INCOMPLETE
-type: DEADLINE
+type: FLOATING
 ----
 id: \d+
 name: from 2011-1-14 to 2022-9-13

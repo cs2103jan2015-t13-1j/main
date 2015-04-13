@@ -2,6 +2,8 @@ package organizer.logic;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,15 +18,15 @@ public class EditTask {
 	private static final String MESSAGE_TYPE_CHANGED= "Edit task operation is successful! Changed to %s task.";
 
 
-	private static final String PATTERN_EDIT_STARTENDDATETIME = "(\\d)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))"
+	private static final String PATTERN_EDIT_STARTENDDATETIME = "([0-9]+)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))"
 			+ "(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
-	private static final String PATTERN_EDIT_STARTDATETIME = "(\\d)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
-	private static final String PATTERN_EDIT_STARTDATE = "(\\d)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
-	private static final String PATTERN_EDIT_STARTTIME = "(\\d)(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
-	private static final String PATTERN_EDIT_ENDTIME = "(\\d)(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
-	private static final String PATTERN_EDIT_ENDDATETIME = "(\\d)(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
-	private static final String PATTERN_EDIT_ENDDATE = "(\\d)(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
-	private static final String PATTERN_EDIT_TITLE = "(\\d)(\\s)(.*)";
+	private static final String PATTERN_EDIT_STARTDATETIME = "([0-9]+)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_STARTDATE = "([0-9]+)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	private static final String PATTERN_EDIT_STARTTIME = "([0-9]+)(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_ENDTIME = "([0-9]+)(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_ENDDATETIME = "([0-9]+)(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_ENDDATE = "([0-9]+)(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	private static final String PATTERN_EDIT_TITLE = "([0-9]+)(\\s)(.*)";
 
 	private static final String TYPE_DEADLINE = "DEADLINE";
 	private static final String TYPE_FLOATING = "FLOATING";
@@ -40,6 +42,8 @@ public class EditTask {
 	private String editedTaskType = "";
 	private DateAndTime dtCheck = new DateAndTime();
 	private int taskID = -1;
+	
+	private final static Logger LOGGER_Edit= Logger.getLogger(EditTask.class.getName()); 
 
 	public ResultSet execute(String userContent, TaskListSet allLists, Validation validOp) {
 		ResultSet returnResult = new ResultSet();
@@ -78,11 +82,13 @@ public class EditTask {
 			returnResult.setOpStatus(MESSAGE_UNSUCCESS);
 
 		}
-
+		
 		if(isTaskTypeChanged) {
 			returnResult.setOpStatus(String.format(MESSAGE_TYPE_CHANGED, editedTaskType));
 			isTaskTypeChanged = false;
 		}
+		
+		
 	}
 
 	private void loadMatchers(String userContent) {
@@ -107,11 +113,14 @@ public class EditTask {
 	}
 
 	private void checkValidTaskID(int lineNum, TaskListSet allLists, Validation validOp) {
+		assert(validOp.isValidTask(lineNum, allLists)): "Invalid line number."+lineNum;
+		
 		if(validOp.isValidTask(lineNum, allLists)) {
 			isValidLineNum =  true;
 			taskID = validOp.checkForTaskID(lineNum, allLists);
 		} else {
 			isValidLineNum = false;
+			LOGGER_Edit.log(Level.SEVERE, "User select non existing task!");
 		}
 
 	}
@@ -180,6 +189,7 @@ public class EditTask {
 	private void editStartDateTime(String userContent, Task tempTask) {
 		LocalDate startDate = dtCheck.toValidDate(EDIT_STARTDATETIME.group(5));
 		LocalTime startTime = dtCheck.determineHour(EDIT_STARTDATETIME.group(11));
+		System.out.println(startDate);
 		LocalDate endDate = tempTask.getTaskEndDate();
 		LocalTime endTime = tempTask.getTaskEndTime();
 
@@ -242,7 +252,7 @@ public class EditTask {
 
 	private void editEndTime(String userContent, Task tempTask) {
 		LocalTime endTime = dtCheck.determineHour(EDIT_ENDTIME.group(5));
-		LocalDate endDate = tempTask.getTaskStartDate();
+		LocalDate endDate = tempTask.getTaskEndDate();
 		LocalDate startDate = tempTask.getTaskStartDate();
 		LocalTime startTime = tempTask.getTaskStartTime();
 

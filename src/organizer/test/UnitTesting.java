@@ -1,4 +1,4 @@
-//@author A0135005X
+
 package organizer.test;
 
 import static org.junit.Assert.*;
@@ -17,6 +17,8 @@ import organizer.logic.*;
 import organizer.parser.CommandParser;
 import organizer.storage.Storage;
 
+//@author A0135005X --unused
+//Unit testing was used for previous version, not workable for V0.5
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UnitTesting {
 
