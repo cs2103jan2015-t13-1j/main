@@ -17,7 +17,7 @@ import organizer.parser.*;
 
 //@author A0113627L
 public class MainApp extends Application {
-	private static final Logger LOGGER = Logger.getLogger(MainApp.class.getName());
+	private static final Logger LOGGER_MainApp = Logger.getLogger(MainApp.class.getName());
 	private static final String RESOURCE_MAINAPP_FXML = "MainApp.fxml";
 	private static final String RESOURCE_APP_TITLE = "MnemoniCal";
 
@@ -34,7 +34,7 @@ public class MainApp extends Application {
 
     public MainApp() throws IOException {
         tasks = commandParser.loadStorage();
-        LOGGER.info(String.format("INIT: load %d tasks", tasks.size()));
+        LOGGER_MainApp.info(String.format("INIT: load %d tasks", tasks.size()));
         fillTaskList();
     }
     
@@ -76,7 +76,7 @@ public class MainApp extends Application {
             controller = loader.getController();
             controller.setMainApp(this);
         } catch (IOException e) {
-            LOGGER.throwing(FXMLLoader.class.getName(), "load", e);
+        	LOGGER_MainApp.throwing(FXMLLoader.class.getName(), "load", e);
         }
     }
     
@@ -103,7 +103,7 @@ public class MainApp extends Application {
             fillTaskList();
             return returnResult;
         } catch (IOException e) {
-        	LOGGER.throwing(CommandParser.class.getName(), "executeCommand", e);
+        	LOGGER_MainApp.throwing(CommandParser.class.getName(), "executeCommand", e);
         	throw e;
         }
     }

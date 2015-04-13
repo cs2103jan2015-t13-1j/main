@@ -2,6 +2,8 @@ package organizer.logic;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +42,8 @@ public class EditTask {
 	private String editedTaskType = "";
 	private DateAndTime dtCheck = new DateAndTime();
 	private int taskID = -1;
+	
+	private final static Logger LOGGER_Edit= Logger.getLogger(EditTask.class.getName()); 
 
 	public ResultSet execute(String userContent, TaskListSet allLists, Validation validOp) {
 		ResultSet returnResult = new ResultSet();
@@ -78,11 +82,13 @@ public class EditTask {
 			returnResult.setOpStatus(MESSAGE_UNSUCCESS);
 
 		}
-
+		
 		if(isTaskTypeChanged) {
 			returnResult.setOpStatus(String.format(MESSAGE_TYPE_CHANGED, editedTaskType));
 			isTaskTypeChanged = false;
 		}
+		
+		
 	}
 
 	private void loadMatchers(String userContent) {
@@ -107,11 +113,14 @@ public class EditTask {
 	}
 
 	private void checkValidTaskID(int lineNum, TaskListSet allLists, Validation validOp) {
+		assert(validOp.isValidTask(lineNum, allLists)): "Invalid line number."+lineNum;
+		
 		if(validOp.isValidTask(lineNum, allLists)) {
 			isValidLineNum =  true;
 			taskID = validOp.checkForTaskID(lineNum, allLists);
 		} else {
 			isValidLineNum = false;
+			LOGGER_Edit.log(Level.SEVERE, "User select non existing task!");
 		}
 
 	}
@@ -243,7 +252,7 @@ public class EditTask {
 
 	private void editEndTime(String userContent, Task tempTask) {
 		LocalTime endTime = dtCheck.determineHour(EDIT_ENDTIME.group(5));
-		LocalDate endDate = tempTask.getTaskStartDate();
+		LocalDate endDate = tempTask.getTaskEndDate();
 		LocalDate startDate = tempTask.getTaskStartDate();
 		LocalTime startTime = tempTask.getTaskStartTime();
 

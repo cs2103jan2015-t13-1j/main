@@ -269,8 +269,16 @@ public class Logic {
 		return returnResult;
 	}
 
-	public void createlastSaveTempFile(String lastSaveFileName) throws IOException {
-		PrintWriter writer = new PrintWriter(LAST_SAVED_FILENAME);
+	public void createlastSaveTempFile(String lastSaveFileName) {
+		PrintWriter writer = null;
+		try {
+			writer = new PrintWriter(LAST_SAVED_FILENAME);
+		} catch (FileNotFoundException e) {
+			LOGGER_Logic.log(Level.SEVERE, "I/O error");
+		}
+		
+		assert(writer != null): "Writer is not available!";
+		
 		writer.print(lastSaveFileName);
 		writer.close();
 	}
