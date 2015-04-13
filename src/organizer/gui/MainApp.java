@@ -1,7 +1,6 @@
 package organizer.gui;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -37,6 +36,7 @@ public class MainApp extends Application {
 
     public MainApp() throws IOException {
         tasks = commandParser.loadStorage();
+        assert tasks != null;
         LOGGER_MainApp.info(String.format("INIT: load %d tasks", tasks.size()));
         fillTaskList();
     }
@@ -50,15 +50,13 @@ public class MainApp extends Application {
     }
     
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws IOException {
         primaryStage = stage;
         primaryStage.initStyle(StageStyle.TRANSPARENT);
         primaryStage.setTitle(RESOURCE_APP_TITLE);
         primaryStage.setResizable(false);
         
         initRootLayout();
-        
-        showAllTasks();
     }
 
     public static void main(String[] args) {
@@ -76,12 +74,11 @@ public class MainApp extends Application {
     	});
     }
     
-    private void initRootLayout() {
+    private void initRootLayout() throws IOException {
         try {
-            final FXMLLoader loader = new FXMLLoader();
-            final URL url = MainApp.class.getResource(RESOURCE_MAINAPP_FXML);
-            loader.setLocation(url);
+            final FXMLLoader loader = new FXMLLoader(MainApp.class.getResource(RESOURCE_MAINAPP_FXML));
             rootLayout = (AnchorPane) loader.load();
+            assert rootLayout != null;
             attachDraggableEvent();
             
             Scene scene = new Scene(rootLayout);
@@ -92,10 +89,8 @@ public class MainApp extends Application {
             controller.setMainApp(this);
         } catch (IOException e) {
         	LOGGER_MainApp.throwing(FXMLLoader.class.getName(), "load", e);
+        	throw e;
         }
-    }
-    
-    private void showAllTasks() {
     }
 
     public Stage getPrimaryStage() {
@@ -114,6 +109,7 @@ public class MainApp extends Application {
         try {
         	final ResultSet returnResult = commandParser.executeCommand(commandString);
             tasks = returnResult.getReturnList();
+            assert tasks != null;
             currentCommandStatus = returnResult.getOpStatus();
             fillTaskList();
             return returnResult;
