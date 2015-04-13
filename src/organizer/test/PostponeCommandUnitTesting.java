@@ -43,7 +43,7 @@ public class PostponeCommandUnitTesting {
 		final PostponeTask postponeTask = new PostponeTask();
 		final TaskListSet set = new TaskListSet();
 		set.setTaskList(new ArrayList<>(Arrays.asList(
-				new Task(0, "apply gym membership", null, null, LocalDate.of(2015, 3, 31), LocalTime.of(20, 0), "DEADLINE"))));
+				new Task(0, "apply gym membership", null, null, LocalDate.of(2015, 3, 31), LocalTime.of(21, 0), "DEADLINE"))));
 		final ResultSet resultSet = postponeTask.execute("1 by 4 hours", set, validOp);
 		final Task resultTask = resultSet.getReturnList().get(0);
 		assertTrue(TestUtil.compareTask(resultTask,
