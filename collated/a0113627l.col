@@ -1,0 +1,1425 @@
+//@author: a0113627l
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\gui\MainApp.java
+	 */
+
+public class MainApp extends Application {
+	private static final Logger LOGGER_MainApp = Logger.getLogger(MainApp.class.getName());
+	private static final String RESOURCE_MAINAPP_FXML = "MainApp.fxml";
+	private static final String RESOURCE_APP_TITLE = "MnemoniCal";
+
+    private Stage primaryStage;
+    private AnchorPane rootLayout;
+    
+    private List<TaskItem> taskData = new ArrayList<>();
+    private String currentCommandStatus = "";
+    
+    private CommandParser commandParser = new CommandParser();
+    private List<Task> tasks;
+    
+    private MainAppController controller;
+    
+    private double xOffset;
+    private double yOffset;
+
+    public MainApp() throws IOException {
+        tasks = commandParser.loadStorage();
+        assert tasks != null;
+        LOGGER_MainApp.info(String.format("INIT: load %d tasks", tasks.size()));
+        fillTaskList();
+    }
+    
+    private void fillTaskList() {
+        taskData.clear();
+        int counter = 0;
+        for (Task task : tasks) {
+        	taskData.add(new TaskItem(task, ++counter));
+        }
+    }
+    
+    @Override
+    public void start(Stage stage) throws IOException {
+        primaryStage = stage;
+        primaryStage.initStyle(StageStyle.TRANSPARENT);
+        primaryStage.setTitle(RESOURCE_APP_TITLE);
+        primaryStage.setResizable(false);
+        
+        initRootLayout();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+    
+    private void attachDraggableEvent() {
+    	rootLayout.setOnMousePressed(event -> {
+    		xOffset = event.getSceneX();
+    		yOffset = event.getSceneY();
+    	});
+    	rootLayout.setOnMouseDragged(event -> {
+    		primaryStage.setX(event.getScreenX() - xOffset);
+    		primaryStage.setY(event.getScreenY() - yOffset);
+    	});
+    }
+    
+    private void initRootLayout() throws IOException {
+        try {
+            final FXMLLoader loader = new FXMLLoader(MainApp.class.getResource(RESOURCE_MAINAPP_FXML));
+            rootLayout = (AnchorPane) loader.load();
+            assert rootLayout != null;
+            attachDraggableEvent();
+            
+            Scene scene = new Scene(rootLayout);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+            
+            controller = loader.getController();
+            controller.setMainApp(this);
+        } catch (IOException e) {
+        	LOGGER_MainApp.throwing(FXMLLoader.class.getName(), "load", e);
+        	throw e;
+        }
+    }
+
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+    
+    public List<TaskItem> getTaskData() {
+        return taskData;
+    }
+    
+    public String getCurrentCommandStatus() {
+    	return currentCommandStatus;
+    }
+    
+    public ResultSet performCommand(String commandString) throws IOException {
+        try {
+        	final ResultSet returnResult = commandParser.executeCommand(commandString);
+            tasks = returnResult.getReturnList();
+            assert tasks != null;
+            currentCommandStatus = returnResult.getOpStatus();
+            fillTaskList();
+            return returnResult;
+        } catch (IOException e) {
+        	LOGGER_MainApp.throwing(CommandParser.class.getName(), "executeCommand", e);
+        	throw e;
+        }
+    }
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\gui\MainApp.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\gui\MainAppController.java
+	 */
+
+public class MainAppController {
+	private static final Logger LOGGER = Logger.getLogger(MainAppController.class.getName());
+	private static final int ITEMS_PER_PAGE = 6;
+	private static final String URL_HELP_MANUAL = "/resources/help_manual";
+	private static final String URL_MANUAL_MAIN = "/Mnemonical User Manual.html";
+	private static final double FADE_TRANSLATION_IN_TASKCARD_MILLIS = 300;
+	private static final double FADE_TRANSLATION_IN_TASKCARD_START_ALPHA = 0.1;
+	private static final double FADE_TRANSLATION_IN_TASKCARD_END_ALPHA = 1;
+	private static final double FADE_TRANSLATION_IN_TASKCARD_SEPARATION_MILLIS = 15;
+	private static final int MAX_COMMAND_HISTORY = 100;
+
+	private MainApp mainApp;
+	private File tempDir;
+	
+	private List<String> historyCommands = new ArrayList<>(Arrays.asList(""));
+	private int historyIndex = 0;
+
+	@FXML
+	private TextField commandText;
+	@FXML
+	private Label commandStatus;
+
+	@FXML
+	private FlowPane mainPane;
+	@FXML
+	private FlowPane sidePane;
+	@FXML
+	private Label pageStatus;
+
+	@FXML
+	private AnchorPane mainPaneHintLayer;
+	@FXML
+	private Label sidePaneHintLabel;
+
+	private int pageStart = 0;
+	private int pageCount = 0;
+	private List<TaskItem> taskData;
+
+	public MainAppController() {
+	}
+
+	@FXML
+	private void initialize() throws IOException, URISyntaxException {
+		commandStatus.setText("");
+		commandText.requestFocus();
+		tempDir = ResourceUtil.makeTemporaryFromResourceFolder(URL_HELP_MANUAL);
+	}
+
+	public void setMainApp(MainApp mainApp) {
+		this.mainApp = mainApp;
+		updateTaskList();
+	}
+	
+	private void addCommandHistory(String commandString) {
+		historyCommands.add(commandString);
+		if (historyCommands.size() == MAX_COMMAND_HISTORY) {
+			historyCommands.remove(0);
+		}
+		historyIndex = historyCommands.size();
+	}
+
+	@FXML
+	public void performCommand() throws IOException {
+		int lastVisitedPage = -1;
+		final String commandString = commandText.textProperty().get();
+		LOGGER.info("Command: " + commandString);
+		addCommandHistory(commandString);
+		commandText.clear();
+		
+		final ResultSet rs = mainApp.performCommand(commandString);
+		// grab the user view info before each command
+		lastVisitedPage = pageStart;
+		updateTaskList();
+		
+		if (rs.getCommandType() != null) {
+			switch (rs.getCommandType()) {
+			case ADD_TASK:
+				pageStart = pageCount - 1;
+				break;
+			case VIEW_TASK:
+			case CLEAR_TASK:
+				pageStart = 0;
+				break;
+			default:
+				pageStart = lastVisitedPage;
+			}
+		}
+		
+		lastVisitedPage = pageStart;
+
+		updatePage();
+		setCommandStatus();
+		restoreSidePane();
+	}
+
+	private void setCommandStatus() {
+		commandStatus.setText(mainApp.getCurrentCommandStatus());
+	}
+
+	private void updateTaskList() {
+		taskData = this.mainApp.getTaskData();
+		if (taskData.size() == 0) {
+			pageCount = 1;
+		} else if (taskData.size() % ITEMS_PER_PAGE == 0) {
+			pageCount = taskData.size() / ITEMS_PER_PAGE;
+		} else {
+			pageCount = taskData.size() / ITEMS_PER_PAGE + 1;
+		}
+		pageStart = 0;
+		updatePage();
+	}
+
+	private void updatePage() {
+		final ObservableList<Node> children = mainPane.getChildren();
+		children.clear();
+		final List<TaskCardController> controllers = taskData
+				.stream()
+				.skip(pageStart * ITEMS_PER_PAGE)
+				.limit(ITEMS_PER_PAGE)
+				.map(task -> {
+					try {
+						final TaskCardController controller = new TaskCardController();
+						controller.loadTask(task);
+						return controller;
+					} catch (Exception e) {
+						LOGGER.throwing(getClass().getName(), "apply", e);
+						LOGGER.severe("Initialising card controller failed");
+						return null;
+					}
+				}).collect(Collectors.toList());
+		children.addAll(controllers);
+		pageStatus.setText(String.format("%d of %d", pageStart + 1, pageCount));
+		animateMainTaskCards(controllers);
+	}
+
+	private void animateMainTaskCards(List<TaskCardController> controllers) {
+		double delay = 0;
+		for(TaskCardController controller : controllers) {
+			final Duration durationDelay = Duration.millis(delay);
+			final TranslateTransition translation = new TranslateTransition(
+					Duration.millis(FADE_TRANSLATION_IN_TASKCARD_MILLIS),
+					controller);
+			translation.setDelay(durationDelay);
+			translation.setCycleCount(0);
+			translation.setFromX(100);
+			translation.setToX(controller.getLayoutX());
+			translation.play();
+			final FadeTransition fade = new FadeTransition(
+					Duration.millis(FADE_TRANSLATION_IN_TASKCARD_MILLIS),
+					controller);
+			fade.setDelay(durationDelay);
+			fade.setFromValue(FADE_TRANSLATION_IN_TASKCARD_START_ALPHA);
+			fade.setToValue(FADE_TRANSLATION_IN_TASKCARD_END_ALPHA);
+			fade.play();
+			delay += FADE_TRANSLATION_IN_TASKCARD_SEPARATION_MILLIS;
+		}
+	}
+
+	private void flipNextPage() {
+		assert pageStart < pageCount;
+		if (pageStart + 1 < pageCount) {
+			++pageStart;
+			LOGGER.info(String.format("NEXT => %d", pageStart));
+			updatePage();
+		}
+	}
+
+	private void flipPrevPage() {
+		assert pageStart >= 0;
+		if (pageStart > 0) {
+			--pageStart;
+			LOGGER.info(String.format("PREV => %d", pageStart));
+			updatePage();
+		}
+	}
+
+	private void processQuickAction(KeyCode code) throws IOException {
+		if (code != null) {
+			switch (code) {
+			case BACK_QUOTE:
+				restoreSidePane();
+				break;
+			case DIGIT1:
+				displayTaskDetailSidePane(0);
+				break;
+			case DIGIT2:
+				displayTaskDetailSidePane(1);
+				break;
+			case DIGIT3:
+				displayTaskDetailSidePane(2);
+				break;
+			case DIGIT4:
+				displayTaskDetailSidePane(3);
+				break;
+			case DIGIT5:
+				displayTaskDetailSidePane(4);
+				break;
+			case DIGIT6:
+				displayTaskDetailSidePane(5);
+				break;
+			default:
+				showControlKeyHint();
+			}
+		}
+	}
+	
+	private void showPreviousCommand() {
+		if (historyIndex > 0) {
+			commandText.setText(historyCommands.get(--historyIndex));
+		} else {
+			commandText.setText(historyCommands.get(0));
+		}
+	}
+	
+	private void showNextCommand() {
+		if (historyIndex < historyCommands.size() - 1) {
+			commandText.setText(historyCommands.get(++historyIndex));
+		} else {
+			commandText.setText("");
+			historyIndex = historyCommands.size();
+		}
+	}
+
+	@FXML
+	public void keyPressHandler(KeyEvent e) throws Exception {
+		final KeyCode code = e.getCode();
+		if (code == KeyCode.PAGE_DOWN) {
+			flipNextPage();
+		} else if (code == KeyCode.PAGE_UP) {
+			flipPrevPage();
+		} else if (e.isControlDown()) {
+			hideControlKeyHint();
+			processQuickAction(e.getCode());
+		} else if (code == KeyCode.F1) {
+			showHelpManual();
+		} else if (code == KeyCode.UP) {
+			showPreviousCommand();
+		} else if (code == KeyCode.DOWN) {
+			showNextCommand();
+		}
+	}
+
+	@FXML
+	public void keyReleaseHandler(KeyEvent e) {
+		if (!e.isControlDown()) {
+			hideControlKeyHint();
+		}
+	}
+	
+	private void showHelpManual() throws IOException {
+		if(Desktop.isDesktopSupported()) {
+			String url = tempDir.getAbsolutePath().concat(URL_MANUAL_MAIN);
+			File tempPage = new File(url);
+			Desktop.getDesktop().open(tempPage);
+		}
+	}
+
+	private void displayTaskDetailSidePane(int index) throws IOException {
+		LOGGER.info(String.format("MAINCONTROLLER: view detail for card %d", index));
+		sidePane.getChildren().clear();
+		final TaskCardController controller = new TaskCardController(
+				TaskCardController.CardSize.XLARGE);
+		if (pageStart * ITEMS_PER_PAGE + index < taskData.size()) {
+			controller.loadTask(taskData
+					.get(pageStart * ITEMS_PER_PAGE + index));
+			sidePane.getChildren().add(controller);
+		}
+	}
+
+	private void restoreSidePane() {
+		LOGGER.info("MAINCONTROLLER: clear detail view");
+		sidePane.getChildren().clear();
+	}
+
+	private void showControlKeyHint() {
+		mainPaneHintLayer.setVisible(true);
+		for (int i = 0, start = pageStart * ITEMS_PER_PAGE, size = taskData
+				.size(); i < 6; ++i, ++start)
+			mainPaneHintLayer.getChildren().get(i).setVisible(start < size);
+		sidePaneHintLabel.setVisible(true);
+	}
+
+	private void hideControlKeyHint() {
+		mainPaneHintLayer.setVisible(false);
+		sidePaneHintLabel.setVisible(false);
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\gui\MainAppController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\gui\TaskCardController.java
+	 */
+
+public class TaskCardController extends Region {
+	private final static Logger LOGGER = Logger.getLogger(TaskCardController.class.getName());
+	@FXML
+	private Label nameLabel;
+	@FXML
+	private Label priorityLabel;
+	@FXML
+	private Label statusLabel;
+	@FXML
+	private Label startTimeLabel;
+	@FXML
+	private Label endTimeLabel;
+	@FXML
+	private Label idLabel;
+	@FXML
+	private Label typeLabel;
+	
+	public enum CardSize {
+		SMALL,
+		LARGE,
+		XLARGE;
+		public String getResourceName() {
+			switch (this) {
+			case SMALL: return "TaskCardSmall.fxml";
+			case LARGE: return "TaskCardLarge.fxml";
+			case XLARGE: return "TaskCardXLarge.fxml";
+			default: throw new RuntimeException("Unimplememented size: " + this);
+			}
+		}
+	}
+	
+	public TaskCardController() throws IOException {
+		this(CardSize.LARGE);	// default size is large
+	}
+
+	public TaskCardController(CardSize size) throws IOException {
+		try {
+	        final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(size.getResourceName()));
+	        fxmlLoader.setController(this);
+	        this.getChildren().add(fxmlLoader.load());
+		} catch (IOException e) {
+			LOGGER.throwing(FXMLLoader.class.getName(), "load", e);
+			throw e;
+		}
+	}
+	
+	@FXML
+	private void initialize() {
+	}
+	
+	public void loadTask(TaskItem task) {
+		nameLabel.textProperty().bind(task.taskNameProperty());
+		idLabel.setText(Integer.toString(task.getTaskIndex()));
+		statusLabel.textProperty().bind(task.taskStatusProperty());
+		priorityLabel.textProperty().bind(task.taskPriorityProperty());
+		typeLabel.setText(task.getTaskType());
+		if (task.getTaskStartDate() != null || task.getTaskStartTime() != null)
+			startTimeLabel.setText("From " + formatDateString(task.getTaskStartDate(), task.getTaskStartTime()));
+		else
+			startTimeLabel.setText("");
+		if (task.getTaskEndDate() != null || task.getTaskEndTime() != null)
+			endTimeLabel.setText("To " + formatDateString(task.getTaskEndDate(), task.getTaskEndTime()));
+		else
+			endTimeLabel.setText("");
+	}
+
+	private static String formatDateString(
+			LocalDate date,
+			LocalTime time) {
+		StringBuilder strb = new StringBuilder();
+		if (date != null) {
+			// String has date field
+			strb.append(date.getDayOfMonth())
+				.append(' ')
+				.append(date.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()))
+				.append(", ")
+				.append(date.getYear());
+		}
+		if (date != null && time != null) {
+			// String has both date and time field
+			// We need separator
+			strb.append(' ');
+		}
+		if (time != null) {
+			// String has time field
+			final int hour = time.getHour(), minute = time.getMinute();
+			if (hour < 10)
+				strb.append('0');	// Fill missing 0
+			strb
+				.append(time.getHour())
+				.append(':');
+			if (minute < 10)
+				strb.append('0');
+			strb.append(time.getMinute());
+		}
+		return strb.toString();
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\gui\TaskCardController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\gui\TaskItem.java
+	 */
+
+public class TaskItem {
+	private final Task task;
+	private final StringProperty taskName;
+	private final StringProperty taskStatus;
+	private final StringProperty taskPriority;
+	private final IntegerProperty taskIndex;
+	private final ObjectProperty<LocalDate> taskStartDate;
+	private final ObjectProperty<LocalDate> taskEndDate;
+	private final ObjectProperty<LocalTime> taskStartTime;
+	private final ObjectProperty<LocalTime> taskEndTime;
+	
+	TaskItem(Task task, int index) {
+		this.task = task;
+		taskName = new SimpleStringProperty(task.getTaskName());
+		taskStatus = new SimpleStringProperty(task.getTaskStatus());
+		taskStartDate = new SimpleObjectProperty<>(task.getTaskStartDate());
+		taskEndDate = new SimpleObjectProperty<>(task.getTaskEndDate());
+		taskStartTime = new SimpleObjectProperty<>(task.getTaskStartTime());
+		taskEndTime = new SimpleObjectProperty<>(task.getTaskEndTime());
+		taskIndex = new SimpleIntegerProperty(index);
+		taskPriority = new SimpleStringProperty(task.getTaskPriority());
+	}
+	
+	public String getTaskType() {
+		return task.getTaskType();
+	}
+	
+	public String getTaskName() {
+		return taskName.get();
+	}
+	
+	public StringProperty taskNameProperty() {
+		return taskName;
+	}
+	
+	public LocalDate getTaskStartDate() {
+		return taskStartDate.get();
+	}
+	
+	public ObjectProperty<LocalDate> taskStartDateProperty() {
+		return taskStartDate;
+	}
+	
+	public LocalDate getTaskEndDate() {
+		return taskEndDate.get();
+	}
+	
+	public ObjectProperty<LocalDate> taskEndDateProperty() {
+		return taskEndDate;
+	}
+	
+	public int getTaskIndex() {
+		return taskIndex.get();
+	}
+	
+	public IntegerProperty taskIndexProperty() {
+		return taskIndex;
+	}
+	
+	public String getTaskStatus() {
+		return task.getTaskStatus();
+	}
+	
+	public StringProperty taskStatusProperty() {
+		return taskStatus;
+	}
+	
+	public String getTaskPriority() {
+		return task.getTaskPriority();
+	}
+	
+	public StringProperty taskPriorityProperty() {
+		return taskPriority;
+	}
+	
+	public LocalTime getTaskStartTime() {
+		return task.getTaskStartTime();
+	}
+	
+	public ObjectProperty<LocalTime> taskStartTimeProperty() {
+		return taskStartTime;
+	}
+	
+	public LocalTime getTaskEndTime() {
+		return task.getTaskEndTime();
+	}
+	
+	public ObjectProperty<LocalTime> taskEndTimeProperty() {
+		return taskEndTime;
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\gui\TaskItem.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\storage\Storage.java
+	 */
+
+public class Storage {
+	private static final Logger LOGGER = Logger.getLogger(Storage.class.getName());
+
+	public static final String defaultFileName = "storage.txt";
+
+	private static final String nameFieldIdentifier = "name: ";
+	private static final String startDateFieldIdentifier = "start date: ";
+	private static final String startTimeFieldIdentifier = "start time: ";
+	private static final String endDateFieldIdentifier = "end date: ";
+	private static final String endTimeFieldIdentifier = "end time: ";
+	private static final String statusFieldIdentifier = "status: ";
+	private static final String typeFieldIdentifier = "type: ";
+	private static final String taskIdFieldIdentifier = "id: ";
+	private static final String priorityFieldIdentifier = "priority: ";
+
+	private static final String endIdentifier = "----";
+	
+	/**
+	 * readFile
+	 * @return ArrayList<Task> a list of tasks
+	 * @throws IOException
+	 */
+	public ArrayList<Task> readFile() throws IOException {
+		return readFile(defaultFileName);
+	}
+	
+	public ArrayList<Task> readFromStream(InputStream in) throws IOException {
+		ArrayList<Task> taskList = new ArrayList<Task>();
+		try (Scanner sc = new Scanner(in)) {
+			Task task = new Task();
+			boolean begin = false;
+			while(sc.hasNextLine()) {
+				String line = sc.nextLine();
+				if (line.startsWith(nameFieldIdentifier)) {
+					begin = true;
+					task.setTaskName(line.substring(nameFieldIdentifier.length()));
+				} else if (line.startsWith(startDateFieldIdentifier)) {
+					begin = true;
+					task.setTaskStartDate(LocalDate.parse(line.substring(startDateFieldIdentifier.length())));
+				} else if(line.startsWith(startTimeFieldIdentifier)) {
+					begin = true;
+					task.setTaskStartTime(LocalTime.parse(line.substring(startTimeFieldIdentifier.length())));
+				} else if(line.startsWith(endDateFieldIdentifier)) {
+					begin = true;
+					task.setTaskEndDate(LocalDate.parse(line.substring(endDateFieldIdentifier.length())));
+				} else if(line.startsWith(endTimeFieldIdentifier)) {
+					begin = true;
+					task.setTaskEndTime(LocalTime.parse(line.substring(endTimeFieldIdentifier.length())));
+				}else if (line.startsWith(statusFieldIdentifier)) {
+					begin = true;
+					task.setTaskStatus(line.substring(statusFieldIdentifier.length()));
+				} else if(line.startsWith(typeFieldIdentifier)) {
+					begin = true;
+					task.setTaskType(line.substring(typeFieldIdentifier.length()));
+				} else if (line.equals(endIdentifier)) {
+					if (begin) {
+						taskList.add(task);
+						task = new Task();
+						begin = false;
+					}
+				} else if (line.startsWith(taskIdFieldIdentifier)) {
+					begin = true;
+					task.setTaskID(Integer.parseInt(line.substring(taskIdFieldIdentifier.length())));
+				} else if (line.startsWith(priorityFieldIdentifier)) {
+					begin = true;
+					task.setTaskPriority(line.substring(priorityFieldIdentifier.length()));
+				}
+			}
+			// clean up
+			if (begin) {
+				taskList.add(task);
+			}
+			return taskList;
+		}
+	}
+
+	public ArrayList<Task> readFile(String fileName) throws IOException {
+		File file = new File(fileName);
+		try {
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+		} catch (SecurityException e) {
+			LOGGER.throwing(getClass().getName(), "readFile", e);
+			LOGGER.severe(
+					String.format(
+							"Attempt to create a new storage file %s failed due to security settings",
+							fileName));
+		}
+		return readFromStream(new FileInputStream(file));
+	}
+	
+	public void writeFile(List<Task> taskList) throws IOException {
+		writeFile(taskList, defaultFileName);
+	}
+	
+	/**
+	 * writeFile writes a list to the file
+	 * @param taskList
+	 * @param fileName
+	 * @throws IOException
+	 */
+	public void writeFile(List<Task> taskList, String fileName) throws IOException {
+		writeFileToStream(taskList, new FileOutputStream(fileName));
+	}
+
+	public void writeFileToStream(List<Task> taskList, OutputStream out) throws IOException {
+		try (PrintWriter pw = new PrintWriter(out)) {
+			Iterator<Task> taskIterator = taskList.iterator();
+			while (taskIterator.hasNext()) {
+				// name
+				final Task task = taskIterator.next();
+				pw.print(taskIdFieldIdentifier);
+				pw.println(task.getTaskID());
+				pw.print(nameFieldIdentifier);
+				pw.println(task.getTaskName());
+				if (task.getTaskStartDate() != null) {
+					pw.print(startDateFieldIdentifier);
+					pw.println(task.getTaskStartDate().toString());
+				}
+				if (task.getTaskStartTime() != null) {
+					pw.print(startTimeFieldIdentifier);
+					pw.println(task.getTaskStartTime());
+				}
+				
+				if (task.getTaskEndDate() != null) {
+					pw.print(endDateFieldIdentifier);
+					pw.println(task.getTaskEndDate().toString());
+				}
+				if (task.getTaskEndTime() != null) {
+					pw.print(endTimeFieldIdentifier);
+					pw.println(task.getTaskEndTime());
+				}
+				pw.print(statusFieldIdentifier);
+				pw.println(task.getTaskStatus());
+				pw.print(typeFieldIdentifier);
+				pw.println(task.getTaskType());
+				
+				if (task.getTaskPriority() != null) {
+					pw.print(priorityFieldIdentifier);
+					pw.println(task.getTaskPriority());
+				}
+				
+				pw.println(endIdentifier);
+			}
+		}
+		
+	}
+	
+
+}
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\storage\Storage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\AllTests.java
+	 */
+
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+	CompleteCommandUnitTesting.class,
+	IncompleteCommandUnitTesting.class,
+	DeleteCommandUnitTesting.class,
+	EditCommandUnitTesting.class,
+	PostponeCommandUnitTesting.class,
+	RankCommandUnitTesting.class,
+	SearchCommandUnitTesting.class,
+	StorageTesting.class,
+	UndoCommandUnitTesting.class,
+	ViewCommandUnitTesting.class,
+	DeadlineCommandUnitTesting.class,
+	DateAndTimeUnitTesting.class,
+	RankCommandUnitTesting.class,
+	FloatCommandUnitTesting.class,
+	AddCommandUnitTesting.class
+})
+public class AllTests {
+
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\AllTests.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\DeadlineCommandUnitTesting.java
+	 */
+
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\DeadlineCommandUnitTesting.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\DeadlineCommandUnitTesting.java
+	 */
+
+@RunWith(Parameterized.class)
+public class DeadlineCommandUnitTesting {
+
+	@Parameterized.Parameters
+	public static List<Object[]> getParameters() {
+		final LocalDate startDate = LocalDate.now(), endDate = startDate;
+		final LocalDate nearestWednesday, nearestMonday;
+		if(3 - endDate.getDayOfWeek().getValue() < 0) {
+			nearestWednesday = endDate.plusDays(7+3 - endDate.getDayOfWeek().getValue());
+		} else {
+			nearestWednesday = endDate.plusDays(3 - endDate.getDayOfWeek().getValue());
+		}
+		if(1 - endDate.getDayOfWeek().getValue() < 0) {
+			nearestMonday = endDate.plusDays(7+1 - endDate.getDayOfWeek().getValue());
+		} else {
+			nearestMonday = endDate.plusDays(1 - endDate.getDayOfWeek().getValue());
+
+		}
+		return Arrays.asList(new Object[][]{
+				{	// test 1
+					new Task(0, "a", null, null, LocalDate.of(2015, 1, 3), LocalTime.of(23, 59), "DEADLINE"),
+					new Task(0, "a", LocalDate.of(2015, 1, 1), null, LocalDate.of(2015, 1, 20), null, "TIMED"),
+					"1 by 2015-1-3"
+				},
+				{	// test 2
+					new Task(0, "a", null, null, nearestWednesday, LocalTime.of(23, 59), "DEADLINE"),
+					new Task(0, "a", nearestMonday, null, nearestMonday.plusDays(1), LocalTime.of(23, 59), "TIMED"),
+					"1 by wednesday"
+				},
+				{	// test 3
+					new Task(0, "a", null, null, LocalDate.of(2015, 4, 18), LocalTime.of(19, 0), "DEADLINE"),
+					new Task(0, "a", nearestMonday, null, nearestMonday.plusDays(1), LocalTime.of(23, 59), "TIMED"),
+					"1 by 2015-04-18 19:00"
+				},
+				{	// test 4
+					new Task(0, "a", null, null, nearestWednesday, LocalTime.of(23, 59), "DEADLINE"),
+					new Task(0, "a", nearestMonday, null, nearestMonday.plusDays(1), LocalTime.of(7, 0), "TIMED"),
+					"1 by wednesday 07:00"
+				},
+				{	// test 5
+					new Task(0, "a", startDate, null, endDate, LocalTime.of(19, 0), "TIMED"),
+					new Task(0, "a", startDate, null, endDate, LocalTime.of(11, 11), "TIMED"),
+					"1 by 19:00"
+				}
+		});
+	}
+
+	private final Task expected;
+	private final Task input;
+	private final String command;
+
+	public DeadlineCommandUnitTesting(Task expected, Task input, String command) {
+		this.expected = expected;
+		this.input = input;
+		this.command = command;
+	}
+
+	@Test
+	public void test() {
+		final DeadlineTask deadlineTask = new DeadlineTask();
+		final Validation validOp = new Validation();
+		final TaskListSet set = new TaskListSet();
+		set.setTaskList(new ArrayList<>(Arrays.asList(input)));
+		final ResultSet rs = deadlineTask.execute(command, set, validOp);
+		final Task resultTask = rs.getReturnList().get(0);
+		assertTrue(TestUtil.compareTask(resultTask, expected));
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\DeadlineCommandUnitTesting.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\EditCommandUnitTesting.java
+	 */
+
+@RunWith(Parameterized.class)
+public class EditCommandUnitTesting {
+
+	@Parameterized.Parameters
+	public static List<Object[]> getParameters() {
+		final LocalDate startDate = LocalDate.now(), endDate = startDate;
+		return Arrays.asList(new Object[][]{
+				{	// test 1
+					new Task(0, "b", null, null, null, null, "FLOATING"),
+					new Task(0, "a", null, null, null, null, "FLOATING"),
+					"1 b"
+				},
+				{	// test 2
+					new Task(0, "a", startDate, null, endDate, LocalTime.of(19, 0), "TIMED"),
+					new Task(0, "a", startDate, null, endDate, LocalTime.of(11, 11), "TIMED"),
+					"1 to 19:00"
+				},
+				{	// test 3
+					new Task(0, "a", startDate, LocalTime.of(19, 0), endDate, LocalTime.of(11, 11), "TIMED"),
+					new Task(0, "a", startDate, null, endDate, LocalTime.of(20, 11), "TIMED"),
+					"1 from 19:00"
+				},
+				{	// test 4
+					new Task(0, "a", startDate, null, endDate, LocalTime.of(11, 11), "TIMED"),
+					new Task(0, "a", startDate, null, endDate, LocalTime.of(11, 11), "TIMED"),
+					"1 from 19:00"
+				},
+				{	// test 5
+					new Task(0, "a", LocalDate.of(1993, 1, 1), null, LocalDate.of(2015, 4, 18), LocalTime.of(19, 0), "TIMED"),
+					new Task(0, "a", LocalDate.of(1993, 1, 1), null, endDate, LocalTime.of(11, 11), "TIMED"),
+					"1 to 2015-04-18 19:00"
+				},
+				{	// test 6
+					new Task(0, "a", LocalDate.of(1993, 1, 1), null, LocalDate.of(2015, 4, 18), LocalTime.of(11, 11), "TIMED"),
+					new Task(0, "a", LocalDate.of(1993, 1, 1), null, endDate, LocalTime.of(11, 11), "TIMED"),
+					"1 to 2015-04-18"
+				},
+				{	// test 7
+					new Task(0, "a", LocalDate.of(1993, 1, 1), LocalTime.of(0, 0), endDate, LocalTime.of(19, 0), "TIMED"),
+					new Task(0, "a", endDate, LocalTime.of(0, 0), endDate, LocalTime.of(11, 11), "TIMED"),
+					"1 from 1993-1-1 00:00"
+				},
+				{	// test 8
+					new Task(0, "a", LocalDate.of(2014, 1, 1), LocalTime.of(0, 0), LocalDate.of(2015, 11, 12), LocalTime.of(10, 0), "TIMED"),
+					new Task(0, "a", endDate, LocalTime.of(0, 0), endDate, LocalTime.of(11, 11), "TIMED"),
+					"1 from 2014-1-1 00:00 to 2015-11-12 10:00"
+				}
+		});
+	}
+
+	private final Task expected;
+	private final Task input;
+	private final String command;
+	
+	public EditCommandUnitTesting(Task expected, Task input, String command) {
+		this.expected = expected;
+		this.input = input;
+		this.command = command;
+	}
+	
+	@Test
+	public void test() {
+		final EditTask editTask = new EditTask();
+		final Validation validOp = new Validation();
+		final TaskListSet set = new TaskListSet();
+		set.setTaskList(new ArrayList<>(Arrays.asList(input)));
+		final ResultSet rs = editTask.execute(command, set, validOp);
+		final Task resultTask = rs.getReturnList().get(0);
+		assertTrue(TestUtil.compareTask(resultTask, expected));
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\EditCommandUnitTesting.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\IntegrationTesting.java
+	 */
+
+public class IntegrationTesting {
+	CommandParser commandParser = new CommandParser();
+	final Storage storage = new Storage();
+	private static final Pattern MATCH_TO_END = Pattern.compile("\\Z");
+	private static final Pattern MATCH_TO_EOL = Pattern.compile("<<<EOL");
+
+	private static String readStream(InputStream in) {
+		try(Scanner sc = new Scanner(in)) {
+			final String result = sc.useDelimiter(MATCH_TO_END).next();
+			sc.close();
+			return result;
+		}catch(NoSuchElementException e){
+			return "";
+		}
+	}
+	
+	private InputStream getResourceInputStream(String resourceName) {
+		return getClass().getResourceAsStream(resourceName);
+	}
+	
+	private Scanner getResourceScanner(String resourceName) {
+		return new Scanner(getResourceInputStream(resourceName));
+	}
+	
+	@Test
+	public void testUserCommandExecutedProperly() throws IOException {
+		commandParser.executeCommand("clear");
+		final Queue<Pattern> queueExpected = new LinkedList<>();
+		try (Scanner sc = getResourceScanner("resources/compare_view.txt")) {
+			sc.useDelimiter(MATCH_TO_EOL);
+			while(sc.hasNext()) {
+				queueExpected.add(Pattern.compile(sc.next().trim()));
+			}
+		}
+		try (Scanner sc = getResourceScanner("resources/commands.txt")) {
+			while (sc.hasNext()) {
+				final ResultSet rs = commandParser.executeCommand(sc.nextLine());
+				if (rs.getCommandType() == CommandParser.COMMAND_TYPE.VIEW_TASK)
+					compareResult(queueExpected.poll(), out -> {
+						try {
+							storage.writeFileToStream(rs.getReturnList(), out);
+						} catch (Exception e) {
+							throw new RuntimeException(e);
+						}
+					});
+			}
+			// compare storage
+			compareResult(Pattern.compile(readStream(getResourceInputStream("resources/expected.txt"))),
+					out -> {
+						try {
+							commandParser.writeStorageToStream(out);
+						} catch (Exception e) {
+							throw new RuntimeException(e);
+						}
+					});
+		}
+	}
+
+	private void compareResult(Pattern expected, Consumer<OutputStream> operator) throws IOException {
+		// compare resultList with another list
+		final PipedInputStream in = new PipedInputStream();
+		final PipedOutputStream out = new PipedOutputStream(in);
+		operator.accept(out);
+		final String result = readStream(in);
+		assertTrue(expected.matcher(result).find());
+		in.close();
+	}
+
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\IntegrationTesting.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\SearchCommandUnitTesting.java
+	 */
+
+
+@RunWith(Parameterized.class)
+public class SearchCommandUnitTesting {
+	
+	@Parameterized.Parameters
+	public static List<Object[]> getParameters() {
+		return Arrays.asList(new Object[][] {
+				{	// test 1
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "abcc", null, null, null, null, "FLOATING")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "abcc", null, null, null, null, "FLOATING"),
+							new Task(1, "deff", null, null, null, null, "FLOATING")
+					})),
+					"abc"
+				},
+				{
+					new ArrayList<>(Arrays.asList(new Task[]{
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "abcc", null, null, null, null, "FLOATING"),
+							new Task(1, "deff", null, null, null, null, "FLOATING")
+					})),
+					"g"
+				}
+		});
+	}
+
+	private final ArrayList<Task> expected;
+	private final ArrayList<Task> input;
+	private final String command;
+	
+	public SearchCommandUnitTesting(ArrayList<Task> expected, ArrayList<Task> input, String command) {
+		this.expected = expected;
+		this.input = input;
+		this.command = command;
+	}
+	
+	@Test
+	public void test() {
+		final SearchTask searchTask = new SearchTask();
+		final TaskListSet set = new TaskListSet();
+		set.setTaskList(input);
+		final ResultSet rs = searchTask.execute(command, set);
+		final Iterator<Task> expected = this.expected.iterator(), result = rs.getReturnList().iterator();
+		while (expected.hasNext() && result.hasNext()) {
+			assertTrue(TestUtil.compareTask(expected.next(), result.next()));
+		}
+		assertFalse(expected.hasNext() || result.hasNext());
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\SearchCommandUnitTesting.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\StorageTesting.java
+	 */
+
+public class StorageTesting {
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+	
+	private InputStream createInputStreamFromString(final String input) {
+		return new ByteArrayInputStream(input.getBytes());
+	}
+
+	@Test
+	public void testStorageFields() throws IOException {
+		final Task targetTask = new Task();
+		targetTask.setTaskID(0);
+		targetTask.setTaskEndDate(LocalDate.parse("2001-01-01"));
+		targetTask.setTaskName("buy milk");
+		targetTask.setTaskPriority("low");
+		targetTask.setTaskStatus("COMPLETE");
+		final String input =
+				"id: 0\n"
+				+ "name: buy milk\n"
+				+ "end date: 2001-01-01\n"
+				+ "status: COMPLETE\n"
+				+ "priority: low\n"
+				+ "----\n"
+				+ "----\n";
+		InputStream is = createInputStreamFromString(input);
+		Storage storage = new Storage();
+		ArrayList<Task> taskList = storage.readFromStream(is);
+		/* exactly one task */
+		assertEquals(taskList.size(), 1);
+		/* correct content */
+		final Task oneTask = taskList.get(0);
+		assertNotNull(oneTask);
+		assertEquals(oneTask.getTaskID(), targetTask.getTaskID());
+		assertEquals(oneTask.getTaskName(), targetTask.getTaskName());
+		assertEquals(oneTask.getTaskEndDate(), targetTask.getTaskEndDate());
+		assertEquals(oneTask.getTaskPriority(), targetTask.getTaskPriority());
+		assertEquals(oneTask.getTaskStatus(), targetTask.getTaskStatus());
+	}
+	
+	@Test
+	public void testInvalidFields() throws IOException {
+		/* invalid fields should be ignored */
+		final String input =
+				"INVALID\n"
+				+ "INVALID\n"
+				+ "INVALID\n"
+				+ "\n\n"
+				+ "----";
+		InputStream is = createInputStreamFromString(input);
+		Storage storage = new Storage();
+		ArrayList<Task> taskList = storage.readFromStream(is);
+		
+		assertEquals(taskList.size(), 0);
+	}
+	
+	@Test
+	public void testThrow() throws IOException {
+		final String input = "id: WHAT?!\n----\n";
+		InputStream is = createInputStreamFromString(input);
+		Storage storage = new Storage();
+		exception.expect(NumberFormatException.class);
+		@SuppressWarnings("unused")
+		ArrayList<Task> taskList = storage.readFromStream(is);
+	}
+
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\StorageTesting.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\TestUtil.java
+	 */
+
+public class TestUtil {
+	public static boolean compareObject(Object a, Object b) {
+		return a == b || a != null && b != null && a.equals(b);
+	}
+	public static boolean compareTask(Task a, Task b) {
+		return a == b ||
+				a != null && b != null &&
+					compareObject(a.getTaskName(), b.getTaskName()) &&
+					compareObject(a.getTaskID(), b.getTaskID()) &&
+					compareObject(a.getTaskPriority(), b.getTaskPriority()) &&
+					compareObject(a.getTaskStatus(), b.getTaskStatus()) &&
+					compareObject(a.getTaskType(), b.getTaskType()) &&
+					compareObject(a.getTaskStartDate(), b.getTaskStartDate()) &&
+					compareObject(a.getTaskStartTime(), b.getTaskStartTime()) &&
+					compareObject(a.getTaskEndDate(), b.getTaskEndDate());
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\TestUtil.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\ViewCommandUnitTesting.java
+	 */
+
+@RunWith(Parameterized.class)
+public class ViewCommandUnitTesting {
+	private final ArrayList<Task> expected;
+	private final ArrayList<Task> storage;
+	private final String viewParameter;
+	private final ViewTask viewTask = new ViewTask();
+	
+	public ViewCommandUnitTesting (ArrayList<Task> expected, ArrayList<Task> storage, String viewParameter) {
+		this.expected = expected;
+		this.storage = storage;
+		this.viewParameter = viewParameter;
+	}
+	
+	@Before
+	public void init() {
+		
+	}
+	
+	@Parameterized.Parameters
+	public static List<Object[]> getParameters() {
+		final LocalDate startDate = LocalDate.now(), endDate = LocalDate.now();
+		final LocalTime startTime = LocalTime.now(), endTime = LocalTime.now();
+		return Arrays.asList(new Object[][]{
+				{	// test 1
+					new ArrayList<>(Arrays.asList(new Task[]{})),
+					new ArrayList<>(Arrays.asList(new Task[]{})),
+					"all"
+				},
+				{	// test 2
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED"),
+							new Task(1, "what", null, null, null, null, "FLOATING")
+					})),
+					"today"
+				},
+				{	// test 3
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED", "LOW", "COMPLETE")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", startDate, startTime, endDate, endTime, "TIMED", "MEDIUM", "INCOMPLETE")
+					})),
+					"complete"
+				},
+				{	// test 4
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(1, "buy milk", startDate, startTime, endDate, endTime, "TIMED", "MEDIUM", "INCOMPLETE")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", startDate, startTime, endDate, endTime, "TIMED", "MEDIUM", "INCOMPLETE")
+					})),
+					"incomplete"
+				},
+				{	// test 5
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(1, "buy milk", startDate, startTime, endDate.plusDays(1), endTime, "TIMED", "MEDIUM", "INCOMPLETE")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", startDate, startTime, endDate.plusDays(1), endTime, "TIMED", "MEDIUM", "INCOMPLETE")
+					})),
+					"tomorrow"
+				},
+				{	// test 6
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), endTime, "TIMED", "HIGH")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", startDate, startTime, endDate.plusDays(1), endTime, "TIMED", "MEDIUM", "INCOMPLETE"),
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), endTime, "TIMED", "HIGH")
+					})),
+					"high"
+				},
+				{
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(1, "buy milk", startDate, startTime, endDate.plusDays(1), endTime, "TIMED", "MEDIUM", "INCOMPLETE")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", startDate, startTime, endDate.plusDays(1), endTime, "TIMED", "MEDIUM", "INCOMPLETE"),
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), endTime, "TIMED", "HIGH")
+					})),
+					"medium"
+				},
+				{
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED", "LOW", "COMPLETE")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", startDate, startTime, endDate.plusDays(1), endTime, "TIMED", "MEDIUM", "INCOMPLETE"),
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), endTime, "TIMED", "HIGH")
+					})),
+					"low"
+				},
+				{
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", null, null, endDate, endTime, "DEADLINE", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", null, null, endDate.plusDays(1), null, "DEADLINE", "MEDIUM", "INCOMPLETE")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", null, null, endDate, endTime, "DEADLINE", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", null, null, endDate.plusDays(1), null, "DEADLINE", "MEDIUM", "INCOMPLETE"),
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), null, "TIMED", "HIGH")
+					})),
+					"deadline"
+				},
+				{
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), null, "TIMED", "HIGH")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", null, null, endDate, endTime, "DEADLINE", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", null, null, endDate.plusDays(1), null, "DEADLINE", "MEDIUM", "INCOMPLETE"),
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), null, "TIMED", "HIGH")
+					})),
+					"timed"
+				},
+				{
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(3, "buy milk", null, null, null, null, "FLOATING")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", null, null, endDate, endTime, "DEADLINE", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", null, null, endDate.plusDays(1), null, "DEADLINE", "MEDIUM", "INCOMPLETE"),
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), null, "TIMED", "HIGH"),
+							new Task(3, "buy milk", null, null, null, null, "FLOATING")
+					})),
+					"floating"
+				},
+				{
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(3, "buy milk", null, null, endDate.plusDays(-100), null, "OVERDUE")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", null, null, endDate, endTime, "DEADLINE", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", null, null, endDate.plusDays(1), null, "DEADLINE", "MEDIUM", "INCOMPLETE"),
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), null, "TIMED", "HIGH"),
+							new Task(3, "buy milk", null, null, endDate.plusDays(-100), null, "OVERDUE")
+					})),
+					"overdue"
+				},
+				{
+					new ArrayList<>(Arrays.asList(new Task[]{})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", null, null, endDate, endTime, "DEADLINE", "LOW", "COMPLETE"),
+							new Task(1, "buy milk", null, null, endDate.plusDays(1), null, "DEADLINE", "MEDIUM", "INCOMPLETE"),
+							new Task(2, "buy milk", startDate, startTime, endDate.plusDays(1), null, "TIMED", "HIGH"),
+							new Task(3, "buy milk", null, null, endDate.plusDays(-100), null, "OVERDUE")
+					})),
+					"abc"
+				}
+		});
+	}
+	
+	@Test
+	public void testView() {
+		final TaskListSet set = new TaskListSet();
+		set.setTaskList(storage);
+		final ResultSet rs = viewTask.execute(viewParameter, set);
+		Iterator<Task> result = rs.getReturnList().iterator(), expected = this.expected.iterator();
+		while (result.hasNext() && expected.hasNext()) {
+			assertTrue(compareTask(result.next(), expected.next()));
+		}
+		assertFalse(result.hasNext() || expected.hasNext());
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\ViewCommandUnitTesting.java
+
+
+
+
+

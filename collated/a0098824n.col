@@ -1,0 +1,2234 @@
+//@author: a0098824n
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\AddTask.java
+	 */
+
+public class AddTask {
+	private static final Logger LOGGER = Logger.getLogger(AddTask.class.getName());
+	private static final String PATTERN_DEADLINE_DATEONLY = "(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	private static final String PATTERN_DEADLINE_DAYASDATE = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)";
+
+	private static final String PATTERN_DEADLINE_DATETIME = "(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_DEADLINE_DAYTIME = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	
+	private static final String KEYWORD_DEADLINE = " by ";
+	private static final String TYPE_DEADLINE = "DEADLINE";
+	private static final String TYPE_FLOATING = "FLOATING";
+	private static final String TYPE_TIMED = "TIMED";
+	private static final String TYPE_ERROR = "ERROR";
+	private static final String TIME_DEADLINE ="23:59";
+	
+	private static final String KEYWORD_TIMED_DATE = " on ";
+	private static final String KEYWORD_TIMED_TODAY = "today";
+	private static final String KEYWORD_TIMED_TMRW = "tomorrow";
+	private static final String KEYWORD_NOTIMED_DATE = " from ";
+	
+	private static final int MAX = 50000;
+	private static final int MIN = 0;
+	
+	//add {taskname} {on} {date}
+	private static final String PATTERN_TIMED_START_DATE = "(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	//add {taskname} {on} {day}
+	private static final String PATTERN_TIMED_START_DAY = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)";
+	//add {taskname} {today|tomorrow}
+	private static final String PATTERN_TIMED_START_TODAYTMRW = "(today|tomorrow)";
+	//add {taskname} {on} {date} {from} {time} {to} {time}
+	private static final String PATTERN_TIMED_STARTEND_1DATE = "(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	//add {taskname} {on} {mon-sun} {from} {time} {to} {time}
+	private static final String PATTERN_TIMED_STARTEND_1DAY = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";	
+	//add {taskname} {today|tomorrow} {from} {time} {to} {time}
+	private static final String PATTERN_TIMED_STARTEND_TODAYTMRWTIMERANGE = "(today|tomorrow)(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	//add {taskname} {on} {date} {from} {time} {to} {date} {time}
+	private static final String PATTERN_TIMED_STARTEND_2DATE = "(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	//add {taskname} {from} {date} {to} {date}
+	private static final String PATTERN_NOTIMED_STARTEND_2DATE = "(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	//add {taskname} {on} {date} {time}
+	private static final String PATTERN_TIMED_START_DATETIME = "(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	//add {taskname} {on} {mon-sun} {time}
+	private static final String PATTERN_TIMED_START_DAYTIME = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	//add {taskname} {today|tomorrow} {time}
+	private static final String PATTERN_TIMED_START_TODAYTMRWTIME = "(today|tomorrow)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+
+	private static final String MESSAGE_SUCCESS = "Add task operation is successful!";
+	private static final String MESSAGE_UNSUCCESS = "Add task operation is unsuccessful! End date/time error!";
+	
+	private DateAndTime dtCheck = new DateAndTime();
+	
+	ResultSet returnResult = new ResultSet();
+	boolean isVisited = false;
+	
+	public ResultSet execute(String taskInfo, TaskListSet allLists) {
+		returnResult = new ResultSet();
+		String taskName = null;
+		String taskDateTime = null;
+		int taskID = -1;
+		int randomID = -1;
+		boolean isUnique = false;
+		ArrayList<Task> taskList = allLists.getTaskList();
+		while(!isUnique) {
+			isUnique = true;
+			Random randomNumberGen = new Random();
+			randomID = randomNumberGen.nextInt((MAX - MIN) + 1) + MIN;
+			
+			for(int i = 0; i < allLists.getTaskList().size(); i++) {
+				if(randomID == allLists.getTaskList().get(i).getTaskID()) {
+					isUnique = false;
+					break;
+				}
+			}
+		}
+		
+		taskID = randomID;
+
+		Task tempItem = new Task();
+		
+		if(taskInfo.contains(KEYWORD_DEADLINE) && keywordByChecker(taskInfo)) {
+			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_DEADLINE)).trim();
+			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_DEADLINE)+KEYWORD_DEADLINE.length()).trim();
+			tempItem = addDeadlineTask(taskName, taskDateTime, tempItem);
+		} else if(taskInfo.contains(KEYWORD_TIMED_DATE) && keywordOnCheck(taskInfo)) {
+			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_TIMED_DATE)).trim();
+			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_TIMED_DATE)+KEYWORD_TIMED_DATE.length()).trim();
+			tempItem = addTimedTask_DATEDAY(taskName, taskDateTime, tempItem);
+		} else if(taskInfo.contains(KEYWORD_TIMED_TODAY) && keywordTodayChecker(taskInfo)) {
+			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_TIMED_TODAY)).trim();
+			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_TIMED_TODAY)).trim();
+			tempItem =  addTimedTask_TODAYTMRW(taskName, taskDateTime, tempItem);
+		} else if(taskInfo.contains(KEYWORD_TIMED_TMRW) && keywordTmrwChecker(taskInfo) && !isVisited) {
+			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_TIMED_TMRW)).trim();
+			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_TIMED_TMRW)).trim();
+			tempItem =  addTimedTask_TODAYTMRW(taskName, taskDateTime, tempItem);
+		} else if(taskInfo.contains(KEYWORD_NOTIMED_DATE) && keywordFromChecker(taskInfo)) {
+			taskName = taskInfo.substring(0, taskInfo.lastIndexOf(KEYWORD_NOTIMED_DATE)).trim();
+			taskDateTime = taskInfo.substring(taskInfo.lastIndexOf(KEYWORD_NOTIMED_DATE)+KEYWORD_NOTIMED_DATE.length()).trim();
+			tempItem = addTimedTask_DATEDAY(taskName, taskDateTime, tempItem);
+		} else {
+			taskName = taskInfo;
+			tempItem = addFloatingTask(taskName, tempItem);
+		}
+
+		assert taskName.length() > 0;
+		assert taskID >= 0;
+		LOGGER.info(String.format("add task %s with id %d", taskName, taskID));
+		
+		tempItem.setTaskID(taskID);
+		if(tempItem.getTaskType().equals(TYPE_ERROR)) {
+			returnResult.setOpStatus(MESSAGE_UNSUCCESS);
+		} else {
+			taskList.add(tempItem);
+			returnResult.setOpStatus(MESSAGE_SUCCESS);
+		}
+		
+		allLists.setTaskList(taskList);
+		returnResult.setReturnList(taskList);
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.ADD_TASK);
+		
+		return returnResult;
+	}
+	
+	private boolean keywordByChecker(String taskDateTime){
+		boolean isChecked = false;
+		
+		Matcher DEADLINE_DATEONLY;
+		Matcher DEADLINE_DATETIME;
+		Matcher DEADLINE_DAYTIME;
+		Matcher DEADLINE_DAYASDATE; 
+		
+		taskDateTime = taskDateTime.substring(taskDateTime.lastIndexOf(KEYWORD_DEADLINE)+KEYWORD_DEADLINE.length()).trim();
+		
+		DEADLINE_DATEONLY = Pattern.compile(PATTERN_DEADLINE_DATEONLY).matcher(taskDateTime);
+		DEADLINE_DATETIME = Pattern.compile(PATTERN_DEADLINE_DATETIME).matcher(taskDateTime);
+		DEADLINE_DAYTIME = Pattern.compile(PATTERN_DEADLINE_DAYTIME).matcher(taskDateTime);
+		DEADLINE_DAYASDATE = Pattern.compile(PATTERN_DEADLINE_DAYASDATE).matcher(taskDateTime);
+		
+		if(DEADLINE_DATEONLY.matches() || DEADLINE_DATETIME.matches() || DEADLINE_DAYTIME.matches() || DEADLINE_DAYASDATE.matches()){
+			isChecked = true;
+		}
+		return isChecked;
+	}
+	
+	private boolean keywordOnCheck(String taskDateTime) {
+		boolean isChecked = false;
+		Matcher TIMED_STARTEND_2DATE;
+		Matcher TIMED_STARTEND_1DATE;
+		Matcher TIMED_STARTEND_1DAY;
+		Matcher TIMED_START_DATETIME;
+		Matcher TIMED_START_DAYTIME;
+		Matcher TIMED_START_DATE;
+		Matcher TIMED_START_DAY;
+		
+		taskDateTime = taskDateTime.substring(taskDateTime.lastIndexOf(KEYWORD_TIMED_DATE)+KEYWORD_TIMED_DATE.length()).trim();
+		
+		TIMED_STARTEND_2DATE = Pattern.compile(PATTERN_TIMED_STARTEND_2DATE).matcher(taskDateTime);
+		TIMED_STARTEND_1DATE = Pattern.compile(PATTERN_TIMED_STARTEND_1DATE).matcher(taskDateTime);
+		TIMED_STARTEND_1DAY = Pattern.compile(PATTERN_TIMED_STARTEND_1DAY).matcher(taskDateTime);
+		TIMED_START_DATETIME = Pattern.compile(PATTERN_TIMED_START_DATETIME).matcher(taskDateTime);
+		TIMED_START_DAYTIME = Pattern.compile(PATTERN_TIMED_START_DAYTIME).matcher(taskDateTime);
+		TIMED_START_DATE = Pattern.compile(PATTERN_TIMED_START_DATE).matcher(taskDateTime);
+		TIMED_START_DAY = Pattern.compile(PATTERN_TIMED_START_DAY).matcher(taskDateTime);
+
+		if(TIMED_STARTEND_2DATE.matches() || TIMED_STARTEND_1DATE.matches() || TIMED_STARTEND_1DAY.matches() || TIMED_START_DATETIME.matches()
+				|| TIMED_START_DAYTIME.matches() || TIMED_START_DATE.matches() || TIMED_START_DAY.matches()) {
+			isChecked = true;
+		}
+		
+		return isChecked;
+	}
+	
+	private boolean keywordTodayChecker(String taskDateTime) {
+		boolean isChecked = false;
+		
+		Matcher TIMED_STARTEND_TODAYTMRWTIMERANGE;
+		Matcher TIMED_START_TODAYTMRWTIME;
+		Matcher TIMED_START_TODAYTMRW;
+		
+		taskDateTime = taskDateTime.substring(taskDateTime.lastIndexOf(KEYWORD_TIMED_TODAY));
+		TIMED_STARTEND_TODAYTMRWTIMERANGE = Pattern.compile(PATTERN_TIMED_STARTEND_TODAYTMRWTIMERANGE).matcher(taskDateTime);
+		TIMED_START_TODAYTMRWTIME = Pattern.compile(PATTERN_TIMED_START_TODAYTMRWTIME).matcher(taskDateTime);
+		TIMED_START_TODAYTMRW = Pattern.compile(PATTERN_TIMED_START_TODAYTMRW).matcher(taskDateTime);
+		
+		if(TIMED_STARTEND_TODAYTMRWTIMERANGE.matches() || TIMED_START_TODAYTMRWTIME.matches() || TIMED_START_TODAYTMRW.matches()) {
+			isChecked = true;
+			isVisited = true;
+		}
+		
+		return isChecked;
+	}
+	
+	private boolean keywordTmrwChecker(String taskDateTime) {
+		boolean isChecked = false;
+		
+		Matcher TIMED_STARTEND_TODAYTMRWTIMERANGE;
+		Matcher TIMED_START_TODAYTMRWTIME;
+		Matcher TIMED_START_TODAYTMRW;
+		
+		taskDateTime = taskDateTime.substring(taskDateTime.lastIndexOf(KEYWORD_TIMED_TMRW));
+		
+		TIMED_STARTEND_TODAYTMRWTIMERANGE = Pattern.compile(PATTERN_TIMED_STARTEND_TODAYTMRWTIMERANGE).matcher(taskDateTime);
+		TIMED_START_TODAYTMRWTIME = Pattern.compile(PATTERN_TIMED_START_TODAYTMRWTIME).matcher(taskDateTime);
+		TIMED_START_TODAYTMRW = Pattern.compile(PATTERN_TIMED_START_TODAYTMRW).matcher(taskDateTime);
+		
+		if(TIMED_STARTEND_TODAYTMRWTIMERANGE.matches() || TIMED_START_TODAYTMRWTIME.matches() || TIMED_START_TODAYTMRW.matches()) {
+			isChecked = true;
+		}
+		
+		return isChecked;
+	}
+	
+	private boolean keywordFromChecker(String taskDateTime) {
+		boolean isChecked = false;
+		Matcher NOTIMED_STARTEND_2DATE;
+		taskDateTime = taskDateTime.substring(taskDateTime.lastIndexOf(KEYWORD_NOTIMED_DATE)+KEYWORD_NOTIMED_DATE.length()).trim();
+		NOTIMED_STARTEND_2DATE = Pattern.compile(PATTERN_NOTIMED_STARTEND_2DATE).matcher(taskDateTime);
+		
+		if(NOTIMED_STARTEND_2DATE.matches()) {
+			isChecked = true;
+		}
+		
+		return isChecked;
+	}
+	
+
+	
+	public Task addDeadlineTask(String taskName, String taskDateTime, Task deadlineTask) {
+		Matcher DEADLINE_DATEONLY;
+		Matcher DEADLINE_DATETIME;
+		Matcher DEADLINE_DAYTIME;
+		Matcher DEADLINE_DAYASDATE;
+		
+		DEADLINE_DATEONLY = Pattern.compile(PATTERN_DEADLINE_DATEONLY).matcher(taskDateTime);
+		DEADLINE_DATETIME = Pattern.compile(PATTERN_DEADLINE_DATETIME).matcher(taskDateTime);
+		DEADLINE_DAYTIME = Pattern.compile(PATTERN_DEADLINE_DAYTIME).matcher(taskDateTime);
+		DEADLINE_DAYASDATE = Pattern.compile(PATTERN_DEADLINE_DAYASDATE).matcher(taskDateTime);
+		
+		if(DEADLINE_DATEONLY.matches()) {
+			LOGGER.info(String.format("%s is of type DEADLINE_DATEONLY", taskName));
+			deadlineTask.setTaskEndDate(dtCheck.toValidDate(taskDateTime));
+			deadlineTask.setTaskEndTime(LocalTime.parse(TIME_DEADLINE));
+			deadlineTask.setTaskType(TYPE_DEADLINE);
+		} else if(DEADLINE_DAYASDATE.matches()) {
+			LOGGER.info(String.format("%s is of type DEADLINE_DAYASDATE", taskName));
+			deadlineTask.setTaskEndDate(dtCheck.determineDate(DEADLINE_DAYASDATE.group(1)));
+			deadlineTask.setTaskEndTime(LocalTime.parse(TIME_DEADLINE));
+			deadlineTask.setTaskType(TYPE_DEADLINE);
+		} else if(DEADLINE_DATETIME.matches()) {
+			LOGGER.info(String.format("%s is of type DEADLINE_DATETIME", taskName));
+			deadlineTask.setTaskEndDate(dtCheck.toValidDate(DEADLINE_DATETIME.group(1)));
+			deadlineTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_DATETIME.group(7)));
+			deadlineTask.setTaskType(TYPE_DEADLINE);
+		} else if(DEADLINE_DAYTIME.matches()) {
+			LOGGER.info(String.format("%s is of type DEADLINE_DAYTIME", taskName));
+			deadlineTask.setTaskEndDate(dtCheck.determineDate(DEADLINE_DAYTIME.group(1)));
+			deadlineTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_DAYTIME.group(3)));
+			deadlineTask.setTaskType(TYPE_DEADLINE);
+		} else {
+			LOGGER.info(String.format("%s is of type FLOATING", taskName));
+			taskName = taskName.concat(" "+taskDateTime);
+			deadlineTask.setTaskType(TYPE_FLOATING);
+		}
+		
+		deadlineTask.setTaskName(taskName);
+		return deadlineTask;
+		
+	}
+	
+	public Task addFloatingTask(String taskName, Task floatTask) {
+		floatTask.setTaskName(taskName);
+		floatTask.setTaskType(TYPE_FLOATING);
+		return floatTask;
+	}
+	
+	public Task addTimedTask_DATEDAY(String taskName, String taskDateTime, Task timedTask) {
+		
+		Matcher TIMED_STARTEND_2DATE;
+		Matcher TIMED_STARTEND_1DATE;
+		Matcher TIMED_STARTEND_1DAY;
+		Matcher TIMED_START_DATETIME;
+		Matcher TIMED_START_DAYTIME;
+		Matcher TIMED_START_DATE;
+		Matcher TIMED_START_DAY;
+		Matcher NOTIMED_STARTEND_2DATE;
+		
+		TIMED_STARTEND_2DATE = Pattern.compile(PATTERN_TIMED_STARTEND_2DATE).matcher(taskDateTime);
+		TIMED_STARTEND_1DATE = Pattern.compile(PATTERN_TIMED_STARTEND_1DATE).matcher(taskDateTime);
+		TIMED_STARTEND_1DAY = Pattern.compile(PATTERN_TIMED_STARTEND_1DAY).matcher(taskDateTime);
+		TIMED_START_DATETIME = Pattern.compile(PATTERN_TIMED_START_DATETIME).matcher(taskDateTime);
+		TIMED_START_DAYTIME = Pattern.compile(PATTERN_TIMED_START_DAYTIME).matcher(taskDateTime);
+		TIMED_START_DATE = Pattern.compile(PATTERN_TIMED_START_DATE).matcher(taskDateTime);
+		TIMED_START_DAY = Pattern.compile(PATTERN_TIMED_START_DAY).matcher(taskDateTime);
+		NOTIMED_STARTEND_2DATE = Pattern.compile(PATTERN_NOTIMED_STARTEND_2DATE).matcher(taskDateTime);
+		
+		if(TIMED_STARTEND_1DATE.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_STARTEND_1DATE", taskName));
+			timedTask.setTaskStartDate(dtCheck.toValidDate(TIMED_STARTEND_1DATE.group(1)));
+			timedTask.setTaskEndDate(timedTask.getTaskStartDate());
+			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_1DATE.group(9));
+			LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_1DATE.group(15));
+			
+			if(dtCheck.isValidDueDT(null, null, startTime, endTime)) {
+				timedTask.setTaskStartTime(startTime);
+				timedTask.setTaskEndTime(endTime);
+				timedTask.setTaskType(TYPE_TIMED);
+			} else {
+				timedTask.setTaskType(TYPE_ERROR);
+			}
+
+			
+		} else if(TIMED_STARTEND_1DAY.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_STARTEND_1DAY", taskName));
+			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_STARTEND_1DAY.group(1)));
+			timedTask.setTaskEndDate(timedTask.getTaskStartDate());
+			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_1DAY.group(5));
+			LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_1DAY.group(11));
+			
+			if(dtCheck.isValidDueDT(null, null, startTime, endTime)) {
+				timedTask.setTaskStartTime(startTime);
+				timedTask.setTaskEndTime(endTime);
+				timedTask.setTaskType(TYPE_TIMED);
+			} else {
+				timedTask.setTaskType(TYPE_ERROR);
+			}
+
+		} else if(TIMED_STARTEND_2DATE.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_STARTEND_2DATE", taskName));
+			LocalDate startDate = dtCheck.toValidDate(TIMED_STARTEND_2DATE.group(1));
+			LocalDate endDate = dtCheck.toValidDate(TIMED_STARTEND_2DATE.group(15));
+			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_2DATE.group(9));
+		    LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_2DATE.group(21));
+		    if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+		    	timedTask.setTaskStartDate(startDate);
+				timedTask.setTaskEndDate(endDate);
+				timedTask.setTaskStartTime(startTime);
+				timedTask.setTaskEndTime(endTime);
+				timedTask.setTaskType(TYPE_TIMED);
+		    } else {
+		    	timedTask.setTaskType(TYPE_ERROR);
+		    }
+
+		} else if(NOTIMED_STARTEND_2DATE.matches()) {
+			LOGGER.info(String.format("%s is of type NOTIMED_STARTEND_2DATE", taskName));
+			LocalDate startDate = dtCheck.toValidDate(NOTIMED_STARTEND_2DATE.group(1));
+			LocalDate endDate = dtCheck.toValidDate(NOTIMED_STARTEND_2DATE.group(9));
+			if(dtCheck.isValidDueDT(startDate, endDate, null, null)) {
+				timedTask.setTaskStartDate(startDate);
+				timedTask.setTaskEndDate(endDate);
+				timedTask.setTaskType(TYPE_TIMED);
+			} else {
+				timedTask.setTaskType(TYPE_ERROR);
+			}
+			
+		} else if(TIMED_START_DATETIME.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_START_DATETIME", taskName));
+			timedTask.setTaskStartDate(dtCheck.toValidDate(TIMED_START_DATETIME.group(1)));
+			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_START_DATETIME.group(7)));
+			timedTask.setTaskType(TYPE_TIMED);
+			
+		} else if(TIMED_START_DAYTIME.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_START_DAYTIME", taskName));
+			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_START_DAYTIME.group(1)));
+			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_START_DAYTIME.group(3)));
+			timedTask.setTaskType(TYPE_TIMED);
+		} else if(TIMED_START_DATE.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_START_DATE", taskName));
+			timedTask.setTaskStartDate(dtCheck.toValidDate(TIMED_START_DATE.group(1)));
+			timedTask.setTaskType(TYPE_TIMED);
+		} else if(TIMED_START_DAY.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_START_DAY", taskName));
+			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_START_DAY.group(1)));
+			timedTask.setTaskType(TYPE_TIMED);
+		} else {
+			LOGGER.info(String.format("%s is of type FLOATING", taskName));
+			taskName = taskName.concat(" "+taskDateTime);
+			timedTask.setTaskType(TYPE_FLOATING);
+		}
+
+		timedTask.setTaskName(taskName);
+		return timedTask;
+	}
+	
+	public Task addTimedTask_TODAYTMRW(String taskName, String taskDateTime, Task timedTask) {
+		Matcher TIMED_STARTEND_TODAYTMRWTIMERANGE;
+		Matcher TIMED_START_TODAYTMRWTIME;
+		Matcher TIMED_START_TODAYTMRW;
+		
+		TIMED_STARTEND_TODAYTMRWTIMERANGE = Pattern.compile(PATTERN_TIMED_STARTEND_TODAYTMRWTIMERANGE).matcher(taskDateTime);
+		TIMED_START_TODAYTMRWTIME = Pattern.compile(PATTERN_TIMED_START_TODAYTMRWTIME).matcher(taskDateTime);
+		TIMED_START_TODAYTMRW = Pattern.compile(PATTERN_TIMED_START_TODAYTMRW).matcher(taskDateTime);
+		
+		if(TIMED_STARTEND_TODAYTMRWTIMERANGE.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_STARTEND_TODAYTMRWTIMERANGE", taskName));
+			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_STARTEND_TODAYTMRWTIMERANGE.group(1)));
+			timedTask.setTaskEndDate(timedTask.getTaskStartDate());
+			LocalTime startTime = dtCheck.determineHour(TIMED_STARTEND_TODAYTMRWTIMERANGE.group(5));
+			LocalTime endTime = dtCheck.determineHour(TIMED_STARTEND_TODAYTMRWTIMERANGE.group(11));
+
+			if(dtCheck.isValidDueDT(null, null, startTime, endTime)) {
+				timedTask.setTaskStartTime(startTime);
+				timedTask.setTaskEndTime(endTime);
+				timedTask.setTaskType(TYPE_TIMED);
+			} else {
+				timedTask.setTaskType(TYPE_ERROR);
+			}
+
+			
+		} else if(TIMED_START_TODAYTMRWTIME.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_START_TODAYTMRWTIME", taskName));
+			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_START_TODAYTMRWTIME.group(1)));
+			timedTask.setTaskStartTime(dtCheck.determineHour(TIMED_START_TODAYTMRWTIME.group(3)));
+			timedTask.setTaskType(TYPE_TIMED);
+		} else if(TIMED_START_TODAYTMRW.matches()) {
+			LOGGER.info(String.format("%s is of type TIMED_START_TODAYTMRW", taskName));
+			timedTask.setTaskStartDate(dtCheck.determineDate(TIMED_START_TODAYTMRW.group(1)));
+			timedTask.setTaskType(TYPE_TIMED);
+		} else {
+			LOGGER.info(String.format("%s is of type FLOATING", taskName));
+			taskName = taskName.concat(" "+ taskDateTime);
+			timedTask.setTaskType(TYPE_FLOATING);
+		}
+		
+		timedTask.setTaskName(taskName);
+		return timedTask;
+
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\AddTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\DateAndTime.java
+	 */
+
+public class DateAndTime {
+	private static final int daysPerWeek = 7;
+	private static final String dayPattern = "monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun";
+	private static final String singleDigitTimeDate = "0";
+	
+	public boolean isValidDueDT(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+		boolean isValid = true;
+
+		if(endDate != null && startDate != null && endTime != null && startTime != null) {
+			String startDT = startDate.toString().concat("T").concat(startTime.toString());
+			String endDT = endDate.toString().concat("T").concat(endTime.toString());
+			LocalDateTime startDateTime = LocalDateTime.parse(startDT);
+			LocalDateTime endDateTime = LocalDateTime.parse(endDT);
+			System.out.println(startDateTime);
+			System.out.println(endDateTime);
+			if(startDateTime.isAfter(endDateTime)) {
+				return false;
+			}
+			
+		} else if(startTime != null && endTime != null && endDate == startDate && startDate == null) {
+			if(startTime.isAfter(endTime)) {
+				return false;
+			}
+			
+		} else if((endDate != null && startDate != null) && (endTime == null || startTime == null)) {
+			if(startDate.isAfter(endDate)) {
+				return false;
+			}
+		}
+		
+		return isValid;
+	}
+	public LocalTime determineHour(String time) {
+		if(time.substring(0, time.indexOf(":")).length() == 1) {
+			time = singleDigitTimeDate.concat(time);
+		}
+		
+		return LocalTime.parse(time);
+	}
+	
+	public LocalDate toValidDate(String date) {
+		String year = date.substring(0, date.indexOf("-"));
+		String month = date.substring(date.indexOf("-")+1, date.lastIndexOf("-"));
+		String day = date.substring(date.lastIndexOf("-")+1);
+		
+		if(month.length() == 1) {
+			month = singleDigitTimeDate.concat(month);
+		} 
+		
+		if(day.length() == 1) {
+			day = singleDigitTimeDate.concat(day);
+		}
+		
+		date = year.concat("-").concat(month).concat("-").concat(day);
+		
+		return LocalDate.parse(date);
+	}
+	
+	public LocalDate determineDate(String dateInfo) {
+		dateInfo = dateInfo.trim().toLowerCase();
+		LocalDate taskDate;
+		if(dateInfo.equals("today")) {
+			taskDate = LocalDate.now();
+		} else if(dateInfo.equals("tomorrow")) {
+			taskDate = LocalDate.now().plusDays(1);
+		} else if(dateInfo.matches(dayPattern)) {
+			taskDate = determineDay(dateInfo);
+		} else {
+			taskDate = null;
+		}
+
+		return taskDate;
+	}
+
+	public LocalDate determineDay(String dateInfo) {
+		LocalDate taskDate = null;
+		String dayOfWeek = LocalDate.now().getDayOfWeek().toString().toLowerCase();
+
+		Map<String,Integer> dayMap=new HashMap<String,Integer>();
+
+		dayMap.put("sunday",1);
+		dayMap.put("monday",2);
+		dayMap.put("tuesday",3);
+		dayMap.put("wednesday",4);
+		dayMap.put("thursday",5);
+		dayMap.put("friday",6);
+		dayMap.put("saturday",7);
+		dayMap.put("sun",8);
+		dayMap.put("mon",9);
+		dayMap.put("tues",10);
+		dayMap.put("wed",11);
+		dayMap.put("thurs",12);
+		dayMap.put("fri",13);
+		dayMap.put("sat",14);
+
+
+		int numOfDay = dayMap.get(dayOfWeek).intValue();
+		int numOfTaskDay = dayMap.get(dateInfo).intValue();
+		
+		if(numOfTaskDay > daysPerWeek) {
+			numOfTaskDay -= daysPerWeek;
+		}
+
+		if(numOfDay == numOfTaskDay) {
+			taskDate = LocalDate.now().plusDays(daysPerWeek);
+		} else {
+			int taskDuration = (numOfTaskDay + daysPerWeek - numOfDay) % daysPerWeek;
+			taskDate = LocalDate.now().plusDays(taskDuration);
+		}
+
+		return taskDate;
+	}
+
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\DateAndTime.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\DeadlineTask.java
+	 */
+
+public class DeadlineTask {
+	private static final Logger LOGGER = Logger.getLogger(DeadlineTask.class.getName());
+	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
+	private static final String MESSAGE_INVALID_CONTENT = "Deadline a task operation failed for invalid content!";
+	private static final String MESSAGE_TYPE_CHANGED= "Deadline a task operation is successful! Changed to DEADLINE task.";
+	private static final String MESSAGE_INVALID_TYPE = "Selected task is already a deadline task!";
+
+	private static final String TYPE_DEADLINE = "DEADLINE";
+	private static final String TIME_DEFAULT = "23:59";
+
+	private static final String PATTERN_DEADLINE_ENDDATETIME = "([0-9]+)(\\s)(\\bby\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_DEADLINE_ENDDATE = "([0-9]+)(\\s)(\\bby\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	private static final String PATTERN_DEADLINE_ENDDAY = "([0-9]+)(\\s)(\\bby\\b)(\\s)(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)";
+	private static final String PATTERN_DEADLINE_ENDDAYTIME = "([0-9]+)(\\s)(\\bby\\b)(\\s)(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tues|wed|thurs|fri|sat|sun|today|tomorrow)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+
+	private Matcher DEADLINE_ENDDATETIME, DEADLINE_ENDDATE, DEADLINE_ENDDAY, DEADLINE_ENDDAYTIME;
+	private DateAndTime dtCheck = new DateAndTime();
+
+	private boolean isReadyToDeadline = false;
+	private boolean isValidLineNum = false;
+	private boolean isDeadlined = false;
+	private boolean isValidType = false;
+
+	private int taskID = -1;
+
+	public ResultSet execute(String userContent, TaskListSet allLists, Validation validOp) {
+		ResultSet returnResult = new ResultSet();
+		loadMatchers(userContent);
+		checkForMatch(userContent);
+		runEditProcess(userContent, allLists, returnResult, validOp);
+
+		returnResult.setReturnList(allLists.getTaskList());
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.DEADLINE_TASK);
+
+		LOGGER.info(String.format("mark task with ID %d as a deadline task", taskID));
+		return returnResult;
+	}
+
+	private void loadMatchers(String userContent) {
+		DEADLINE_ENDDATETIME = Pattern.compile(PATTERN_DEADLINE_ENDDATETIME).matcher(userContent);
+		DEADLINE_ENDDATE = Pattern.compile(PATTERN_DEADLINE_ENDDATE).matcher(userContent);
+		DEADLINE_ENDDAY = Pattern.compile(PATTERN_DEADLINE_ENDDAY).matcher(userContent);
+		DEADLINE_ENDDAYTIME = Pattern.compile(PATTERN_DEADLINE_ENDDAYTIME).matcher(userContent);
+	}
+
+	private void checkForMatch(String userContent) {
+		if(DEADLINE_ENDDATETIME.matches() || DEADLINE_ENDDATE.matches()
+				|| DEADLINE_ENDDAY.matches() || DEADLINE_ENDDAYTIME.matches()) {
+
+			isReadyToDeadline = true;
+		} else {
+			isReadyToDeadline = false;
+		}
+	}
+
+	private void runEditProcess(String userContent, TaskListSet allLists, ResultSet returnResult, Validation validOp) {
+		Task tempTask = new Task();
+
+		if(isReadyToDeadline) {
+			int lineNum = Integer.parseInt(userContent.substring(0, userContent.indexOf(" ")));
+			checkValidTaskID(lineNum, allLists, validOp);
+		} else {
+			returnResult.setOpStatus(MESSAGE_INVALID_CONTENT);
+		}
+		if(isReadyToDeadline && isValidLineNum) {
+			tempTask = getToDeadlineTask(taskID, allLists);
+		}
+
+		if(isReadyToDeadline && isValidLineNum && isValidType) {
+			matchEditProcess(userContent, tempTask);
+		} else if(isReadyToDeadline && isValidLineNum && !isValidType) {
+			returnResult.setOpStatus(MESSAGE_INVALID_TYPE);
+		} else if(isReadyToDeadline && !isValidLineNum) {
+			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+
+		}
+
+		if(isReadyToDeadline && isValidLineNum && isDeadlined && isValidType) {
+			returnResult.setOpStatus(MESSAGE_TYPE_CHANGED);
+			isReadyToDeadline = false;
+			isValidLineNum = false;
+			isDeadlined = false;
+			isValidType = false;
+		}
+
+	}
+
+	private void checkValidTaskID(int lineNum, TaskListSet allLists, Validation validOp) {
+		if(validOp.isValidTask(lineNum, allLists)) {
+			isValidLineNum =  true;
+			taskID = validOp.checkForTaskID(lineNum, allLists);
+			assert taskID >= 0;
+		} else {
+			isValidLineNum = false;
+		}
+
+	}
+
+	private Task getToDeadlineTask(int taskID, TaskListSet allLists) {
+		Task tempTask = null;
+		for(Task task : allLists.getTaskList()) {
+			if(taskID == task.getTaskID()) {
+				tempTask = task;
+				break;
+			} 
+		}
+		assert tempTask != null;
+		if(tempTask.getTaskType().equals(TYPE_DEADLINE)) {
+			isValidType = false;
+		} else {
+			tempTask.setTaskEndDate(null);
+			tempTask.setTaskEndTime(null);
+			tempTask.setTaskStartTime(null);
+			tempTask.setTaskStartDate(null);
+			tempTask.setTaskType(TYPE_DEADLINE);
+			isValidType = true;
+		}
+
+		return tempTask;
+	}
+
+	private void matchEditProcess(String editInfo, Task tempTask) {
+		if(DEADLINE_ENDDATETIME.matches()) {
+			setEndDateTime(editInfo, tempTask);
+		} else if(DEADLINE_ENDDATE.matches()) {
+			setEndDate(editInfo, tempTask);
+		} else if(DEADLINE_ENDDAY.matches()) {
+			setEndDay(editInfo, tempTask);
+		} else if(DEADLINE_ENDDAYTIME.matches()) {
+			setEndDayTime(editInfo, tempTask);
+		}
+
+		isDeadlined = true;
+	}
+
+	private void setEndDateTime(String userContent, Task tempTask) {
+		tempTask.setTaskEndDate(dtCheck.toValidDate(DEADLINE_ENDDATETIME.group(5)));
+		tempTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_ENDDATETIME.group(11)));
+
+	}
+
+	private void setEndDate(String userContent, Task tempTask) {
+		tempTask.setTaskEndDate(dtCheck.toValidDate(DEADLINE_ENDDATE.group(5)));
+		tempTask.setTaskEndTime(LocalTime.parse(TIME_DEFAULT));
+	}
+
+	private void setEndDay(String userContent, Task tempTask) {
+		tempTask.setTaskEndDate(dtCheck.determineDate(DEADLINE_ENDDAY.group(5)));
+		tempTask.setTaskEndTime(LocalTime.parse(TIME_DEFAULT));
+	}
+
+	private void setEndDayTime(String userContent, Task tempTask) {
+		tempTask.setTaskEndDate(dtCheck.determineDate(DEADLINE_ENDDAYTIME.group(5)));
+		tempTask.setTaskEndTime(dtCheck.determineHour(DEADLINE_ENDDAYTIME.group(7)));
+	}
+
+
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\DeadlineTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\DeleteTask.java
+	 */
+
+public class DeleteTask {
+	private static final Logger LOGGER = Logger.getLogger(DeleteTask.class.getName());
+	private static final String MESSAGE_SUCCESS = "Delete task operation is successful!";
+	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
+	
+	public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {
+		int lineNum;
+		try {
+			lineNum = Integer.parseInt(taskInfo.trim());
+		} catch (NumberFormatException e) {
+			LOGGER.throwing(getClass().getName(), "execute", e);
+			LOGGER.severe("Invalid number format");
+			throw e;
+		}
+		ResultSet returnResult = new ResultSet();
+		
+		if(validOp.isValidTask(lineNum, allLists)) {
+			int taskID = validOp.checkForTaskID(lineNum, allLists);
+			assert taskID >= 0;
+			removeFromTaskList(taskID, allLists.getTaskList());
+			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
+			LOGGER.info(String.format("delete task with ID %d", taskID));
+		} else {
+			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+		}
+		
+		returnResult.setReturnList(allLists.getTaskList());
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.DELETE_TASK);
+		return returnResult;
+	}
+	
+	private void removeFromTaskList(int taskID, ArrayList<Task> taskList) {
+		for(int i = 0; i < taskList.size(); i++) {
+			if(taskList.get(i).getTaskID() == taskID) {
+				taskList.remove(i);
+				break;
+			}
+		}
+	}
+
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\DeleteTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\EditTask.java
+	 */
+
+public class EditTask {
+	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
+	private static final String MESSAGE_INVALID_CONTENT = "Edit task operation failed for invalid content!";
+	private static final String MESSAGE_SUCCESS = "Edit task operation is successful!";
+	private static final String MESSAGE_UNSUCCESS = "Edit task operation failed for end date/time error!";
+	private static final String MESSAGE_TYPE_CHANGED= "Edit task operation is successful! Changed to %s task.";
+	private static final String MESSAGE_ALTERNATIVE = "Try converting to deadline task instead!";
+
+
+	private static final String PATTERN_EDIT_STARTENDDATETIME = "([0-9]+)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))"
+			+ "(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_STARTDATETIME = "([0-9]+)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_STARTDATE = "([0-9]+)(\\s)(\\bfrom\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	private static final String PATTERN_EDIT_STARTTIME = "([0-9]+)(\\s)(\\bfrom\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_ENDTIME = "([0-9]+)(\\s)(\\bto\\b)(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_ENDDATETIME = "([0-9]+)(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))(\\s)(([01]?[0-9]|2[0-3]):([0-5][0-9]))";
+	private static final String PATTERN_EDIT_ENDDATE = "([0-9]+)(\\s)(\\bto\\b)(\\s)(((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]))";
+	private static final String PATTERN_EDIT_TITLE = "([0-9]+)(\\s)(.*)";
+
+	private static final String TYPE_DEADLINE = "DEADLINE";
+	private static final String TYPE_FLOATING = "FLOATING";
+	private static final String TYPE_TIMED = "TIMED";
+
+	private Matcher EDIT_STARTENDDATETIME, EDIT_STARTDATETIME, EDIT_STARTDATE, EDIT_STARTTIME,
+	EDIT_ENDDATETIME, EDIT_ENDDATE, EDIT_ENDTIME, EDIT_TITLE;
+
+	private boolean isValidLineNum = false;
+	private boolean isEdited= false;
+	private boolean isReadyToEdit = false;
+	private boolean isTaskTypeChanged = false;
+	private boolean isInvalidType = false;
+	private String editedTaskType = "";
+	private DateAndTime dtCheck = new DateAndTime();
+	private int taskID = -1;
+
+	private final static Logger LOGGER_Edit= Logger.getLogger(EditTask.class.getName()); 
+
+	public ResultSet execute(String userContent, TaskListSet allLists, Validation validOp) {
+		ResultSet returnResult = new ResultSet();
+		loadMatchers(userContent);
+		checkForMatch(userContent);
+
+		runEditProcess(userContent, allLists, returnResult, validOp);
+
+		returnResult.setReturnList(allLists.getTaskList());
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.EDIT_TASK);
+		return returnResult;
+	}
+
+	private void runEditProcess(String userContent, TaskListSet allLists, ResultSet returnResult, Validation validOp) {
+		if(isReadyToEdit) {
+			int lineNum = Integer.parseInt(userContent.substring(0, userContent.indexOf(" ")));
+			checkValidTaskID(lineNum, allLists, validOp);
+		} else {
+			returnResult.setOpStatus(MESSAGE_INVALID_CONTENT);
+		}
+
+		if(isReadyToEdit && isValidLineNum) {
+			matchEditProcess(userContent, getToEditTask(taskID, allLists));
+		}
+
+		if(isReadyToEdit && isValidLineNum && isInvalidType) {
+			returnResult.setOpStatus(MESSAGE_ALTERNATIVE);
+		}
+
+		if(isReadyToEdit && isValidLineNum && isEdited) {
+			returnResult.setOpStatus(MESSAGE_SUCCESS);
+			isReadyToEdit = false;
+			isValidLineNum = false;
+			isEdited = false;
+			isInvalidType = false;
+
+		} else if(isReadyToEdit && !isValidLineNum) {
+			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+
+		} else if(isReadyToEdit && isValidLineNum && !isEdited) {
+			returnResult.setOpStatus(MESSAGE_UNSUCCESS);
+
+		}
+
+		if(isTaskTypeChanged) {
+			returnResult.setOpStatus(String.format(MESSAGE_TYPE_CHANGED, editedTaskType));
+			isTaskTypeChanged = false;
+		}
+
+
+	}
+
+	private void loadMatchers(String userContent) {
+		EDIT_STARTENDDATETIME = Pattern.compile(PATTERN_EDIT_STARTENDDATETIME).matcher(userContent);
+		EDIT_STARTDATETIME =  Pattern.compile(PATTERN_EDIT_STARTDATETIME).matcher(userContent);
+		EDIT_STARTDATE = Pattern.compile(PATTERN_EDIT_STARTDATE).matcher(userContent);
+		EDIT_STARTTIME = Pattern.compile(PATTERN_EDIT_STARTTIME).matcher(userContent);
+		EDIT_ENDDATETIME = Pattern.compile(PATTERN_EDIT_ENDDATETIME).matcher(userContent);
+		EDIT_ENDDATE = Pattern.compile(PATTERN_EDIT_ENDDATE).matcher(userContent);
+		EDIT_ENDTIME = Pattern.compile(PATTERN_EDIT_ENDTIME).matcher(userContent);
+		EDIT_TITLE = Pattern.compile(PATTERN_EDIT_TITLE).matcher(userContent);
+	}
+
+	private void checkForMatch(String userContent) {
+		if(EDIT_STARTENDDATETIME.matches() || EDIT_STARTDATETIME.matches() || EDIT_STARTDATE.matches()
+				|| EDIT_STARTTIME.matches() || EDIT_ENDDATETIME.matches() || EDIT_ENDDATE.matches()
+				|| EDIT_ENDTIME.matches() || EDIT_TITLE.matches()) {
+			isReadyToEdit = true;
+		} else {
+			isReadyToEdit = false;
+		}
+	}
+
+	private void checkValidTaskID(int lineNum, TaskListSet allLists, Validation validOp) {
+		assert(validOp.isValidTask(lineNum, allLists)): "Invalid line number."+lineNum;
+
+		if(validOp.isValidTask(lineNum, allLists)) {
+			isValidLineNum =  true;
+			taskID = validOp.checkForTaskID(lineNum, allLists);
+		} else {
+			isValidLineNum = false;
+			LOGGER_Edit.log(Level.SEVERE, "User select non existing task!");
+		}
+
+	}
+
+	private Task getToEditTask(int taskID, TaskListSet allLists) {
+		for(Task task : allLists.getTaskList()) {
+			if(taskID == task.getTaskID()) {
+				return task;
+			} 
+		}
+
+		return null;
+	}
+
+	private void matchEditProcess(String editInfo, Task tempTask) {
+		assert tempTask != null;
+		if(EDIT_STARTENDDATETIME.matches()) {
+			editStartEndDateTime(editInfo, tempTask);
+		} else if(EDIT_STARTDATETIME.matches()) {
+			editStartDateTime(editInfo, tempTask);
+		} else if(EDIT_STARTDATE.matches()) {
+			editStartDate(editInfo, tempTask);
+		} else if(EDIT_STARTTIME.matches()) {
+			editStartTime(editInfo, tempTask);
+		} else if(EDIT_ENDDATE.matches()) {
+			editEndDate(editInfo, tempTask);
+		} else if(EDIT_ENDTIME.matches()) {
+			editEndTime(editInfo, tempTask);
+		} else if(EDIT_ENDDATETIME.matches()) {
+			editEndDateTime(editInfo, tempTask);
+		} else if(EDIT_TITLE.matches()) {
+			editTitle(editInfo, tempTask);
+		}
+	}
+
+	private void editTitle(String userContent, Task tempTask) {
+		assert tempTask != null;
+		String taskTitle = EDIT_TITLE.group(3);
+		tempTask.setTaskName(taskTitle);
+		isEdited = true;
+	}
+
+	private void editStartEndDateTime(String userContent, Task tempTask) {
+		assert tempTask != null;
+		LocalDate startDate = dtCheck.toValidDate(EDIT_STARTENDDATETIME.group(5));
+		LocalTime startTime = dtCheck.determineHour(EDIT_STARTENDDATETIME.group(11));
+		LocalDate endDate = dtCheck.toValidDate(EDIT_STARTENDDATETIME.group(17));
+		LocalTime endTime = dtCheck.determineHour(EDIT_STARTENDDATETIME.group(23));
+
+		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+			if((tempTask.getTaskType().equals(TYPE_FLOATING)) || (tempTask.getTaskType().equals(TYPE_DEADLINE))) {
+				tempTask.setTaskType(TYPE_TIMED);
+				isTaskTypeChanged = true;
+				editedTaskType = TYPE_TIMED;
+			}
+
+			isEdited = true;
+			tempTask.setTaskStartDate(startDate);
+			tempTask.setTaskStartTime(startTime);
+			tempTask.setTaskEndDate(endDate);
+			tempTask.setTaskEndTime(endTime);
+
+		}
+	}
+
+	private void editStartDateTime(String userContent, Task tempTask) {
+		assert tempTask != null;
+		LocalDate startDate = dtCheck.toValidDate(EDIT_STARTDATETIME.group(5));
+		LocalTime startTime = dtCheck.determineHour(EDIT_STARTDATETIME.group(11));
+		System.out.println(startDate);
+		LocalDate endDate = tempTask.getTaskEndDate();
+		LocalTime endTime = tempTask.getTaskEndTime();
+
+		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+			if((tempTask.getTaskType().equals(TYPE_FLOATING)) || (tempTask.getTaskType().equals(TYPE_DEADLINE))) {
+				tempTask.setTaskType(TYPE_TIMED);
+				isTaskTypeChanged = true;
+				editedTaskType = TYPE_TIMED;
+			}
+			isEdited = true;
+			tempTask.setTaskStartDate(startDate);
+			tempTask.setTaskStartTime(startTime);
+		}
+	}
+
+	private void editStartDate(String userContent, Task tempTask) {
+		assert tempTask != null;
+		LocalDate startDate = dtCheck.toValidDate(EDIT_STARTDATE.group(5));
+		LocalDate endDate = tempTask.getTaskEndDate();
+		LocalTime endTime = tempTask.getTaskEndTime();
+		LocalTime startTime = tempTask.getTaskStartTime();
+
+		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+			if((tempTask.getTaskType().equals(TYPE_FLOATING)) || (tempTask.getTaskType().equals(TYPE_DEADLINE))) {
+				tempTask.setTaskType(TYPE_TIMED);
+				isTaskTypeChanged = true;
+				editedTaskType = TYPE_TIMED;
+			} 
+			isEdited = true;
+			tempTask.setTaskStartDate(startDate);
+
+		}
+	}
+
+	private void editStartTime(String userContent, Task tempTask) {
+		assert tempTask != null;
+		LocalTime startTime = dtCheck.determineHour(EDIT_STARTTIME.group(5));
+		LocalTime endTime = tempTask.getTaskEndTime();
+		LocalDate endDate = tempTask.getTaskEndDate();
+		LocalDate startDate = tempTask.getTaskStartDate();
+		if(tempTask.getTaskType().equals(TYPE_TIMED)) {
+			if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+				isEdited = true;
+				tempTask.setTaskStartTime(startTime);
+			}
+		} 
+	}
+
+	private void editEndDate(String userContent, Task tempTask) {
+		assert tempTask != null;
+		LocalDate endDate = dtCheck.toValidDate(EDIT_ENDDATE.group(5));
+		LocalTime endTime = tempTask.getTaskEndTime();
+		LocalTime startTime = tempTask.getTaskStartTime();
+		LocalDate startDate = tempTask.getTaskStartDate();
+
+		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+			if(!tempTask.getTaskType().equals(TYPE_FLOATING)) {
+				isEdited = true;
+				tempTask.setTaskEndDate(endDate);
+			}
+		}
+	}
+
+	private void editEndTime(String userContent, Task tempTask) {
+		assert tempTask != null;
+		LocalTime endTime = dtCheck.determineHour(EDIT_ENDTIME.group(5));
+		LocalDate endDate = tempTask.getTaskEndDate();
+		LocalDate startDate = tempTask.getTaskStartDate();
+		LocalTime startTime = tempTask.getTaskStartTime();
+
+		if(tempTask.getTaskType().equals(TYPE_FLOATING)) {
+			isEdited = false;
+			isInvalidType = true;
+		} else if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+			if(tempTask.getTaskEndDate() == null && tempTask.getTaskType().equals(TYPE_TIMED)) {
+				tempTask.setTaskEndDate(tempTask.getTaskStartDate());
+			}
+
+			isEdited = true;
+			tempTask.setTaskEndTime(endTime);
+
+		} else {
+			isEdited = false;
+		}
+	}
+
+	//only for timed tasks, else use deadline function
+	private void editEndDateTime(String userContent, Task tempTask) {
+		assert tempTask != null;
+		LocalDate endDate = dtCheck.toValidDate(EDIT_ENDDATETIME.group(5));
+		LocalTime endTime = dtCheck.determineHour(EDIT_ENDDATETIME.group(11));
+		LocalDate startDate = tempTask.getTaskStartDate();
+		LocalTime startTime = tempTask.getTaskStartTime();
+
+		if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+			if(tempTask.getTaskType().equals(TYPE_TIMED)) {
+				tempTask.setTaskEndDate(endDate);
+				tempTask.setTaskEndTime(endTime);
+				isEdited = true;
+			}
+
+		}
+	}
+
+
+}
+
+
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\EditTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\FloatTask.java
+	 */
+
+public class FloatTask {
+	private static final Logger LOGGER = Logger.getLogger(FloatTask.class.getName());
+	private static final String MESSAGE_SUCCESS = "Set float task operation is successful!";
+	private static final String MESSAGE_INVALID_TYPE = "Selected task is already a floating task!";
+	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
+	private static final String MESSAGE_INVALID_CONTENT = "Set float task operation failed for invalid content!";
+	private static final String PATTERN_FLOAT = "([0-9]+)";
+
+	private static final String TYPE_DEADLINE = "DEADLINE";
+	private static final String TYPE_FLOATING = "FLOATING";
+	private static final String TYPE_TIMED = "TIMED";
+	
+	
+
+	public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {
+		int lineNum;
+		Matcher FLOAT_MATCHER = Pattern.compile(PATTERN_FLOAT).matcher(taskInfo);
+		ResultSet returnResult = new ResultSet();
+		
+		if(FLOAT_MATCHER.matches()) {
+			try {
+				lineNum = Integer.parseInt(taskInfo.trim());
+			} catch (NumberFormatException e) {
+				LOGGER.throwing(getClass().getName(), "execute", e);
+				LOGGER.severe("Invalid number format");
+				throw e;
+			}
+			
+			if(validOp.isValidTask(lineNum, allLists)) {
+				int taskID = validOp.checkForTaskID(lineNum, allLists);
+				assert taskID >= 0;
+				returnResult.setOpStatus(setTaskToFloat(taskID, allLists.getTaskList()));
+				returnResult.setCommandType(CommandParser.COMMAND_TYPE.FLOAT_TASK);
+			} else {
+				returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+			}
+		} else {
+			returnResult.setOpStatus(MESSAGE_INVALID_CONTENT);
+		}
+		
+		returnResult.setReturnList(allLists.getTaskList());
+		returnResult.setCommandType(COMMAND_TYPE.FLOAT_TASK);
+		return returnResult;
+	}
+
+	private String setTaskToFloat(int taskID, ArrayList<Task> taskList) {
+		Task tempTask = new Task();
+		String opStatus = "";
+
+		for(int i = 0; i < taskList.size(); i++) {
+			tempTask = taskList.get(i);
+			opStatus = setDateTimeInfo(taskID, tempTask, opStatus);
+		}
+
+		return opStatus;
+	}
+
+	private String setDateTimeInfo(int taskID, Task tempTask, String opStatus) {
+		if(tempTask.getTaskID() == taskID) {
+			if(tempTask.getTaskType().equals(TYPE_DEADLINE) || tempTask.getTaskType().equals(TYPE_TIMED)) {
+				tempTask.setTaskEndDate(null);
+				tempTask.setTaskEndTime(null);
+				tempTask.setTaskStartDate(null);
+				tempTask.setTaskStartTime(null);
+				tempTask.setTaskType(TYPE_FLOATING);
+				opStatus = MESSAGE_SUCCESS;
+			} else {
+				opStatus = MESSAGE_INVALID_TYPE;
+			}
+
+		}
+		return opStatus;
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\FloatTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\LoadTask.java
+	 */
+
+public class LoadTask {
+	private final static Logger LOGGER = Logger.getLogger(LoadTask.class.getName());
+	private final static String MESSAGE_LOAD_SUCCESS= "Loaded %1$s successfully!";
+	private final static String MESSAGE_NEWFILE_SUCCESS= "File not found. %1$s has been created successfully!";
+	private final static String FILE_TEMP_STORAGE = "tasklists.tmp";
+	private final static String MESSAGE_TEMPFILE_ACCESS = "Unable to load file! Please check file name!";
+	private final static String MESSAGE_TEMPFILE_NOTFOUND = "Nothing to recover!";
+	private final static String MESSAGE_TEMPFILE_FOUND = "Tasklist recovered!";
+	
+	ResultSet returnResult = new ResultSet();
+	Storage tempStorage = new Storage();
+	
+	public ResultSet recoverTempList(TaskListSet allLists) throws IOException {
+		File recoverFile = new File(FILE_TEMP_STORAGE);
+		try {
+			recoverFile.createNewFile();
+		} catch (SecurityException e) {
+			LOGGER.throwing(getClass().getName(), "recoverTempList", e);
+			LOGGER.severe("Security settings prevent creating a new recovery file");
+			throw e;
+		}
+		if(recoverFile.exists()) {
+			allLists.setTaskList(tempStorage.readFile(FILE_TEMP_STORAGE));
+			returnResult.setOpStatus(MESSAGE_TEMPFILE_FOUND);
+		} else {
+			returnResult.setOpStatus(MESSAGE_TEMPFILE_NOTFOUND);
+		}
+		
+		returnResult.setReturnList(allLists.getTaskList());
+		return returnResult;
+	}
+	
+	public ResultSet execute(TaskListSet allLists, String fileName) throws IOException {
+		if(!allLists.getTaskList().isEmpty()) {
+			File tempFile = new File(FILE_TEMP_STORAGE);
+			try {
+				tempFile.createNewFile();
+			} catch (SecurityException e) {
+				LOGGER.throwing(getClass().getName(), "execute", e);
+				LOGGER.severe("Security settings prevent creating a new temporary file");
+				throw e;
+			}
+			
+			if(!tempFile.exists()) {
+				PrintWriter writer = new PrintWriter(FILE_TEMP_STORAGE);
+				writer.print("");
+				writer.close();
+			} else {
+				tempStorage.writeFile(allLists.getTaskList(), FILE_TEMP_STORAGE);
+			}
+			
+		}
+		
+		File userFile = new File(fileName);
+		if(!fileName.equals(FILE_TEMP_STORAGE)) {
+			try {
+				userFile.createNewFile();
+			} catch (SecurityException e) {
+				LOGGER.throwing(getClass().getName(), "recoverTempList", e);
+				LOGGER.severe("Security settings prevent creating a new user storage");
+				throw e;
+			}
+			
+			if(!userFile.exists()) {
+				returnResult.setOpStatus(String.format(MESSAGE_NEWFILE_SUCCESS, fileName));
+				allLists.setTaskList(null);
+			} else {
+				returnResult.setOpStatus(String.format(MESSAGE_LOAD_SUCCESS, fileName));
+				allLists.setTaskList(tempStorage.readFile(fileName));
+			}
+		} else {
+			returnResult.setOpStatus(MESSAGE_TEMPFILE_ACCESS);
+		}
+		
+		returnResult.setReturnList(allLists.getTaskList());
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.LOAD);
+		return returnResult;
+	}
+	
+	
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\LoadTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\Logic.java
+	 */
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import organizer.storage.Storage;
+
+public class Logic {
+	private final static String MODE_INIT_VIEW = "all";
+	private final static String OP_VIEW = "View Tasks Filter: %1$s \nStatus: ";
+	private final static String LAST_SAVED_FILENAME = "lastSaved.tmp";
+	private final static String LOGGER_FileStatus = "Currently working on %1$s";
+	private final static Logger LOGGER_Logic= Logger.getLogger(Logic.class.getName()); 
+	public static String MODE_VIEW = "all";
+
+	String TERM_SEARCH = "";
+	Storage tempStorage = new Storage();
+	ResultSet returnResult = new ResultSet();
+	TaskListSet allLists = new TaskListSet();
+	Validation validOp = new Validation();
+	UndoCommand undoOp = new UndoCommand();
+	boolean isDefaultFile = true;
+	String userFile = "";
+	String defaultFileName = "storage.txt";
+
+	public static Stack<ArrayList<Task>> undoList = new Stack<ArrayList<Task>>();
+
+	public ArrayList<Task> loadStorage(InputStream in) throws IOException {
+		allLists.setTaskList(tempStorage.readFromStream(in));
+		validOp.setIsSearch(false);
+		validOp.setIsView(false);
+		return viewDefault();
+	}
+
+	public ArrayList<Task> loadStorage() throws IOException {
+		File tempFile = new File(LAST_SAVED_FILENAME);
+
+		try {
+			Scanner sc = new Scanner(tempFile);
+			while(sc.hasNextLine()) {
+				String lastSavedName = sc.nextLine();
+				allLists.setTaskList(tempStorage.readFile(lastSavedName));
+				LOGGER_Logic.log(Level.INFO, String.format(LOGGER_FileStatus, lastSavedName));
+				isDefaultFile = false;
+				userFile = lastSavedName;
+			}
+			
+			sc.close();
+			tempFile.delete();
+
+		} catch (FileNotFoundException e) {
+			allLists.setTaskList(tempStorage.readFile());
+			LOGGER_Logic.log(Level.INFO, String.format(LOGGER_FileStatus, defaultFileName));
+		}
+
+		validOp.setIsView(false);
+		validOp.setIsSearch(false);
+		return viewDefault();
+	}
+
+	public void writeStorage() throws IOException {
+		try {
+			tempStorage.writeFile(allLists.getTaskList());
+		} catch (IOException e) {
+			LOGGER_Logic.throwing(getClass().getName(), "writeStorage", e);
+			LOGGER_Logic.warning("Attempt to write storage into file failed");
+			throw e;
+		}
+	}
+
+	public void writeStorage(OutputStream out) throws IOException {
+		try {
+			tempStorage.writeFileToStream(allLists.getTaskList(), out);
+		} catch (IOException e) {
+			LOGGER_Logic.throwing(getClass().getName(), "writeStorage", e);
+			LOGGER_Logic.warning("Attempt to write storage into stream failed");
+			throw e;
+		}
+	}
+
+	public ArrayList<Task> viewDefault() {
+		ViewTask command = new ViewTask();
+		if(validOp.getIsView()) {
+			allLists.setViewList(viewCommand(MODE_VIEW).getReturnList());
+			allLists.setInitList(allLists.getViewList());
+		} else if(validOp.getIsSearch()) {
+			allLists.setResultList(searchCommand(TERM_SEARCH).getReturnList());
+			allLists.setInitList(allLists.getResultList());
+		} else {
+			ResultSet returnResult = command.execute(MODE_INIT_VIEW, allLists);
+			allLists.setInitList(returnResult.getReturnList());
+		}
+
+		return allLists.getInitList();
+	}
+
+	public ResultSet addCommand(String taskInfo) {
+		addToUndoList(allLists.getTaskList());
+		AddTask command = new AddTask();
+		returnResult = command.execute(taskInfo, allLists);
+		validOp.setIsSearch(false);
+		validOp.setIsView(false);
+		MODE_VIEW = "all";
+		setViewMode();
+		return returnResult;
+	}
+
+	public ResultSet deleteCommand(String taskInfo) {
+		addToUndoList(allLists.getTaskList());
+		DeleteTask command = new DeleteTask();
+		returnResult = command.execute(taskInfo, allLists, validOp);
+		setViewMode();
+		return returnResult;
+	}
+
+	public ResultSet searchCommand(String searchTerm) {
+		SearchTask command = new SearchTask();
+		returnResult = command.execute(searchTerm, allLists);
+		validOp.setIsSearch(true);
+		TERM_SEARCH = searchTerm;
+		return returnResult;
+	}
+
+	public ResultSet viewCommand(String viewType) {
+		ViewTask command = new ViewTask();
+		returnResult = command.execute(viewType, allLists);
+		validOp.setIsView(true);
+		validOp.setIsSearch(false);
+		MODE_VIEW = viewType;
+		return returnResult;
+	}
+
+	public ResultSet postponeCommand(String taskInfo) {
+		addToUndoList(allLists.getTaskList());
+		PostponeTask command = new PostponeTask();
+		returnResult = command.execute(taskInfo, allLists, validOp);
+		setViewMode();
+		return returnResult;
+	}
+
+	public ResultSet clearCommand() {
+		addToUndoList(allLists.getTaskList());
+		ClearTask command = new ClearTask();
+		returnResult = command.execute(allLists.getTaskList());
+		return returnResult;
+	}
+
+	public ResultSet rankCommand(String taskInfo) {
+		addToUndoList(allLists.getTaskList());
+		RankTask command = new RankTask();
+		returnResult = command.execute(taskInfo, allLists, validOp);
+		setViewMode();
+		return returnResult;
+	}
+
+	public ResultSet completeCommand(String taskInfo) {
+		addToUndoList(allLists.getTaskList());
+		CompleteTask command = new CompleteTask();
+		returnResult = command.execute(taskInfo, allLists, validOp);
+		setViewMode();
+		return returnResult;	
+	}
+
+	public ResultSet incompleteCommand(String taskInfo) {
+		addToUndoList(allLists.getTaskList());
+		IncompleteTask command = new IncompleteTask();
+		returnResult = command.execute(taskInfo, allLists, validOp);
+		setViewMode();
+		return returnResult;	
+	}
+
+	public ResultSet editCommand(String userContent) {
+		addToUndoList(allLists.getTaskList());
+		EditTask command = new EditTask();
+		returnResult = command.execute(userContent, allLists, validOp);
+		setViewMode();
+		return returnResult;
+	}
+	
+	public ResultSet deadlineCommand(String userContent) {
+		addToUndoList(allLists.getTaskList());
+		DeadlineTask command = new DeadlineTask();
+		returnResult = command.execute(userContent, allLists, validOp);
+		setViewMode();
+		return returnResult;
+	}
+
+	public ResultSet undoCommand() {
+		UndoCommand command = new UndoCommand();
+		returnResult = command.execute(allLists, undoList, validOp.getIsView(), validOp.getIsSearch());
+		setViewMode();
+		return returnResult;
+	}
+
+	public ResultSet floatCommand(String userContent) {
+		addToUndoList(allLists.getTaskList());
+		FloatTask command = new FloatTask();
+		returnResult = command.execute(userContent, allLists, validOp);
+		setViewMode();
+		return returnResult;
+	}
+
+	public void addToUndoList(ArrayList<Task> taskList) {
+		ArrayList<Task> tempTaskList = new ArrayList<Task>();
+		for(int index = 0; index < taskList.size(); index++) {
+			Task tempTask = new Task();
+			tempTask.setTaskStartDate(taskList.get(index).getTaskStartDate());
+			tempTask.setTaskType(taskList.get(index).getTaskType());
+			tempTask.setTaskEndDate(taskList.get(index).getTaskEndDate());
+			tempTask.setTaskEndTime(taskList.get(index).getTaskEndTime());
+			tempTask.setTaskStartTime(taskList.get(index).getTaskStartTime());
+			tempTask.setTaskID(taskList.get(index).getTaskID());
+			tempTask.setTaskName(taskList.get(index).getTaskName());
+			tempTask.setTaskPriority(taskList.get(index).getTaskPriority());
+			tempTask.setTaskStatus(taskList.get(index).getTaskStatus());
+			tempTaskList.add(tempTask);
+		}
+		undoList.push(new ArrayList<Task>(tempTaskList));
+	}
+
+	public ResultSet saveCommand() throws IOException {
+		SaveTask command = new SaveTask();
+		String lastSaveFileName = "";
+
+		if(isDefaultFile) {
+			returnResult = command.executeSave(allLists.getTaskList());
+			lastSaveFileName = defaultFileName;
+		} else {
+			returnResult = command.executeSaveAs(allLists.getTaskList(), userFile);
+			lastSaveFileName = userFile;
+		}
+
+		createlastSaveTempFile(lastSaveFileName);
+
+		setViewMode();
+		return returnResult;
+	}
+
+	public ResultSet saveAsCommand(String fileName) throws IOException {
+		SaveTask command = new SaveTask();
+		returnResult = command.executeSaveAs(allLists.getTaskList(), fileName);
+		setViewMode();
+		isDefaultFile = false;
+		userFile = fileName;
+		createlastSaveTempFile(userFile);
+		return returnResult;
+	}
+
+	private void setViewMode() {
+		String operationMessage = returnResult.getOpStatus();
+		returnResult.setReturnList(viewDefault());
+		returnResult.setOpStatus(String.format(OP_VIEW, MODE_VIEW).concat(operationMessage));
+	}
+
+	public ResultSet setViewMode(ResultSet returnResult) {
+		String operationMessage = returnResult.getOpStatus();
+		returnResult.setReturnList(viewDefault());
+		returnResult.setOpStatus(String.format(OP_VIEW, MODE_VIEW).concat(operationMessage));
+		return returnResult;
+	}
+
+	public ResultSet loadFileCommand(String fileName) throws IOException {
+		LoadTask command = new LoadTask();
+		returnResult = command.execute(allLists, fileName);
+		validOp.setIsSearch(false);
+		validOp.setIsView(false);
+		returnResult.setReturnList(viewDefault());
+		MODE_VIEW = "all";
+		isDefaultFile = false;
+		userFile = fileName;
+		setViewMode();
+		return returnResult;
+	}
+
+	public void createlastSaveTempFile(String lastSaveFileName) {
+		PrintWriter writer = null;
+		try {
+			writer = new PrintWriter(LAST_SAVED_FILENAME);
+		} catch (FileNotFoundException e) {
+			LOGGER_Logic.log(Level.SEVERE, "I/O error");
+		}
+		
+		assert(writer != null): "Writer is not available!";
+		
+		writer.print(lastSaveFileName);
+		writer.close();
+	}
+
+}
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\Logic.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\SaveTask.java
+	 */
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Logger;
+
+import organizer.parser.CommandParser;
+import organizer.storage.Storage;
+
+public class SaveTask {
+	private final static Logger LOGGER = Logger.getLogger(SaveTask.class.getName());
+	private final static String MESSAGE_SAVE_SUCCESS= "Task list saved to file storage.txt successfully!";
+	private final static String MESSAGE_SAVEAS_SUCCESS= "Task list saved to file %1$s successfully!";
+
+	ResultSet returnResult = new ResultSet();
+	Storage tempStorage = new Storage();
+	
+	public ResultSet executeSave(ArrayList<Task> taskList) throws IOException {
+		try {
+			tempStorage.writeFile(taskList);
+		} catch (IOException e) {
+			LOGGER.throwing(getClass().getName(), "executeSaveAs", e);
+			LOGGER.severe("Failed to save into default file");
+			throw e;
+		}
+		returnResult.setOpStatus(MESSAGE_SAVE_SUCCESS);
+		returnResult.setReturnList(taskList);
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.SAVE);
+		return returnResult;
+	}
+	
+	public ResultSet executeSaveAs(ArrayList<Task> taskList, String fileName) throws IOException {
+		try {
+			tempStorage.writeFile(taskList, fileName);
+		} catch (IOException e) {
+			LOGGER.throwing(getClass().getName(), "executeSaveAs", e);
+			LOGGER.severe("Failed to save as a file");
+			throw e;
+		}
+		returnResult.setOpStatus(String.format(MESSAGE_SAVEAS_SUCCESS, fileName));
+		returnResult.setReturnList(taskList);
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.SAVEAS);
+		return returnResult;
+	}
+	
+	
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\SaveTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\UndoCommand.java
+	 */
+
+public class UndoCommand {
+	private final static String MESSAGE_UNDO_SUCCESS = "Undo successfully!";
+	private final static String MESSAGE_UNDO_FAIL = "No actions to undo!";
+	ResultSet returnResult = new ResultSet();
+	ViewTask refreshTask = new ViewTask();
+	
+	public ResultSet execute(TaskListSet allLists, Stack<ArrayList<Task>> undoList, boolean isView, boolean isSearch) {
+		if(!undoList.isEmpty()) {
+			allLists.setTaskList(undoList.pop());
+			returnResult.setOpStatus(MESSAGE_UNDO_SUCCESS);
+		} else {
+			returnResult.setOpStatus(MESSAGE_UNDO_FAIL);
+		}
+		
+		if(isView) {
+			returnResult.setReturnList(allLists.getViewList());
+		} else if(isSearch) {
+			returnResult.setReturnList(allLists.getResultList());
+		} else {
+			returnResult.setReturnList(allLists.getTaskList());
+		}
+		
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.UNDO);
+		return returnResult;
+	}
+	
+	
+	
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\UndoCommand.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\Validation.java
+	 */
+
+public class Validation {
+    private static final String rankPattern = "high|medium|low|remove";
+    
+    boolean isSearch, isView;
+    
+    public Validation() {
+        this.isSearch = false;
+        this.isView = false;
+    }
+    
+    public boolean getIsView() {
+        return isView;
+    }
+    
+    public void setIsView(boolean isView) {
+        this.isView = isView;
+    }
+    
+    public boolean getIsSearch() {
+        return isSearch;
+    }
+    
+    public void setIsSearch(boolean isSearch) {
+        this.isSearch = isSearch;
+    }
+    
+    public boolean isValidTask(int lineNum, TaskListSet allList) {
+        if(getIsSearch() && lineNum > allList.getResultList().size()) {
+            return false;
+        } else if(getIsView() && lineNum > allList.getViewList().size()) {
+            return false;
+        } else if(lineNum > allList.getTaskList().size()){
+            return false;
+        } else if(lineNum <= 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+    public int checkForTaskID(int lineNum, TaskListSet allList) {
+        int taskID = -1;
+        if(isSearch) {
+            taskID = allList.getResultList().get(lineNum-1).getTaskID();
+        } else if(isView) {
+            taskID = allList.getViewList().get(lineNum-1).getTaskID();         
+        } else {
+            taskID = allList.getTaskList().get(lineNum-1).getTaskID();
+        }
+        return taskID;
+    }
+    
+    public boolean isValidRank(String taskRank) {
+        if(taskRank.matches(rankPattern)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\Validation.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\ViewTask.java
+	 */
+
+public class ViewTask {
+	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
+	private static final String MESSAGE_SUCCESS = "View Tasks Filter: %1$s";
+	private static final String MESSAGE_UNSUCCESS = "Invalid view filter!";
+	private static final String STATUS_INCOMPLETE = "INCOMPLETE";
+
+	private enum ViewType {
+		TODAY,
+		TOMORROW,
+		DEADLINE,
+		FLOATING,
+		HIGH,
+		MEDIUM,
+		LOW,
+		TIMED,
+		COMPLETE,
+		INCOMPLETE,
+		OVERDUE,
+		ALL;
+
+		public String toString() {
+			switch (this) {
+			case TODAY: return "today";
+			case TOMORROW: return "tomorrow";
+			case COMPLETE: return "COMPLETE";
+			case INCOMPLETE: return "INCOMPLETE";
+			case DEADLINE: return "DEADLINE";
+			case FLOATING: return "FLOATING";
+			case HIGH: return "HIGH";
+			case MEDIUM: return "MEDIUM";
+			case LOW: return "LOW";
+			case TIMED: return "TIMED";
+			case OVERDUE: return "OVERDUE";
+			case ALL: return "all";
+			default: return "any";
+			}
+		}
+	}
+
+	public ResultSet execute(String viewTypeString, TaskListSet allLists){
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		allLists.setViewList(tempList);
+		ResultSet returnResult = new ResultSet();
+
+		switch (viewTypeString.trim().toLowerCase()) {
+		case "today":
+			allLists.setViewList(viewToday(allLists.getTaskList()));
+			break;
+		case "tomorrow":
+			allLists.setViewList(viewTomorrow(allLists.getTaskList()));
+			break;
+		case "complete":
+			allLists.setViewList(viewComplete(allLists.getTaskList()));
+			break;
+		case "incomplete":
+			allLists.setViewList(viewIncomplete(allLists.getTaskList()));
+			break;
+		case "all":
+			allLists.setViewList(allLists.getTaskList());
+			break;
+		case "floating":
+			allLists.setViewList(viewFloating(allLists.getTaskList()));
+			break;
+		case "timed":
+			allLists.setViewList(viewTimed(allLists.getTaskList()));
+			break;
+		case "deadline":
+			allLists.setViewList(viewDeadline(allLists.getTaskList()));
+			break;
+		case "overdue":
+			allLists.setViewList(viewOverDue(allLists.getTaskList()));
+			break;
+		case "high":
+			viewTypeString = viewTypeString.concat(" ranked");
+			allLists.setViewList(viewRank(allLists.getTaskList(),(ViewType.HIGH).toString()));
+			break;
+		case "medium":
+			viewTypeString = viewTypeString.concat(" ranked");
+			allLists.setViewList(viewRank(allLists.getTaskList(),(ViewType.MEDIUM).toString()));
+			break;
+		case "low":
+			viewTypeString = viewTypeString.concat(" ranked");
+			allLists.setViewList(viewRank(allLists.getTaskList(),(ViewType.LOW).toString()));
+			break;
+		default:
+			returnResult.setReturnList(allLists.getViewList());
+			returnResult.setOpStatus(String.format(MESSAGE_UNSUCCESS, viewTypeString));
+			return returnResult;
+		}
+		
+		returnResult.setReturnList(allLists.getViewList());
+		returnResult.setOpStatus(isEmptyView(allLists.getViewList(), viewTypeString));
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.VIEW_TASK);
+		return returnResult;
+
+	}
+	
+	private String isEmptyView(ArrayList<Task> viewList, String viewTypeString) {
+		if(viewList.isEmpty()) {
+			return MESSAGE_EMPTY_LIST;
+		} else {
+			return String.format(MESSAGE_SUCCESS, viewTypeString);
+		}
+	}
+	
+	private ArrayList<Task> viewToday(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			if((taskList.get(index).getTaskEndDate() != null && taskList.get(index).getTaskEndDate().equals(LocalDate.now())) 
+					|| (taskList.get(index).getTaskStartDate() != null && taskList.get(index).getTaskStartDate().equals(LocalDate.now()))) {
+				tempList.add(taskList.get(index));
+			}
+		}
+		
+		return tempList;
+	}
+	
+	private ArrayList<Task> viewTomorrow(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			if((taskList.get(index).getTaskEndDate() != null && taskList.get(index).getTaskEndDate().equals(LocalDate.now().plusDays(1))) 
+					|| (taskList.get(index).getTaskStartDate() != null && taskList.get(index).getTaskStartDate().equals(LocalDate.now().plusDays(1)))) {
+				tempList.add(taskList.get(index));
+			}
+		}
+		
+		return tempList;
+	}
+	
+	private ArrayList<Task> viewRank(ArrayList<Task> taskList, String rankType) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		Task tempTask = new Task();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			tempTask = taskList.get(index);
+			if(tempTask.getTaskPriority() != null && tempTask.getTaskPriority().equals(rankType)) {
+				tempList.add(taskList.get(index));
+			}
+		}
+		return tempList;
+	}
+	
+	private ArrayList<Task> viewComplete(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			if(taskList.get(index).getTaskStatus().equals(ViewType.COMPLETE.toString())) {
+				tempList.add(taskList.get(index));
+			}
+		}
+		
+		return tempList;
+	}
+	
+	private ArrayList<Task> viewIncomplete(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			if(taskList.get(index).getTaskStatus().equals(ViewType.INCOMPLETE.toString())) {
+				tempList.add(taskList.get(index));
+			}
+		}
+		
+		return tempList;
+	}
+	
+	private ArrayList<Task> viewFloating(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			if(taskList.get(index).getTaskType().equals(ViewType.FLOATING.toString())) {
+				tempList.add(taskList.get(index));
+			}
+		}
+		
+		return tempList;
+	}
+	
+	private ArrayList<Task> viewTimed(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			if(taskList.get(index).getTaskType().equals(ViewType.TIMED.toString())) {
+				tempList.add(taskList.get(index));
+			}
+		}
+		
+		return tempList;
+	}
+	
+	private ArrayList<Task> viewDeadline(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		Task tempTask = new Task();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			tempTask = taskList.get(index);
+			if(tempTask.getTaskType().equals(ViewType.DEADLINE.toString())) {
+				tempList.add(tempTask);
+			}
+		}
+		
+		return tempList;
+	}
+	
+	private ArrayList<Task> viewOverDue(ArrayList<Task> taskList) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		Task tempTask = new Task();
+		LocalDate currentDate = LocalDate.now();
+		LocalTime currentTime = LocalTime.now();
+		
+		for(int index = 0; index < taskList.size(); index++) {
+			tempTask = taskList.get(index);
+			
+			if(tempTask.getTaskEndDate() != null && tempTask.getTaskStatus().equals(STATUS_INCOMPLETE)) {
+				//date already overdue
+				if(tempTask.getTaskEndDate().compareTo(currentDate) < 0) {
+					tempList.add(tempTask);
+					//date is the same as current date so proceed to check time
+				} else if((tempTask.getTaskEndDate().compareTo(currentDate) == 0) && tempTask.getTaskEndTime() != null) {
+					if(tempTask.getTaskEndTime().compareTo(currentTime) < 0) {
+						tempList.add(tempTask);
+					}
+				}
+			
+			}
+		}
+		
+		return tempList;
+	}
+	
+	
+	
+}
+
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\ViewTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\DateAndTimeUnitTesting.java
+	 */
+
+public class DateAndTimeUnitTesting {
+
+	private DateAndTime dtChecker = new DateAndTime();
+	@Test
+	public void testIsValidDueDT() {
+		//first condition: due date is earlier than start date, vice versa
+		boolean output_1  = dtChecker.isValidDueDT(LocalDate.of(2015, 4, 1), LocalDate.of(2015, 3, 19), LocalTime.of(19, 00), LocalTime.of(20, 00));
+		boolean output_2 = dtChecker.isValidDueDT(LocalDate.of(2015, 3, 19), LocalDate.of(2015, 4, 1), LocalTime.of(19, 00), LocalTime.of(20, 00));
+
+		assertFalse(output_1);
+		assertTrue(output_2);
+
+		//second condition: due date and start date is the same, but due time is earlier than start time, vice versa
+		output_1 = dtChecker.isValidDueDT(LocalDate.of(2015, 3, 19), LocalDate.of(2015, 3, 19), LocalTime.of(20, 00), LocalTime.of(19, 00));
+		output_2 = dtChecker.isValidDueDT(LocalDate.of(2015, 3, 19), LocalDate.of(2015, 3, 19), LocalTime.of(19, 00), LocalTime.of(20, 00));
+		assertFalse(output_1);
+		assertTrue(output_2);
+
+		//third condition: due date and start date is not the same, and time is not an issue, but due date is earlier than start date, vice versa
+		output_1 = dtChecker.isValidDueDT(LocalDate.of(2015, 4, 1), LocalDate.of(2015, 3, 19), LocalTime.of(19, 00), null);
+		output_2 = dtChecker.isValidDueDT(LocalDate.of(2015, 3, 19), LocalDate.of(2015, 4, 1), null, LocalTime.of(19, 00));
+		assertFalse(output_1);
+		assertTrue(output_2);
+
+	}
+
+	@Test
+	public void testDetermineHour() {
+		//to ensure user input for time meets format requirements
+		String time_input = "9:00";
+		String time_expected = "09:00";
+		String time_output = dtChecker.determineHour(time_input).toString();
+		assertEquals(time_expected, time_output);
+
+		time_input = "09:00";
+		time_expected = "09:00";
+		time_output = dtChecker.determineHour(time_input).toString();
+		assertEquals(time_expected, time_output);
+	}
+
+	@Test
+	public void testToValidDate() {
+		//to ensure user input for date meets format requirements
+		String date_input = "2015-4-01";
+		String date_expected = "2015-04-01";
+		String date_output = dtChecker.toValidDate(date_input).toString();
+		assertEquals(date_expected, date_output);
+
+		date_input = "2015-4-1";
+		date_expected = "2015-04-01";
+		date_output = dtChecker.toValidDate(date_input).toString();
+		assertEquals(date_expected, date_output);
+		
+		date_input = "2015-04-1";
+		date_expected = "2015-04-01";
+		date_output = dtChecker.toValidDate(date_input).toString();
+		assertEquals(date_expected, date_output);
+
+	}
+
+	@Test
+	public void testDetermineDate() {
+		//to check if day conversion to date is successful
+		String day_input = "today";
+		String day_expected = LocalDate.now().toString();
+		String day_output = dtChecker.determineDate(day_input).toString();
+		assertEquals(day_expected, day_output);
+		
+		day_input = "tomorrow";
+		day_expected = LocalDate.now().plusDays(1).toString();
+		day_output = dtChecker.determineDate(day_input).toString();
+		assertEquals(day_expected, day_output);
+		
+		day_input = "monday";
+		day_expected = LocalDate.now().plusDays(7+1 - LocalDate.now().getDayOfWeek().getValue()).toString();
+		day_output = dtChecker.determineDate(day_input).toString();
+		assertEquals(day_expected, day_output);
+	}
+
+	@Test
+	public void testDetermineDay() {
+		//to test if can grab the date of the nearest day correctly
+		
+		String day_input = "monday";
+		String date_expected = "2015-04-20";
+		String day_output = dtChecker.determineDay(day_input).toString();
+		assertEquals(date_expected, day_output);
+	}
+
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\DateAndTimeUnitTesting.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\UndoCommandUnitTesting.java
+	 */
+
+public class UndoCommandUnitTesting {
+
+	private final UndoCommand undoTask = new UndoCommand();
+	private final CommandParser cp = new CommandParser();
+
+	@Test
+	public void testUndo() throws IOException {
+		final TaskListSet set = new TaskListSet();
+		ResultSet rs = cp.executeCommand("add buy milk by today");
+		int listSize = rs.getReturnList().size();
+		assertTrue(listSize == 1);
+		rs = undoTask.execute(set, Logic.undoList, false, false);
+		listSize = rs.getReturnList().size();
+		assertTrue(listSize == 0);
+		
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\UndoCommandUnitTesting.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\resources\ResourceUtil.java
+	 */
+
+public class ResourceUtil {
+
+	private final static String TEMP_FOLDER_NAME =  "c:/temp/";
+	private final static String FOLDER_TO_COPY = "resources/help_manual/";
+
+	public static File makeTemporaryFromResourceFolder(String resourcePath) throws IOException, URISyntaxException {
+		String sourcePath = MainApp.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		sourcePath = URLDecoder.decode(sourcePath, "UTF-8");
+		File destinationFile;
+
+		if(sourcePath.endsWith(".jar")) {
+			String destPath = sourcePath.substring(0, sourcePath.lastIndexOf("/"));
+			System.out.println(destPath);
+			destinationFile = getResourceFromJarFile(sourcePath, TEMP_FOLDER_NAME);
+		} else {
+			File sourceFile = new File(sourcePath.concat(resourcePath));
+			destinationFile = new File(TEMP_FOLDER_NAME);
+			Path sourceFilePath = sourceFile.toPath();
+			Path destinationFilePath = destinationFile.toPath();
+			Files.walkFileTree(sourceFilePath, new CopyDirVisitor(sourceFilePath, destinationFilePath, StandardCopyOption.REPLACE_EXISTING));
+		}
+
+		deleteDirOnExit(destinationFile);
+		return destinationFile;
+	}
+
+	public static File getResourceFromJarFile(String jarSource, String destDir) throws IOException {
+		JarFile jarFile = new JarFile(jarSource);
+		Enumeration<JarEntry> enumEntries = jarFile.entries();
+		List<JarEntry> resEntries = new ArrayList<JarEntry>();
+		File destFile = new File("");
+
+		while (enumEntries.hasMoreElements()) {
+			JarEntry file = (java.util.jar.JarEntry) enumEntries.nextElement();
+
+			// if its a directory, create it
+			if (file.getName().startsWith(FOLDER_TO_COPY)) { 
+				destFile = new File(destDir + java.io.File.separator + file.getName());
+				if(file.isDirectory() && !destFile.exists()) {
+					destFile.mkdirs();
+				} else {
+					resEntries.add(file);
+				}
+			}	
+		}
+
+		writeNonDirFiles(destDir, jarFile, resEntries);
+		jarFile.close();
+
+		destFile = new File(destDir+java.io.File.separator+FOLDER_TO_COPY);
+
+		return destFile;
+	}
+
+	private static void writeNonDirFiles(String destDir, JarFile jarFile, List<JarEntry> resEntries) throws IOException,FileNotFoundException {
+		File destFile;
+		for(int i = 0; i < resEntries.size(); i++) {
+			destFile = new File(destDir + java.io.File.separator + resEntries.get(i).getName());
+			executeWriteFile(jarFile, resEntries, destFile, i);
+		}
+	}
+
+	private static void executeWriteFile(JarFile jarFile,
+			List<JarEntry> resEntries, File destFile, int i)
+					throws IOException, FileNotFoundException {
+		if(!destFile.exists()) {
+			InputStream is = null;
+			FileOutputStream fos = null;
+			is = jarFile.getInputStream(resEntries.get(i)); // get the input stream
+			fos = new java.io.FileOutputStream(destFile);
+			readWriteFiles(is, fos);
+		}
+	}
+
+	private static void readWriteFiles(InputStream is, FileOutputStream fos) throws IOException {
+		// write contents of 'is' to 'fos'
+		while (is.available() > 0) {  
+			byte[] buffer = new byte[4096];
+			int n = 0;
+			while (-1 != (n = is.read(buffer))) {
+				fos.write(buffer, 0, n);
+			}
+		}
+		fos.close();
+		is.close();
+	}
+
+	public static void deleteDirOnExit(File tempResourceDir) {
+		tempResourceDir.deleteOnExit();
+		File[] files = tempResourceDir.listFiles();
+
+		for(int i = 0; i < files.length; i++) {
+			if (files[i].isDirectory()){
+				deleteDirOnExit(files[i]);
+			} else {
+				files[i].deleteOnExit();
+			}
+		}
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\resources\ResourceUtil.java
+
+
+
+
+

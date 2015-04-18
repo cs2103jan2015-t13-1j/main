@@ -1,0 +1,47 @@
+//@author: a0098824n-reused
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\resources\CopyDirVisitor.java
+	 */
+
+/**Adapted from http://codingjunkie.net/java-7-copy-move/ **/
+
+public class CopyDirVisitor extends SimpleFileVisitor<Path>
+{
+	private final Path sourcePath, destPath;
+	private final CopyOption copyOption;
+
+	public CopyDirVisitor(Path sourcePath, Path destPath, CopyOption copyOption)
+	{
+		this.sourcePath = sourcePath;
+		this.destPath = destPath;
+		this.copyOption = copyOption;
+	}
+
+	@Override
+	public FileVisitResult preVisitDirectory(Path sourceDir, BasicFileAttributes attrs) throws IOException
+	{
+		Path targetPath = destPath.resolve(sourcePath.relativize(sourceDir));
+
+		if(!Files.exists(targetPath)) {
+			File tempDir = new File(targetPath.toString());
+			tempDir.mkdirs();
+		}
+		return FileVisitResult.CONTINUE;
+	}
+
+	@Override
+	public FileVisitResult visitFile(Path sourceFile, BasicFileAttributes attrs) throws IOException
+	{
+		Files.copy(sourceFile, destPath.resolve(sourcePath.relativize(sourceFile)), copyOption);
+		return FileVisitResult.CONTINUE;
+	}
+}
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\resources\CopyDirVisitor.java
+
+
+
+
+

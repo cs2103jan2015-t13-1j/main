@@ -1,0 +1,1111 @@
+//@author: a0113871j
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\ClearTask.java
+	 */
+
+public class ClearTask {
+	private static final Logger LOGGER = Logger.getLogger(ClearTask.class.getName());
+	private static final String MESSAGE_EMPTY_LIST = "No task(s) found!";
+	private static final String MESSAGE_SUCCESS = "Clear task(s) operation is successful!";
+	
+	public ResultSet execute(ArrayList<Task> taskList){
+		ResultSet returnResult = new ResultSet();
+		
+		if(taskList.isEmpty()) {
+			returnResult.setOpStatus(MESSAGE_EMPTY_LIST);
+		} else {
+			taskList.clear();
+			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
+		}
+		
+		returnResult.setReturnList(taskList);
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.CLEAR_TASK);
+		
+		LOGGER.info("cleared");
+		return returnResult;
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\ClearTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\CompleteTask.java
+	 */
+
+public class CompleteTask {
+	private static final Logger LOGGER = Logger.getLogger(CompleteTask.class.getName());
+	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
+	private static final String MESSAGE_SUCCESS = "Complete task(s) operation is successful!";
+	private static final String STATUS_COMPLETE = "COMPLETE";
+	
+	public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {
+		int lineNum;
+		try {
+			lineNum = Integer.parseInt(taskInfo.trim());
+		} catch (NumberFormatException e) {
+			LOGGER.throwing(getClass().getName(), "execute", e);
+			LOGGER.severe("Invalid number format");
+			throw e;
+		}
+		ResultSet returnResult = new ResultSet();
+		ArrayList<Task> tempList = allLists.getTaskList();
+		
+		if(validOp.isValidTask(lineNum, allLists)) {
+			Task tempTask = null;
+			int taskID = validOp.checkForTaskID(lineNum, allLists);
+			assert taskID >= 0;
+			for (Task task : tempList) {
+				if (taskID == task.getTaskID()) {
+					tempTask = task;
+					task.setTaskStatus(STATUS_COMPLETE);
+					returnResult.setOpStatus(MESSAGE_SUCCESS);
+					LOGGER.info(String.format("mark task %s, id %d complete", task.getTaskName(), task.getTaskID()));
+					break;
+				}
+			}
+			assert tempTask != null;
+		} else {
+			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+		}
+		
+		allLists.setTaskList(tempList);
+		returnResult.setReturnList(allLists.getTaskList());
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.COMPLETE_TASK);
+		
+		return returnResult;
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\CompleteTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\IncompleteTask.java
+	 */
+
+public class IncompleteTask {
+	private static final Logger LOGGER = Logger.getLogger(IncompleteTask.class.getName());
+    private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
+    private static final String MESSAGE_SUCCESS = "Revert completed task operation is successful!";
+    private static final String STATUS_TASK = "INCOMPLETE";
+    
+    public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {
+        int lineNum;
+        try {
+        	lineNum = Integer.parseInt(taskInfo.trim());
+        } catch (NumberFormatException e) {
+        	LOGGER.throwing(getClass().getName(), "execute", e);
+        	LOGGER.severe("Invalid number format");
+        	throw e;
+        }
+        ResultSet returnResult = new ResultSet();
+        ArrayList<Task> tempList = allLists.getTaskList();
+        
+        if(validOp.isValidTask(lineNum, allLists)) {
+			int taskID = validOp.checkForTaskID(lineNum, allLists);
+			assert taskID >= 0;
+			for(Task task : tempList) {
+				if(taskID == task.getTaskID()) {
+					task.setTaskStatus(STATUS_TASK);
+					returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
+					break;
+				}
+			}
+		} else {
+			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+		}
+        
+        allLists.setTaskList(tempList);
+        returnResult.setReturnList(allLists.getTaskList());
+        returnResult.setCommandType(CommandParser.COMMAND_TYPE.INCOMPLETE_TASK);
+        return returnResult;
+    }
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\IncompleteTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\PostponeTask.java
+	 */
+
+public class PostponeTask {
+	private static final Logger LOGGER = Logger.getLogger(PostponeTask.class.getName());
+	private static final String MESSAGE_SUCCESS = "Postpone task operation is successful!";
+	private static final String MESSAGE_UNSUCCESS = "Postpone task operation failed for invalid content!";
+	private static final String MESSAGE_NODEADLINE = "No deadline found!";
+	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
+	private final static String PATTERN_POSTPONE = "([0-9]+)(\\s)(\\bby\\b)(\\s)(\\d)(\\s)(hours|hour|days|day|hr|hrs)";
+	private final static String PATTERN_HOUR = "hour|hours|hr|hrs";
+	private final static String PATTERN_DAY = "day|days";
+
+	public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {
+		Matcher POSTPONE = Pattern.compile(PATTERN_POSTPONE).matcher(taskInfo);
+		ResultSet returnResult = new ResultSet();
+		DateAndTime dtCheck = new DateAndTime();
+		
+		if(POSTPONE.matches()) {
+			int lineNum, NumofDaysOrhours;
+			try {
+				lineNum = Integer.parseInt(POSTPONE.group(1));
+				NumofDaysOrhours = Integer.parseInt(POSTPONE.group(5));
+			} catch (NumberFormatException e) {
+				LOGGER.throwing(getClass().getName(), "execute", e);
+				LOGGER.severe("Invalid format of postpone command, but regex check did not detect it");
+				throw e;
+			}
+			String timeIdentifier = POSTPONE.group(7);
+			assert timeIdentifier.length() > 0;
+					
+			Task tempTask = null;
+			
+			if(validOp.isValidTask(lineNum, allLists)) {
+				int taskID = validOp.checkForTaskID(lineNum, allLists);
+				assert taskID >= 0;
+				
+				for(Task task : allLists.getTaskList()) {
+					if(taskID == task.getTaskID()) {
+						tempTask = task;
+						break;
+					}
+				}
+				assert tempTask != null;
+				
+				LocalDate startDate = tempTask.getTaskStartDate();
+				LocalDate endDate = tempTask.getTaskEndDate();
+				LocalTime startTime = tempTask.getTaskStartTime();
+				LocalTime endTime = tempTask.getTaskEndTime();
+				if (endDate == null && endTime == null) {
+					returnResult.setOpStatus(MESSAGE_NODEADLINE);
+				} else {
+					if(endTime != null && timeIdentifier.matches(PATTERN_HOUR)) {
+						int offsetHour = endTime.getHour() + NumofDaysOrhours;
+						int offsetDay = offsetHour / 24;
+						offsetHour %= 24;
+						endDate = endDate.plusDays(offsetDay);
+						endTime = LocalTime.of(offsetHour, endTime.getMinute());
+					} else if(endDate != null && timeIdentifier.matches(PATTERN_DAY)) {
+						endDate = endDate.plusDays(NumofDaysOrhours);
+					}
+					
+					if(dtCheck.isValidDueDT(startDate, endDate, startTime, endTime)) {
+						tempTask.setTaskEndDate(endDate);
+						tempTask.setTaskEndTime(endTime);
+						returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
+						LOGGER.info(String.format("postpone %d to %s",
+								taskID,
+								endTime == null ?
+										endDate.toString() :
+										LocalDateTime.of(endDate, endTime).toString()));
+					}
+				}		
+			} else {
+				returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+			}
+		} else {
+			returnResult.setOpStatus(MESSAGE_UNSUCCESS);
+		}
+
+		returnResult.setReturnList(allLists.getTaskList());
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.POSTPONE_TASK);
+		return returnResult;
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\PostponeTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\RankTask.java
+	 */
+
+public class RankTask {
+	private static final Logger LOGGER = Logger.getLogger(RankTask.class.getName());
+	private static final String MESSAGE_INVALID_TASK = "Selected task does not exists!";
+	private static final String MESSAGE_INVALID_RANK = "Invalid priority rank!";
+	private static final String MESSAGE_SUCCESS = "Rank task operation is successful!";
+	private static final String TYPE_REMOVE = "remove";
+	
+	public ResultSet execute(String taskInfo, TaskListSet allLists, Validation validOp) {
+		int lineNum;
+		try {
+			lineNum = Integer.parseInt(taskInfo.substring(0, taskInfo.indexOf(" ")));
+		} catch (NumberFormatException e) {
+			LOGGER.throwing(getClass().getName(), "execute", e);
+			LOGGER.severe("Invalid number format");
+			throw e;
+		}
+		String taskRank = taskInfo.substring(taskInfo.indexOf(" ")+1);
+		ArrayList<Task> tempList = allLists.getTaskList();
+		ResultSet returnResult = new ResultSet();
+		
+		if(validOp.isValidTask(lineNum, allLists) && validOp.isValidRank(taskRank)) {
+			int taskID = validOp.checkForTaskID(lineNum, allLists);
+			for(int i = 0; i < tempList.size(); i++) {
+				if(tempList.get(i).getTaskID() == taskID) {
+					if(taskRank.equals(TYPE_REMOVE)) {
+						tempList.get(i).setTaskPriority(null);
+					} else {
+						tempList.get(i).setTaskPriority(taskRank.toUpperCase());
+					}
+					
+					break;
+				}
+			}
+			
+			allLists.setTaskList(tempList);
+			returnResult.setOpStatus(String.format(MESSAGE_SUCCESS));
+			
+		} else if(!validOp.isValidRank(taskRank)){
+			returnResult.setOpStatus(MESSAGE_INVALID_RANK);
+		} else {
+			returnResult.setOpStatus(MESSAGE_INVALID_TASK);
+		}
+		
+		returnResult.setReturnList(allLists.getTaskList());
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.RANK_TASK);
+		return returnResult;
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\RankTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\ResultSet.java
+	 */
+
+public class ResultSet {
+	String opStatus;
+	ArrayList<Task> returnList;
+	CommandParser.COMMAND_TYPE commandType;
+	
+	public ResultSet(String opStatus, ArrayList<Task> returnList, CommandParser.COMMAND_TYPE commandType) {
+		this.opStatus = opStatus;
+		this.returnList = returnList;
+		this.commandType = commandType;
+	}
+
+	public ResultSet() {
+		opStatus = null;
+		returnList = null;
+		commandType = null;
+		
+	}
+	
+	public CommandParser.COMMAND_TYPE getCommandType() {
+		return commandType;
+	}
+	
+	public void setCommandType(CommandParser.COMMAND_TYPE commandType) {
+		this.commandType = commandType;
+	}
+
+	public String getOpStatus() {
+		return opStatus;
+	}
+
+	public ArrayList<Task> getReturnList() {
+		return returnList;
+	}
+	
+	public void setOpStatus(String opStatus) {
+		this.opStatus = opStatus;
+	}
+	
+	public void setReturnList(ArrayList<Task> returnList) {
+		this.returnList = returnList;
+	}
+
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\ResultSet.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\SearchTask.java
+	 */
+
+public class SearchTask {
+	private static final String MESSAGE_SEARCH_FOUND = "Search results found: \"%1$s\"";
+	private static final String MESSAGE_NO_RESULT = "No results found!";
+	ResultSet returnResult = new ResultSet();
+	
+	public ResultSet execute(String searchTerm, TaskListSet allLists) {
+		ArrayList<Task> tempList = new ArrayList<Task>();
+		allLists.setResultList(tempList);
+		
+		for(int i = 0; i < allLists.getTaskList().size(); i++) {
+			Task task = allLists.getTaskList().get(i);
+			if(task.getTaskName().toLowerCase().contains(searchTerm.trim().toLowerCase())) {
+				tempList.add(task);
+			}
+		}
+		
+		allLists.setResultList(tempList);
+		
+		if(allLists.getResultList().isEmpty()) {
+			returnResult.setOpStatus(MESSAGE_NO_RESULT);
+		} else {
+			returnResult.setOpStatus(String.format(MESSAGE_SEARCH_FOUND,searchTerm));
+		}
+
+		returnResult.setReturnList(allLists.getResultList());
+		returnResult.setCommandType(CommandParser.COMMAND_TYPE.SEARCH_TASK);
+		return returnResult;
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\SearchTask.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\Task.java
+	 */
+
+public class Task {
+
+	private final static String STATUS_DEFAULT = "INCOMPLETE";
+	
+	private int taskID = 0;
+	private String taskName = null;
+	private String taskStatus = null;
+	private LocalDate taskStartDate = null;
+	private LocalTime taskStartTime = null;
+	private LocalDate taskEndDate = null;
+	private LocalTime taskEndTime = null;
+	private String taskPriority = null;
+	private String taskType = null;
+
+
+	/**
+	 * Default constructor.
+	 */
+	public Task() {
+		taskID = 0;
+		taskName = null;
+		taskStatus = STATUS_DEFAULT;
+		taskStartDate = null;
+		taskStartTime = null;
+		taskEndDate = null;
+		taskEndTime = null;
+		taskPriority = null;
+		taskType = null;
+	}
+
+
+	public Task(int taskID, String taskName, LocalDate taskStartDate, LocalTime taskStartTime, LocalDate taskEndDate, LocalTime taskEndTime, String taskType) {
+		this.taskID = taskID;
+		this.taskName = taskName;
+		this.taskStatus = STATUS_DEFAULT;
+		this.taskStartDate = taskStartDate;
+		this.taskStartTime = taskStartTime;
+		this.taskEndDate = taskEndDate;
+		this.taskEndTime = taskEndTime;
+		this.taskType = taskType;
+		
+	}
+	
+	public Task(int taskID, String taskName, LocalDate taskStartDate, LocalTime taskStartTime, LocalDate taskEndDate, LocalTime taskEndTime, String taskType, String taskPriority) {
+		this(taskID, taskName, taskStartDate, taskStartTime, taskEndDate, taskEndTime, taskType);
+		this.taskPriority = taskPriority;
+	}
+	
+	public Task(int taskID, String taskName, LocalDate taskStartDate, LocalTime taskStartTime, LocalDate taskEndDate, LocalTime taskEndTime, String taskType, String taskPriority, String taskStatus) {
+		this(taskID, taskName, taskStartDate, taskStartTime, taskEndDate, taskEndTime, taskType, taskPriority);
+		this.taskStatus = taskStatus;
+	}
+
+	/**
+	 * Get/Set methods for task attributes.
+	 */
+	public int getTaskID() {
+		return taskID;
+	}
+
+	public void setTaskID(int taskID) {
+		this.taskID = taskID;
+	}
+
+	public String getTaskName() {
+		return taskName;
+	}
+
+	public void setTaskName(String taskName) {
+		this.taskName = taskName;
+	}
+
+	public String getTaskStatus() {
+		return taskStatus;
+	}
+
+	public void setTaskStatus(String taskStatus) {
+		this.taskStatus = taskStatus;
+	}
+
+	public LocalDate getTaskStartDate() {
+		return taskStartDate;
+	}
+	
+	public void setTaskStartDate(LocalDate taskStartDate) {
+		this.taskStartDate = taskStartDate;
+	}
+	
+	public LocalTime getTaskStartTime() {
+		return taskStartTime;
+	}
+	
+	public void setTaskStartTime(LocalTime taskStartTime) {
+		this.taskStartTime = taskStartTime;
+	}
+	
+	public LocalDate getTaskEndDate() {
+		return taskEndDate;
+	}
+	
+	public void setTaskEndDate(LocalDate taskEndDate) {
+		this.taskEndDate = taskEndDate;
+	}
+	
+	public LocalTime getTaskEndTime() {
+		return taskEndTime;
+	}
+	
+	public void setTaskEndTime(LocalTime taskEndTime) {
+		this.taskEndTime = taskEndTime;
+	}
+	
+	public String getTaskPriority() {
+		return taskPriority;
+	}
+
+	public void setTaskPriority(String taskPriority) {
+		this.taskPriority = taskPriority;
+	}
+	
+	public String getTaskType() {
+		return taskType;
+	}
+	
+	public void setTaskType(String taskType) {
+		this.taskType = taskType;
+	}
+	
+	
+
+}
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\Task.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\TaskListSet.java
+	 */
+
+public class TaskListSet {
+	ArrayList<Task> taskList = new ArrayList<Task>(); 
+	ArrayList<Task> resultList = new ArrayList<Task>();
+	ArrayList<Task> viewList = new ArrayList<Task>();
+	ArrayList<Task> initList = new ArrayList<Task>();
+	
+	public TaskListSet() {
+	}
+	
+	public TaskListSet(ArrayList<Task> taskList, ArrayList<Task> resultList, ArrayList<Task> viewList, ArrayList<Task> initList) {
+		this.taskList = taskList;
+		this.resultList = resultList;
+		this.viewList = viewList;
+		this.initList = initList;
+	}
+	
+	public ArrayList<Task> getTaskList() {
+		return taskList;
+	}
+	
+	public void setTaskList(ArrayList<Task> taskList) {
+		this.taskList = taskList;
+	}
+	
+	public ArrayList<Task> getResultList() {
+		return resultList;
+	}
+	
+	public void setResultList(ArrayList<Task> resultList) {
+		this.resultList = resultList;
+	}
+	
+	public ArrayList<Task> getViewList() {
+		return viewList;
+	}
+	
+	public void setViewList(ArrayList<Task> viewList) {
+		this.viewList = viewList;
+	}
+	
+	public ArrayList<Task> getInitList() {
+		return initList;
+	}
+	
+	public void setInitList(ArrayList<Task> initList) {
+		this.initList = initList;
+	}
+	
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\logic\TaskListSet.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\parser\CommandParser.java
+	 */
+
+public class CommandParser {
+	private static final String MESSAGE_INVALID_COMMAND = "Unregconized command!";
+	
+	private static final String noContentCommandPattern = "clear|undo|save";
+	private static final String withContentCommandPattern = "add|delete|search|view|edit|rank|postpone|incomplete|complete|save as|float|load";
+	
+	ArrayList<Task> taskList = new ArrayList<Task>();
+	ArrayList<Task> resultList = new ArrayList<Task>(); // for search
+	ArrayList<Task> viewList = new ArrayList<Task>();
+
+	Logic logic = new Logic();
+
+	public ArrayList<Task> loadStorage() throws IOException {
+		taskList = logic.loadStorage();
+		return taskList;
+	}
+
+	public void writeStorage() throws IOException {
+		logic.writeStorage();
+	}
+	
+	public void writeStorageToStream(OutputStream out) throws IOException {
+		logic.writeStorage(out);
+	}
+
+	public static enum COMMAND_TYPE {
+		ADD_TASK, DELETE_TASK, VIEW_TASK, SEARCH_TASK, COMPLETE_TASK, INCOMPLETE_TASK, CLEAR_TASK, EDIT_TASK, POSTPONE_TASK, RANK_TASK, DEADLINE_TASK,
+		UNDO, SAVE, LOAD, FLOAT_TASK, SAVEAS, INVALID, EXIT
+	};
+
+	public static COMMAND_TYPE determineCommandType(String commandTypeString) {
+		if (commandTypeString.equals(null)) {
+			throw new Error(MESSAGE_INVALID_COMMAND);
+		} else {
+			commandTypeString = commandTypeString.toLowerCase();
+		}
+
+		switch (commandTypeString) {
+		case "add":
+			return COMMAND_TYPE.ADD_TASK;
+		case "delete":
+			return COMMAND_TYPE.DELETE_TASK;
+		case "view":
+			return COMMAND_TYPE.VIEW_TASK;
+		case "search":
+			return COMMAND_TYPE.SEARCH_TASK;
+		case "clear":
+			return COMMAND_TYPE.CLEAR_TASK;
+		case "complete":
+			return COMMAND_TYPE.COMPLETE_TASK;
+		case "incomplete":
+			return COMMAND_TYPE.INCOMPLETE_TASK;
+		case "edit":
+			return COMMAND_TYPE.EDIT_TASK;
+		case "postpone":
+			return COMMAND_TYPE.POSTPONE_TASK;
+		case "rank":
+			return COMMAND_TYPE.RANK_TASK;
+		case "undo":
+			return COMMAND_TYPE.UNDO;
+		case "save":
+			return COMMAND_TYPE.SAVE;
+		case "float":
+			return COMMAND_TYPE.FLOAT_TASK;
+		case "deadline":
+			return COMMAND_TYPE.DEADLINE_TASK;
+		case "saveas":
+			return COMMAND_TYPE.SAVEAS;
+		case "load":
+			return COMMAND_TYPE.LOAD;
+		case "exit":
+			return COMMAND_TYPE.EXIT;
+		default:
+			return COMMAND_TYPE.INVALID;
+		}
+
+	}
+
+	public ResultSet executeCommand(String userCommand) throws IOException {
+		// split the userCommand into operation and task info
+		String userOperation;
+		String userContent;
+
+		if (userCommand.indexOf(' ') >= 0) {
+			userOperation = userCommand.substring(0, userCommand.indexOf(' '));
+			userContent = userCommand.substring(userCommand.indexOf(' ') + 1);
+			if(userOperation.matches(noContentCommandPattern)) {
+				return showNoChanges();
+			}
+
+		} else {
+			userOperation = userCommand;
+			if(userOperation.matches(withContentCommandPattern)) {
+				return showNoChanges();
+			} else {
+				userContent = "";
+			}
+		}
+
+		COMMAND_TYPE commandType = determineCommandType(userOperation);
+		
+		switch (commandType) {
+		case ADD_TASK:
+			return logic.addCommand(userContent);
+		case DELETE_TASK:
+			return logic.deleteCommand(userContent);
+		case SEARCH_TASK:
+			return logic.searchCommand(userContent);
+		case VIEW_TASK:
+			return logic.viewCommand(userContent);
+		case CLEAR_TASK:
+			return logic.clearCommand();
+		case COMPLETE_TASK:
+			return logic.completeCommand(userContent);
+		case INCOMPLETE_TASK:
+			return logic.incompleteCommand(userContent);
+		case EDIT_TASK:
+			return logic.editCommand(userContent);
+		case POSTPONE_TASK:
+			return logic.postponeCommand(userContent);
+		case RANK_TASK:
+			return logic.rankCommand(userContent);
+		case FLOAT_TASK:
+			return logic.floatCommand(userContent);
+		case DEADLINE_TASK:
+			return logic.deadlineCommand(userContent);
+		case UNDO:
+			return logic.undoCommand();
+		case SAVE:
+			return logic.saveCommand();
+		case SAVEAS:
+			return logic.saveAsCommand(userContent);
+		case LOAD:
+			return logic.loadFileCommand(userContent);
+		case EXIT:
+			logic.saveCommand();
+			System.exit(0);
+		default:
+			// throw an error if the command is not recognized
+			return showNoChanges();
+		}
+
+	}
+
+	private ResultSet showNoChanges() {
+		ResultSet returnResult = new ResultSet();
+		returnResult.setOpStatus(MESSAGE_INVALID_COMMAND);
+		returnResult.setReturnList(logic.viewCommand(Logic.MODE_VIEW).getReturnList());
+		return logic.setViewMode(returnResult);
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\parser\CommandParser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\AddCommandUnitTesting.java
+	 */
+
+@RunWith(Parameterized.class)
+public class AddCommandUnitTesting {
+	private final Task expected;
+	private final String command;
+	private final AddTask addTask = new AddTask();
+
+	public AddCommandUnitTesting(Task expected, String command) {
+		this.expected = expected;
+		this.command = command;
+	}
+
+	@Parameterized.Parameters
+	public static List<Object[]> getParameters() {
+		return Arrays.asList(new Object[][] {
+				{ // test 1
+					new Task(0, "buy milk", null, null, LocalDate.now(), LocalTime.of(23, 59), "DEADLINE"),
+					"buy milk by today" 
+				},
+				{ // test 2
+					new Task(0, "buy milk", null, null, LocalDate.of(2015,04,18), LocalTime.of(23, 59), "DEADLINE"),
+					"buy milk by 2015-04-18" },
+				{ // test 3
+					new Task(0, "buy milk", null, null, LocalDate.of(2015,04,18), LocalTime.of(19, 00), "DEADLINE"),
+					"buy milk by 2015-04-18 19:00" },
+				{ // test 4
+					new Task(0, "buy milk", null, null, LocalDate.of(2015,04,17), LocalTime.of(19, 00), "DEADLINE"),
+					"buy milk by friday 19:00" },
+				{ // test 5
+					new Task(0, "buy milk", LocalDate.of(2015,04,18), LocalTime.of(19, 00), LocalDate.of(2015,04,18), LocalTime.of(20, 00), "TIMED"),
+					"buy milk on 2015-04-18 from 19:00 to 20:00" },
+				{ // test 6
+					new Task(0, "buy milk", LocalDate.of(2015,04,17), LocalTime.of(19, 00), LocalDate.of(2015,04,17), LocalTime.of(20, 00), "TIMED"),
+					"buy milk on friday from 19:00 to 20:00" },
+				{ // test 7
+					new Task(0, "buy milk", LocalDate.now(),  LocalTime.of(19, 00), LocalDate.now(), LocalTime.of(20, 00), "TIMED"),
+					"buy milk today from 19:00 to 20:00" },
+				{ // test 8
+					new Task(0, "buy milk", LocalDate.of(2015,04,18), LocalTime.of(19, 00), LocalDate.of(2015,05,01), LocalTime.of(20, 00), "TIMED"),
+					"buy milk on 2015-04-18 from 19:00 to 2015-05-01 20:00" },
+				{ // test 9
+					new Task(0, "buy milk", LocalDate.of(2015,04,18), null, LocalDate.of(2015,05,01), null, "TIMED"),
+					"buy milk from 2015-04-18 to 2015-05-01" },
+				{ // test 10
+					new Task(0, "buy milk", LocalDate.of(2015,04,18), LocalTime.of(19, 00), null, null, "TIMED"),
+					"buy milk on 2015-04-18 19:00" }, 
+				{ // test 11
+					new Task(0, "buy milk", LocalDate.of(2015,04,17), LocalTime.of(19, 00), null, null, "TIMED"),
+					"buy milk on friday 19:00" }, 
+				{ // test 12
+					new Task(0, "buy milk", LocalDate.now(), null, null, LocalTime.of(23, 59), "TIMED"),
+					"buy milk today" }, 
+				{ // test 13
+					new Task(0, "buy milk", null, null, null, null, "FLOATING"),
+					"buy milk"
+				}, 
+				{ // test 14
+					new Task(0, "buy milk", LocalDate.of(2015,04,18), null, null, null, "TIMED"),
+				 	"buy milk on 2015-04-18" }, 
+				{ // test 15
+					new Task(0, "buy milk", LocalDate.of(2015,04,17), null, null, null, "TIMED"),
+				 	"buy milk on friday" },
+
+		});
+	}
+
+	@Test
+	public void testAdd() {
+		final TaskListSet set = new TaskListSet();
+		final ResultSet rs = addTask.execute(command, set);
+		rs.getReturnList().get(0).setTaskID(0);
+		assertTrue(compareTask(rs.getReturnList().get(0), expected));
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\AddCommandUnitTesting.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\CompleteCommandUnitTesting.java
+	 */
+
+@RunWith(Parameterized.class)
+public class CompleteCommandUnitTesting {
+	private final Task expected;
+	private final Task input;
+
+	public CompleteCommandUnitTesting(Task expected, Task input) {
+		this.expected = expected;
+		this.input = input;
+	}
+
+	@Parameterized.Parameters
+	public static List<Object[]> getParameters() {
+		return Arrays.asList(new Object[][] {
+				{ // test 1
+					new Task(0, "buy milk", null, null, LocalDate.now(), LocalTime.of(23, 59), "DEADLINE", "HIGH","COMPLETE"),
+					new Task(0, "buy milk", null, null, LocalDate.now(), LocalTime.of(23, 59), "DEADLINE", "HIGH","INCOMPLETE")
+				},
+				
+		});
+	}
+
+	@Test
+	public void testComplete() {
+		final TaskListSet set = new TaskListSet();
+		set.setTaskList(new ArrayList<>(Arrays.asList(input)));
+		final ResultSet rs = new CompleteTask().execute("1", set, new Validation());
+		assertTrue(compareTask(rs.getReturnList().get(0), expected));
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\CompleteCommandUnitTesting.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\DeleteCommandUnitTesting.java
+	 */
+
+@RunWith(Parameterized.class)
+public class DeleteCommandUnitTesting {
+	private final ArrayList<Task> expected;
+	private final ArrayList<Task> storage;
+	private final DeleteTask deleteTask = new DeleteTask();
+	private final String deleteParameter;
+	
+	public DeleteCommandUnitTesting (ArrayList<Task> expected, ArrayList<Task> storage, String deleteParameter) {
+		this.expected = expected;
+		this.storage = storage;
+		this.deleteParameter = deleteParameter;
+	}
+	
+	@Before
+	public void init() {
+		
+	}
+	
+	@Parameterized.Parameters
+	public static List<Object[]> getParameters() {
+		final LocalDate startDate = LocalDate.now(), endDate = LocalDate.now();
+		final LocalTime startTime = LocalTime.now(), endTime = LocalTime.now();
+		return Arrays.asList(new Object[][]{
+				{	// test 1
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED")
+					})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED"),
+							new Task(1, "what", null, null, null, null, "FLOATING")
+					})),
+					"2"
+				},
+				{	// test 2
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED"),
+							new Task(1, "what", null, null, null, null, "FLOATING")
+										})),
+					new ArrayList<>(Arrays.asList(new Task[]{
+							new Task(0, "buy milk", startDate, startTime, endDate, endTime, "TIMED"),
+							new Task(1, "what", null, null, null, null, "FLOATING"),
+							new Task(2, "what is up", startDate, startTime, endDate, endTime, "TIMED")
+					})),
+					"3"
+				},
+				
+		});
+	}
+	
+	@Test
+	public void testView() {
+		final TaskListSet set = new TaskListSet();
+		set.setTaskList(storage);
+		final ResultSet rs = deleteTask.execute(deleteParameter, set, new Validation());
+		Iterator<Task> result = rs.getReturnList().iterator(), expected = this.expected.iterator();
+		while (result.hasNext() && expected.hasNext()) {
+			assertTrue(compareTask(result.next(), expected.next()));
+		}
+		assertFalse(result.hasNext() || expected.hasNext());
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\DeleteCommandUnitTesting.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\FloatCommandUnitTesting.java
+	 */
+
+@RunWith(Parameterized.class)
+public class FloatCommandUnitTesting {
+	private final Task expected;
+	private final Task input;
+
+	public FloatCommandUnitTesting(Task expected, Task input) {
+		this.expected = expected;
+		this.input = input;
+	}
+
+	@Parameterized.Parameters
+	public static List<Object[]> getParameters() {
+		return Arrays.asList(new Object[][] {
+				{ // test 1
+					new Task(0, "buy milk", null, null, null, null, "FLOATING", "HIGH","COMPLETE"),
+					new Task(0, "buy milk", null, null, LocalDate.now(), LocalTime.of(23, 59), "DEADLINE", "HIGH","COMPLETE")
+				},
+				
+		});
+	}
+
+	@Test
+	public void testFloat() {
+		final TaskListSet set = new TaskListSet();
+		set.setTaskList(new ArrayList<>(Arrays.asList(input)));
+		final ResultSet rs = new FloatTask().execute("1", set, new Validation());
+		assertTrue(compareTask(rs.getReturnList().get(0), expected));
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\FloatCommandUnitTesting.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\IncompleteCommandUnitTesting.java
+	 */
+
+@RunWith(Parameterized.class)
+public class IncompleteCommandUnitTesting {
+	private final Task expected;
+	private final Task input;
+
+	public IncompleteCommandUnitTesting(Task expected, Task input) {
+		this.expected = expected;
+		this.input = input;
+	}
+
+	@Parameterized.Parameters
+	public static List<Object[]> getParameters() {
+		return Arrays.asList(new Object[][] {
+				{ // test 1
+					new Task(0, "buy milk", null, null, LocalDate.now(), LocalTime.of(23, 59), "DEADLINE", "HIGH","INCOMPLETE"),
+					new Task(0, "buy milk", null, null, LocalDate.now(), LocalTime.of(23, 59), "DEADLINE", "HIGH","COMPLETE")
+				},
+				
+		});
+	}
+
+	@Test
+	public void testAdd() {
+		final TaskListSet set = new TaskListSet();
+		set.setTaskList(new ArrayList<>(Arrays.asList(input)));
+		final ResultSet rs = new IncompleteTask().execute("1", set, new Validation());
+		assertTrue(compareTask(rs.getReturnList().get(0), expected));
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\IncompleteCommandUnitTesting.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\PostponeCommandUnitTesting.java
+	 */
+
+public class PostponeCommandUnitTesting {
+	private final Validation validOp = new Validation();
+	
+	@Test
+	public void shouldPostponeByDaysKeyedIn () throws IOException {
+		final LocalDate date = LocalDate.now();
+		final PostponeTask postponeTask = new PostponeTask();
+		final TaskListSet set = new TaskListSet();
+		set.setTaskList(new ArrayList<>(Arrays.asList(new Task(0, "apply gym membership", null, null, date, null, "DEADLINE"))));
+		final ResultSet resultSet = postponeTask.execute("1 by 2 days", set, validOp);
+		final Task resultTask = resultSet.getReturnList().get(0);
+		assertTrue(TestUtil.compareTask(resultTask,
+				new Task(0, "apply gym membership", null, null, date.plusDays(2), null, "DEADLINE")));
+	}
+	
+	
+	@Test
+	public void shouldPostponeByHoursKeyedIn () throws IOException {
+		final PostponeTask postponeTask = new PostponeTask();
+		final TaskListSet set = new TaskListSet();
+		set.setTaskList(new ArrayList<>(Arrays.asList(
+				new Task(0, "apply gym membership", null, null, LocalDate.of(2015, 3, 31), LocalTime.of(21, 0), "DEADLINE"))));
+		final ResultSet resultSet = postponeTask.execute("1 by 4 hours", set, validOp);
+		final Task resultTask = resultSet.getReturnList().get(0);
+		assertTrue(TestUtil.compareTask(resultTask,
+				new Task(0, "apply gym membership", null, null, LocalDate.of(2015, 4, 1), LocalTime.of(0, 0), "DEADLINE")));
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\PostponeCommandUnitTesting.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\RankCommandUnitTesting.java
+	 */
+
+@RunWith(Parameterized.class)
+public class RankCommandUnitTesting {
+	private final Task expected;
+	private final Task input;
+	private final Boolean isRemove;
+
+	public RankCommandUnitTesting(Task expected, Task input, Boolean isRemove) {
+		this.expected = expected;
+		this.input = input;
+		this.isRemove = isRemove;
+	}
+
+	@Parameterized.Parameters
+	public static List<Object[]> getParameters() {
+		return Arrays.asList(new Object[][] {
+				{ // test 1
+					new Task(0, "buy milk", null, null, LocalDate.now(), LocalTime.of(23, 59), "DEADLINE", "HIGH"),
+					new Task(0, "buy milk", null, null, LocalDate.now(), LocalTime.of(23, 59), "DEADLINE", "LOW"),
+					false
+				},{ // test 2
+					new Task(0, "buy milk", null, null, LocalDate.now(), LocalTime.of(23, 59), "DEADLINE", null),
+					new Task(0, "buy milk", null, null, LocalDate.now(), LocalTime.of(23, 59), "DEADLINE", "LOW"),
+					true
+				},
+				
+		});
+	}
+
+	@Test
+	public void testAdd() {
+		final TaskListSet set = new TaskListSet();
+		set.setTaskList(new ArrayList<>(Arrays.asList(input)));
+		final ResultSet rs = new RankTask().execute(isRemove ? "1 remove" : "1 high", set, new Validation());
+		assertTrue(compareTask(rs.getReturnList().get(0), expected));
+	}
+}
+
+	// End of segment: C:\Users\Sony\Documents\cs2103jan2015-t13-4j\main\src\organizer\test\RankCommandUnitTesting.java
+
+
+
+
+
