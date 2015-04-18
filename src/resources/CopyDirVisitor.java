@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
-//@author A0098824N
+//@author A0098824N-reused
 /**Adapted from http://codingjunkie.net/java-7-copy-move/ **/
 
 public class CopyDirVisitor extends SimpleFileVisitor<Path>
